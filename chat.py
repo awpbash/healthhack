@@ -1,109 +1,158 @@
 import os
 import openai
 import tkinter as tk
-from tkinter import ttk, scrolledtext
+from tkinter import ttk, scrolledtext, messagebox
 from dotenv import load_dotenv
 from sentence_transformers import SentenceTransformer
 import iris
+from database import *
 
-
-# Load environment variables from .env
+# Load environment variables from .env (ensure you have one with your Azure key)
 load_dotenv()
+
+# Create database
+createDatabase()
+createTable()
 
 # Azure OpenAI configuration
 AZURE_OPENAI_API_KEY = os.getenv("openAIkey")
 AZURE_OPENAI_ENDPOINT = "https://e0957-m7dhe0bf-eastus2.cognitiveservices.azure.com/"
-DEPLOYMENT_NAME = "gpt-4"  # Your deployment name
+DEPLOYMENT_NAME = "gpt-4"  # Change to your deployment name
 API_VERSION = "2024-08-01-preview"  # Update as needed
 
-# Initialize the Azure OpenAI client
+# Initialize Azure OpenAI client
 client = openai.AzureOpenAI(
     api_key=AZURE_OPENAI_API_KEY,
     api_version=API_VERSION,
     azure_endpoint=AZURE_OPENAI_ENDPOINT
 )
 
-# Define system prompts for each function
+# Define system prompts for different conversation functions
 SYSTEM_PROMPTS = {
-    "symptom_check": (
-        "You are a helpful healthcare assistant. Ask the user detailed questions about their symptoms "
-        "to gather more information and help narrow down possible causes."
+    "Symptom Checker": (
+        "You are a compassionate healthcare assistant specializing in symptom analysis. "
+        "Ask clarifying questions and help the user narrow down potential causes based on their symptoms."
     ),
-    "condition_evaluation": (
-        "You are a professional healthcare assistant. Based on the conversation so far, provide a preliminary "
-        "evaluation of the user's condition and suggest next steps, such as seeking medical attention if needed."
+    "Condition Evaluation": (
+        "You are a professional healthcare assistant. Evaluate the user's condition based on the conversation and suggest next steps, "
+        "such as whether to seek medical attention."
     ),
-    "general_advice": (
-        "You are a friendly healthcare assistant. Answer general health-related questions clearly and compassionately, "
-        "ensuring the user feels informed and supported."
+    "General Advice": (
+        "You are a friendly healthcare assistant offering general health and wellness advice. "
+        "Answer questions clearly and empathetically."
     )
 }
 
-# Conversation history per function (list of messages)
-conversation_history = {
-    "symptom_check": [],
-    "condition_evaluation": [],
-    "general_advice": []
+# Maintain separate conversation histories for each function
+conversation_histories = {
+    "Symptom Checker": [],
+    "Condition Evaluation": [],
+    "General Advice": []
 }
 
 
-def chat_with_gpt(function: str, user_message: str, max_tokens: int = 150) -> str:
-    """
-    Sends a prompt to Azure OpenAI with function-specific context and returns the assistant's reply.
-    """
-    if function not in SYSTEM_PROMPTS:
-        return "Error: Invalid function."
+class HealthcareChatbotUI(tk.Tk):
+    def __init__(self):
+        super().__init__()
+        self.title("Healthcare Assistant Chatbot")
+        self.geometry("900x700")
+        self.configure(bg="#F7F7F7")
+        self.create_widgets()
 
-    # Build messages: system prompt, then conversation history, then the new user message.
-    messages = [{"role": "system", "content": SYSTEM_PROMPTS[function]}]
-    messages.extend(conversation_history[function])
-    messages.append({"role": "user", "content": user_message})
+    def create_widgets(self):
+        # Create a Notebook (tabbed interface)
+        self.notebook = ttk.Notebook(self)
+        self.notebook.pack(fill="both", expand=True, padx=10, pady=10)
 
-    try:
-        response = client.chat.completions.create(
-            model=DEPLOYMENT_NAME,
-            messages=messages,
-            max_tokens=max_tokens,
-            temperature=0.7
-        )
-        reply = response.choices[0].message.content
-        # Update conversation history
-        conversation_history[function].append(
-            {"role": "user", "content": user_message})
-        conversation_history[function].append(
-            {"role": "assistant", "content": reply})
-        return reply
-    except Exception as e:
-        return f"Error: {e}"
+        # Create tabs for each function
+        self.tabs = {}
+        for func in SYSTEM_PROMPTS.keys():
+            tab = ttk.Frame(self.notebook)
+            self.notebook.add(tab, text=func)
+            self.tabs[func] = tab
 
+        # Create chat components for each tab
+        self.chat_components = {}
+        for func, tab in self.tabs.items():
+            # Create a scrolled text widget for the conversation
+            chat_display = scrolledtext.ScrolledText(tab, wrap=tk.WORD, font=("Arial", 12), state="disabled", bg="#FFFFFF")
+            chat_display.pack(fill="both", expand=True, padx=10, pady=10)
 
-def query_rag(prompt):
-    username = 'demo'
-    password = 'demo'
-    hostname = os.getenv('IRIS_HOSTNAME', 'localhost')
-    port = '1972'
-    namespace = 'USER'
-    CONNECTION_STRING = f"{hostname}:{port}/{namespace}"
-    conn = iris.connect(CONNECTION_STRING, username, password)
-    cursor = conn.cursor()
+            # Create a frame for input field and send button
+            input_frame = ttk.Frame(tab)
+            input_frame.pack(fill="x", padx=10, pady=5)
 
-    # Load a pre-trained sentence transformer model. This model's output vectors are of size 384
-    tableName = "SchemaName.TableName"
-    numberOfResults = 10
-    model = SentenceTransformer('pritamdeka/S-PubMedBert-MS-MARCO')
-    searchVector = model.encode(
-        prompt, normalize_embeddings=True).tolist()
-    sql = f"""
-        SELECT TOP ? name, category, price, description
-        FROM {tableName}
-        WHERE price < 100
-        ORDER BY VECTOR_DOT_PRODUCT(description_vector, TO_VECTOR(?)) DESC
-    """
+            # Input field for user message
+            user_input = ttk.Entry(input_frame, font=("Arial", 12))
+            user_input.pack(side="left", fill="x", expand=True, padx=(0, 10))
+            user_input.bind("<Return>", lambda event, f=func: self.send_message(f))
 
-    cursor.execute(sql, [numberOfResults, str(searchVector)])
-    results = cursor.fetchall()
+            # Send button
+            send_btn = ttk.Button(input_frame, text="Send", command=lambda f=func: self.send_message(f))
+            send_btn.pack(side="right")
 
-    return results
+            self.chat_components[func] = {
+                "chat_display": chat_display,
+                "user_input": user_input
+            }
+
+        # Menu Bar for additional functions
+        menubar = tk.Menu(self)
+        self.config(menu=menubar)
+        file_menu = tk.Menu(menubar, tearoff=0)
+        file_menu.add_command(label="Clear Conversation", command=self.clear_current_conversation)
+        file_menu.add_command(label="Exit", command=self.destroy)
+        menubar.add_cascade(label="File", menu=file_menu)
+
+    def clear_current_conversation(self):
+        # Clear conversation history and text for the currently selected tab
+        current_tab = self.notebook.tab(self.notebook.select(), "text")
+        conversation_histories[current_tab] = []
+        chat_display = self.chat_components[current_tab]["chat_display"]
+        chat_display.configure(state="normal")
+        chat_display.delete("1.0", tk.END)
+        chat_display.configure(state="disabled")
+
+    def send_message(self, function):
+        user_message = self.chat_components[function]["user_input"].get().strip()
+        if not user_message:
+            return
+        self.chat_components[function]["user_input"].delete(0, tk.END)
+        self.append_message(function, f"You: {user_message}\n")
+        reply = self.chat_with_gpt(function, user_message)
+        self.append_message(function, f"Assistant: {reply}\n\n")
+
+    def append_message(self, function, message):
+        chat_display = self.chat_components[function]["chat_display"]
+        chat_display.configure(state="normal")
+        chat_display.insert(tk.END, message)
+        chat_display.configure(state="disabled")
+        chat_display.see(tk.END)
+
+    def chat_with_gpt(self, function, user_message, max_tokens=150):
+        # Build conversation messages using the system prompt and conversation history
+        system_prompt = SYSTEM_PROMPTS[function]
+        history = conversation_histories[function]
+        messages = [{"role": "system", "content": system_prompt}]
+        messages.extend(history)
+        messages.append({"role": "user", "content": user_message})
+        try:
+            response = client.chat.completions.create(
+                model=DEPLOYMENT_NAME,
+                messages=messages,
+                max_tokens=max_tokens,
+                temperature=0.7
+            )
+            reply = response.choices[0].message.content.strip()
+            # Update conversation history
+            conversation_histories[function].append({"role": "user", "content": user_message})
+            conversation_histories[function].append({"role": "assistant", "content": reply})
+            return reply
+        except Exception as e:
+            messagebox.showerror("Error", f"An error occurred: {e}")
+            return "Sorry, I encountered an error."
+        
+
 
 
 def insert_data(table_name, table_definition, data):
@@ -112,14 +161,6 @@ def insert_data(table_name, table_definition, data):
     table_definition: (name VARCHAR(255), category VARCHAR(255),review_point INT, price DOUBLE, description VARCHAR(2000), description_vector VECTOR(DOUBLE, 384))
     data: array of values to insert
     """
-    username = 'demo'
-    password = 'demo'
-    hostname = os.getenv('IRIS_HOSTNAME', 'localhost')
-    port = '1972'
-    namespace = 'USER'
-    CONNECTION_STRING = f"{hostname}:{port}/{namespace}"
-    conn = iris.connect(CONNECTION_STRING, username, password)
-    cursor = conn.cursor()
 
     columns = ", ".join([i[0].strip()
                         for i in table_definition.split(',')]) + ")"
@@ -137,7 +178,6 @@ def insert_data(table_name, table_definition, data):
 # ----------------------------
 # Tkinter Chatbot UI
 # ----------------------------
-
 
 class ChatUI:
     def __init__(self, master):
@@ -177,7 +217,7 @@ class ChatUI:
         self._append_text(f"You ({function}): {user_message}\n")
         self.entry_var.set("")
         # Call the chat function to get a reply
-        reply = chat_with_gpt(function, user_message, max_tokens=150)
+        reply = HealthcareChatbotUI.chat_with_gpt(function, user_message, max_tokens=150)
         self._append_text(f"Assistant: {reply}\n\n")
 
     def _append_text(self, text):
@@ -194,4 +234,5 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    app = HealthcareChatbotUI()
+    app.mainloop()
