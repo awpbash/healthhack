@@ -1,41 +1,57 @@
 {
+  "name": "krr",
+  "displayName": "krr",
   "expo": {
     "name": "krr",
     "slug": "krr",
+    "scheme": "krr",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
-    "ios": {
-      "supportsTablet": true
+    "icon": "./assets/images/app-icon-all.png",
+    "updates": {
+      "fallbackToCacheTimeout": 0
     },
+    "newArchEnabled": false,
+    "jsEngine": "hermes",
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "android": {
+      "icon": "./assets/images/app-icon-android-legacy.png",
+      "package": "com.krr",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./assets/images/app-icon-android-adaptive-foreground.png",
+        "backgroundImage": "./assets/images/app-icon-android-adaptive-background.png"
       }
     },
+    "ios": {
+      "icon": "./assets/images/app-icon-ios.png",
+      "supportsTablet": true,
+      "bundleIdentifier": "com.krr"
+    },
     "web": {
-      "bundler": "metro",
-      "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/app-icon-web-favicon.png",
+      "bundler": "metro"
     },
     "plugins": [
-      "expo-router",
+      "expo-localization",
+      "expo-font",
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
-          "imageWidth": 200,
+          "image": "./assets/images/app-icon-android-adaptive-foreground.png",
+          "imageWidth": 300,
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
+          "backgroundColor": "#191015"
         }
       ]
     ],
     "experiments": {
-      "typedRoutes": true
+      "tsconfigPaths": true
     }
+  },
+  "ignite": {
+    "version": "10.1.6"
   }
 }
