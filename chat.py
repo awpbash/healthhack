@@ -3,6 +3,9 @@ import openai
 import tkinter as tk
 from tkinter import ttk, scrolledtext
 from dotenv import load_dotenv
+from sentence_transformers import SentenceTransformer
+import iris
+
 
 # Load environment variables from .env
 load_dotenv()
@@ -43,18 +46,19 @@ conversation_history = {
     "general_advice": []
 }
 
+
 def chat_with_gpt(function: str, user_message: str, max_tokens: int = 150) -> str:
     """
     Sends a prompt to Azure OpenAI with function-specific context and returns the assistant's reply.
     """
     if function not in SYSTEM_PROMPTS:
         return "Error: Invalid function."
-    
+
     # Build messages: system prompt, then conversation history, then the new user message.
     messages = [{"role": "system", "content": SYSTEM_PROMPTS[function]}]
     messages.extend(conversation_history[function])
     messages.append({"role": "user", "content": user_message})
-    
+
     try:
         response = client.chat.completions.create(
             model=DEPLOYMENT_NAME,
@@ -64,41 +68,106 @@ def chat_with_gpt(function: str, user_message: str, max_tokens: int = 150) -> st
         )
         reply = response.choices[0].message.content
         # Update conversation history
-        conversation_history[function].append({"role": "user", "content": user_message})
-        conversation_history[function].append({"role": "assistant", "content": reply})
+        conversation_history[function].append(
+            {"role": "user", "content": user_message})
+        conversation_history[function].append(
+            {"role": "assistant", "content": reply})
         return reply
     except Exception as e:
         return f"Error: {e}"
 
 
+def query_rag(prompt):
+    username = 'demo'
+    password = 'demo'
+    hostname = os.getenv('IRIS_HOSTNAME', 'localhost')
+    port = '1972'
+    namespace = 'USER'
+    CONNECTION_STRING = f"{hostname}:{port}/{namespace}"
+    conn = iris.connect(CONNECTION_STRING, username, password)
+    cursor = conn.cursor()
+
+    # Load a pre-trained sentence transformer model. This model's output vectors are of size 384
+    tableName = "SchemaName.TableName"
+    numberOfResults = 10
+    model = SentenceTransformer('pritamdeka/S-PubMedBert-MS-MARCO')
+    searchVector = model.encode(
+        prompt, normalize_embeddings=True).tolist()
+    sql = f"""
+        SELECT TOP ? name, category, price, description
+        FROM {tableName}
+        WHERE price < 100
+        ORDER BY VECTOR_DOT_PRODUCT(description_vector, TO_VECTOR(?)) DESC
+    """
+
+    cursor.execute(sql, [numberOfResults, str(searchVector)])
+    results = cursor.fetchall()
+
+    return results
+
+
+def insert_data(table_name, table_definition, data):
+    """
+    table_name: SchemaName.TableName
+    table_definition: (name VARCHAR(255), category VARCHAR(255),review_point INT, price DOUBLE, description VARCHAR(2000), description_vector VECTOR(DOUBLE, 384))
+    data: array of values to insert
+    """
+    username = 'demo'
+    password = 'demo'
+    hostname = os.getenv('IRIS_HOSTNAME', 'localhost')
+    port = '1972'
+    namespace = 'USER'
+    CONNECTION_STRING = f"{hostname}:{port}/{namespace}"
+    conn = iris.connect(CONNECTION_STRING, username, password)
+    cursor = conn.cursor()
+
+    columns = ", ".join([i[0].strip()
+                        for i in table_definition.split(',')]) + ")"
+    placeholder_values = ['?' for _ in table_definition.split(',')]
+    placeholder_values[-1] = 'TO_VECTOR(?)'
+    placeholder_values = f'({",".join(placeholder_values)})'
+    sql = f"""
+        INSERT INTO {table_name}
+        {columns}
+        VALUES {placeholder_values}
+    """
+    cursor.execute(sql, data)
+
+
 # ----------------------------
 # Tkinter Chatbot UI
 # ----------------------------
+
+
 class ChatUI:
     def __init__(self, master):
         self.master = master
         master.title("Healthcare Assistant Chatbot")
-        
+
         # Dropdown for selecting the conversation function
         self.function_var = tk.StringVar(value="symptom_check")
-        self.function_menu = ttk.Combobox(master, textvariable=self.function_var, state="readonly")
+        self.function_menu = ttk.Combobox(
+            master, textvariable=self.function_var, state="readonly")
         self.function_menu['values'] = list(SYSTEM_PROMPTS.keys())
         self.function_menu.grid(row=0, column=0, padx=5, pady=5, sticky="w")
-        
+
         # Scrolled text widget for conversation history
-        self.conversation_box = scrolledtext.ScrolledText(master, wrap=tk.WORD, width=80, height=20, state="disabled")
-        self.conversation_box.grid(row=1, column=0, columnspan=2, padx=5, pady=5)
-        
+        self.conversation_box = scrolledtext.ScrolledText(
+            master, wrap=tk.WORD, width=80, height=20, state="disabled")
+        self.conversation_box.grid(
+            row=1, column=0, columnspan=2, padx=5, pady=5)
+
         # Entry widget for user input
         self.entry_var = tk.StringVar()
         self.entry = ttk.Entry(master, textvariable=self.entry_var, width=70)
         self.entry.grid(row=2, column=0, padx=5, pady=5, sticky="ew")
         self.entry.bind("<Return>", self.send_message)
-        
+
         # Send button
-        self.send_button = ttk.Button(master, text="Send", command=self.send_message)
+        self.send_button = ttk.Button(
+            master, text="Send", command=self.send_message)
         self.send_button.grid(row=2, column=1, padx=5, pady=5)
-        
+
     def send_message(self, event=None):
         user_message = self.entry_var.get().strip()
         if not user_message:
@@ -110,17 +179,19 @@ class ChatUI:
         # Call the chat function to get a reply
         reply = chat_with_gpt(function, user_message, max_tokens=150)
         self._append_text(f"Assistant: {reply}\n\n")
-        
+
     def _append_text(self, text):
         self.conversation_box.configure(state="normal")
         self.conversation_box.insert(tk.END, text)
         self.conversation_box.configure(state="disabled")
         self.conversation_box.see(tk.END)
 
+
 def main():
     root = tk.Tk()
     app = ChatUI(root)
     root.mainloop()
+
 
 if __name__ == "__main__":
     main()
