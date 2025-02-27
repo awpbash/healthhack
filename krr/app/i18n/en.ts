@@ -52,6 +52,18 @@ const en = {
         logLabel: "Log",
         logPlaceholder: "Enter some remarks about your vitals logged"
     },
+    dietLoggerScreen: {
+        vegeFruitLabel: "Servings of Vegetables and Fruit",
+        vegeFruitPlaceholder: "e.g. 1",
+        wholegrainLabel: "Servings of Wholegrain",
+        wholegrainPlaceholder: "e.g. 1",
+        sugaryBeveragesLabel: "Servings of Sugary Beverages",
+        sugaryBeveragesPlaceholder: "e.g. 1",
+        dessertLabel: "Servings of Dessert",
+        dessertPlaceholder: "e.g. 1",
+        logLabel: "Log",
+        logPlaceholder: "Enter some remarks about your vitals logged"
+    },
     loginScreen: {
         logIn: "Log In",
         enterDetails:

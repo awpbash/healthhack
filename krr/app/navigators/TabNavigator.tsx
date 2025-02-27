@@ -11,6 +11,7 @@ import { DemoPodcastListScreen } from "../screens/DemoPodcastListScreen"
 import type { ThemedStyle } from "@/theme"
 import { AppStackParamList, AppStackScreenProps } from "./AppNavigator"
 import { useAppTheme } from "@/utils/useAppTheme"
+import { DietLogger } from "@/screens/DietLogger"
 
 export type TabParamList = {
   DemoCommunity: undefined
@@ -98,6 +99,17 @@ export function TabNavigator() {
       <Tab.Screen
         name="ActivityLogger"
         component={ActivityLogger}
+        options={{
+          tabBarLabel: translate("demoNavigator:loggerTab"),
+          tabBarIcon: ({ focused }) => (
+            <Icon icon="menu" color={focused ? colors.tint : colors.tintInactive} size={30} />
+          ),
+        }}
+      />
+
+      <Tab.Screen
+        name="DietLogger"
+        component={DietLogger}
         options={{
           tabBarLabel: translate("demoNavigator:loggerTab"),
           tabBarIcon: ({ focused }) => (
