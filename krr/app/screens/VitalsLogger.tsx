@@ -1,5 +1,5 @@
 import { FC, useState } from "react"
-import { View, ViewStyle } from "react-native"
+import { ViewStyle } from "react-native"
 import { Screen, TextField, Icon, Button } from "../components"
 import { DemoTabScreenProps } from "../navigators/DemoNavigator"
 import { $styles } from "../theme"
@@ -7,13 +7,11 @@ import type { ThemedStyle } from "@/theme"
 import { useAppTheme } from "@/utils/useAppTheme"
 
 import theme, { Theme } from "@/theme/theme"
-import { ThemeProvider, createText, useTheme } from "@shopify/restyle"
+import { ThemeProvider} from "@shopify/restyle"
 
 export const VitalsLogger: FC<DemoTabScreenProps<"VitalsLogger">> = function VitalsLogger(_props) {
-  const Shopify_text = createText<Theme>()
   const { themed } = useAppTheme()
 
-  const options = ["Activity", "Vitals", "Diet"]
   const [heart_rate, set_heart_rate] = useState("")
   const [blood_pressure, set_blood_pressure] = useState("")
   const [weight, set_weight] = useState("")
@@ -75,27 +73,11 @@ export const VitalsLogger: FC<DemoTabScreenProps<"VitalsLogger">> = function Vit
           multiline
           RightAccessory={(props) => <Icon icon="ladybug" containerStyle={props.style} size={21} />}
         />
-      <Button
-        preset="filled"
-      >
-        {"Submit"}
-      </Button>
+        <Button preset="filled">{"Submit"}</Button>
       </Screen>
     </ThemeProvider>
   )
 }
-
-const $whiteContainer: ThemedStyle<ViewStyle> = () => ({
-  backgroundColor: "#F4F2F1",
-  borderRadius: 20,
-  width: "100%",
-})
-
-const $separator: ThemedStyle<ViewStyle> = () => ({
-  height: 1,
-  backgroundColor: "black",
-  width: "100%",
-})
 
 const $textField: ThemedStyle<ViewStyle> = () => ({
   marginBottom: 10,
