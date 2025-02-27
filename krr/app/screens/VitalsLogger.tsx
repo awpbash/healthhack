@@ -1,7 +1,7 @@
 import { FC, useState } from "react"
 import { ViewStyle } from "react-native"
 import { Screen, TextField, Icon, Button } from "../components"
-import { DemoTabScreenProps } from "../navigators/DemoNavigator"
+import { DemoTabScreenProps } from "../navigators/TabNavigator"
 import { $styles } from "../theme"
 import type { ThemedStyle } from "@/theme"
 import { useAppTheme } from "@/utils/useAppTheme"
