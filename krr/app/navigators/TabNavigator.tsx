@@ -6,6 +6,7 @@ import { Icon } from "../components"
 import { translate } from "@/i18n"
 import { DemoCommunityScreen, DemoShowroomScreen, DemoDebugScreen } from "../screens"
 import { VitalsLogger } from "@/screens/VitalsLogger"
+import { ActivityLogger } from "@/screens/ActivityLogger"
 import { DemoPodcastListScreen } from "../screens/DemoPodcastListScreen"
 import type { ThemedStyle } from "@/theme"
 import { AppStackParamList, AppStackScreenProps } from "./AppNavigator"
@@ -86,6 +87,17 @@ export function TabNavigator() {
       <Tab.Screen
         name="VitalsLogger"
         component={VitalsLogger}
+        options={{
+          tabBarLabel: translate("demoNavigator:loggerTab"),
+          tabBarIcon: ({ focused }) => (
+            <Icon icon="menu" color={focused ? colors.tint : colors.tintInactive} size={30} />
+          ),
+        }}
+      />
+
+      <Tab.Screen
+        name="ActivityLogger"
+        component={ActivityLogger}
         options={{
           tabBarLabel: translate("demoNavigator:loggerTab"),
           tabBarIcon: ({ focused }) => (
