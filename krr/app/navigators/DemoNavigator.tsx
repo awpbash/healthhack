@@ -4,19 +4,21 @@ import { TextStyle, ViewStyle } from "react-native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { Icon } from "../components"
 import { translate } from "@/i18n"
-import { DemoCommunityScreen, DemoShowroomScreen, DemoDebugScreen } from "../screens"
+import { DemoShowroomScreen, DemoDebugScreen } from "../screens"
 import { VitalsLogger } from "@/screens/VitalsLogger"
+import { ProfileScreen } from "@/screens/ProfileScreen"
 import { DemoPodcastListScreen } from "../screens/DemoPodcastListScreen"
 import type { ThemedStyle } from "@/theme"
 import { AppStackParamList, AppStackScreenProps } from "./AppNavigator"
 import { useAppTheme } from "@/utils/useAppTheme"
 
+// Keep the existing param list structure but rename DemoCommunity to Profile
 export type DemoTabParamList = {
-  DemoCommunity: undefined
   DemoShowroom: { queryIndex?: string; itemIndex?: string }
-  DemoDebug: undefined
-  DemoPodcastList: undefined
+  Profile: undefined  // Only changing this name
   VitalsLogger: undefined
+  DemoPodcastList: undefined
+  DemoDebug: undefined
 }
 
 /**
@@ -69,10 +71,10 @@ export function DemoNavigator() {
       />
 
       <Tab.Screen
-        name="DemoCommunity"
-        component={DemoCommunityScreen}
+        name="Profile"  // Changed from DemoCommunity to Profile
+        component={ProfileScreen}
         options={{
-          tabBarLabel: translate("demoNavigator:communityTab"),
+          tabBarLabel: translate("demoNavigator:profileTab"),  // Use profileTab instead of communityTab
           tabBarIcon: ({ focused }) => (
             <Icon icon="community" color={focused ? colors.tint : colors.tintInactive} size={30} />
           ),
