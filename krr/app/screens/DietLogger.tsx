@@ -9,55 +9,70 @@ import { useAppTheme } from "@/utils/useAppTheme"
 import theme, { Theme } from "@/theme/theme"
 import { ThemeProvider} from "@shopify/restyle"
 
-export const VitalsLogger: FC<DemoTabScreenProps<"VitalsLogger">> = function VitalsLogger(_props) {
+export const DietLogger: FC<DemoTabScreenProps<"DietLogger">> = function DietLogger(_props) {
   const { themed } = useAppTheme()
 
-  const [heart_rate, set_heart_rate] = useState("")
-  const [blood_pressure, set_blood_pressure] = useState("")
-  const [weight, set_weight] = useState("")
+  const [servings_of_vege_and_fruit, set_servings_of_vege_and_fruit] = useState("")
+  const [wholegrains, set_whole_grains] = useState("")
+  const [sugary_beverages, set_sugary_beverages] = useState("")
+  const [dessert, set_dessert] = useState("")
   const [log, set_log] = useState("")
 
   return (
     <ThemeProvider theme={theme}>
       <Screen preset="scroll" contentContainerStyle={$styles.container} safeAreaEdges={["top"]}>
         <TextField
-          value={heart_rate}
-          onChangeText={set_heart_rate}
+          value={servings_of_vege_and_fruit}
+          onChangeText={set_servings_of_vege_and_fruit}
           containerStyle={themed($textField)}
           autoCapitalize="none"
           autoComplete="email"
           autoCorrect={false}
           keyboardType="email-address"
-          labelTx="vitalLoggerScreen:heartRateLabel"
-          placeholderTx="vitalLoggerScreen:heartRatePlaceholder"
+          labelTx="dietLoggerScreen:vegeFruitLabel"
+          placeholderTx="dietLoggerScreen:vegeFruitPlaceholder"
           // helper={"lol"}
           // status={"lol" ? "error" : undefined}
           // onSubmitEditing={() => authPasswordInput.current?.focus()}
         />
         <TextField
-          value={blood_pressure}
-          onChangeText={set_blood_pressure}
+          value={wholegrains}
+          onChangeText={set_whole_grains}
           containerStyle={themed($textField)}
           autoCapitalize="none"
           autoComplete="email"
           autoCorrect={false}
           keyboardType="email-address"
-          labelTx="vitalLoggerScreen:bloodPressureLabel"
-          placeholderTx="vitalLoggerScreen:bloodPressurePlaceholder"
+          labelTx="dietLoggerScreen:wholegrainLabel"
+          placeholderTx="dietLoggerScreen:wholegrainPlaceholder"
           // helper={"lol"}
           // status={"lol" ? "error" : undefined}
           // onSubmitEditing={() => authPasswordInput.current?.focus()}
         />
         <TextField
-          value={weight}
-          onChangeText={set_weight}
+          value={sugary_beverages}
+          onChangeText={set_sugary_beverages}
           containerStyle={themed($textField)}
           autoCapitalize="none"
           autoComplete="email"
           autoCorrect={false}
           keyboardType="email-address"
-          labelTx="vitalLoggerScreen:weightLabel"
-          placeholderTx="vitalLoggerScreen:weightPlaceholder"
+          labelTx="dietLoggerScreen:sugaryBeveragesLabel"
+          placeholderTx="dietLoggerScreen:sugaryBeveragesPlaceholder"
+          // helper={"lol"}
+          // status={"lol" ? "error" : undefined}
+          // onSubmitEditing={() => authPasswordInput.current?.focus()}
+        />
+        <TextField
+          value={dessert}
+          onChangeText={set_dessert}
+          containerStyle={themed($textField)}
+          autoCapitalize="none"
+          autoComplete="email"
+          autoCorrect={false}
+          keyboardType="email-address"
+          labelTx="dietLoggerScreen:dessertLabel"
+          placeholderTx="dietLoggerScreen:dessertPlaceholder"
           // helper={"lol"}
           // status={"lol" ? "error" : undefined}
           // onSubmitEditing={() => authPasswordInput.current?.focus()}
@@ -65,11 +80,11 @@ export const VitalsLogger: FC<DemoTabScreenProps<"VitalsLogger">> = function Vit
         <TextField
           value={log}
           onChangeText={set_log}
-          labelTx="vitalLoggerScreen:logLabel"
+          labelTx="dietLoggerScreen:logLabel"
           labelTxOptions={{ prop: "label" }}
           helperTx="demoTextField:useCase.passingContent.supportsMultiline.helper"
           helperTxOptions={{ prop: "helper" }}
-          placeholderTx="vitalLoggerScreen:logPlaceholder"
+          placeholderTx="dietLoggerScreen:logPlaceholder"
           multiline
           RightAccessory={(props) => <Icon icon="ladybug" containerStyle={props.style} size={21} />}
         />

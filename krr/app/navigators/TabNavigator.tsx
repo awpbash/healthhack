@@ -6,19 +6,36 @@ import { Icon } from "../components"
 import { translate } from "@/i18n"
 import { DemoShowroomScreen, DemoDebugScreen } from "../screens"
 import { VitalsLogger } from "@/screens/VitalsLogger"
+<<<<<<< HEAD:krr/app/navigators/DemoNavigator.tsx
 import { ProfileScreen } from "@/screens/ProfileScreen"
+=======
+import { ActivityLogger } from "@/screens/ActivityLogger"
+>>>>>>> origin/main:krr/app/navigators/TabNavigator.tsx
 import { DemoPodcastListScreen } from "../screens/DemoPodcastListScreen"
 import type { ThemedStyle } from "@/theme"
 import { AppStackParamList, AppStackScreenProps } from "./AppNavigator"
 import { useAppTheme } from "@/utils/useAppTheme"
+import { DietLogger } from "@/screens/DietLogger"
 
+<<<<<<< HEAD:krr/app/navigators/DemoNavigator.tsx
 // Keep the existing param list structure but rename DemoCommunity to Profile
 export type DemoTabParamList = {
+=======
+export type TabParamList = {
+  DemoCommunity: undefined
+>>>>>>> origin/main:krr/app/navigators/TabNavigator.tsx
   DemoShowroom: { queryIndex?: string; itemIndex?: string }
   Profile: undefined  // Only changing this name
   VitalsLogger: undefined
+<<<<<<< HEAD:krr/app/navigators/DemoNavigator.tsx
   DemoPodcastList: undefined
   DemoDebug: undefined
+=======
+  ActivityLogger: undefined
+  DietLogger: undefined
+  Chat: undefined
+  Dashboard: undefined
+>>>>>>> origin/main:krr/app/navigators/TabNavigator.tsx
 }
 
 /**
@@ -26,12 +43,12 @@ export type DemoTabParamList = {
  *
  * More info: https://reactnavigation.org/docs/typescript/#organizing-types
  */
-export type DemoTabScreenProps<T extends keyof DemoTabParamList> = CompositeScreenProps<
-  BottomTabScreenProps<DemoTabParamList, T>,
+export type DemoTabScreenProps<T extends keyof TabParamList> = CompositeScreenProps<
+  BottomTabScreenProps<TabParamList, T>,
   AppStackScreenProps<keyof AppStackParamList>
 >
 
-const Tab = createBottomTabNavigator<DemoTabParamList>()
+const Tab = createBottomTabNavigator<TabParamList>()
 
 /**
  * This is the main navigator for the demo screens with a bottom tab bar.
@@ -40,7 +57,7 @@ const Tab = createBottomTabNavigator<DemoTabParamList>()
  * More info: https://reactnavigation.org/docs/bottom-tab-navigator/
  * @returns {JSX.Element} The rendered `DemoNavigator`.
  */
-export function DemoNavigator() {
+export function TabNavigator() {
   const { bottom } = useSafeAreaInsets()
   const {
     themed,
@@ -84,6 +101,28 @@ export function DemoNavigator() {
       <Tab.Screen
         name="VitalsLogger"
         component={VitalsLogger}
+        options={{
+          tabBarLabel: translate("demoNavigator:loggerTab"),
+          tabBarIcon: ({ focused }) => (
+            <Icon icon="menu" color={focused ? colors.tint : colors.tintInactive} size={30} />
+          ),
+        }}
+      />
+
+      <Tab.Screen
+        name="ActivityLogger"
+        component={ActivityLogger}
+        options={{
+          tabBarLabel: translate("demoNavigator:loggerTab"),
+          tabBarIcon: ({ focused }) => (
+            <Icon icon="menu" color={focused ? colors.tint : colors.tintInactive} size={30} />
+          ),
+        }}
+      />
+
+      <Tab.Screen
+        name="DietLogger"
+        component={DietLogger}
         options={{
           tabBarLabel: translate("demoNavigator:loggerTab"),
           tabBarIcon: ({ focused }) => (

@@ -17,9 +17,15 @@ const theme = createTheme({
         white: palette.white,
     },
     spacing: {
-        s: 8,
-        m: 16,
-        l: 24,
+        xxxs: 2,
+        xxs: 4,
+        xs: 8,
+        sm: 12,
+        md: 16,
+        lg: 24,
+        xl: 32,
+        xxl: 48,
+        xxxl: 64,
 
         padding_small: 10,
         padding_normal: 20,
@@ -40,7 +46,7 @@ const theme = createTheme({
             color: "text",
             paddingBottom: "padding_small",
             paddingTop: "padding_small",
-            textAlign: "center"
+            textAlign: "center",
         },
     },
 })

@@ -4,16 +4,22 @@
  * Generally speaking, it will contain an auth flow (registration, login, forgot password)
  * and a "main" flow which the user will use once logged in.
  */
+import "react-native-reanimated"
+import "react-native-gesture-handler" // Ensure this is the first import
 import { NavigationContainer, NavigatorScreenParams } from "@react-navigation/native"
 import { createNativeStackNavigator, NativeStackScreenProps } from "@react-navigation/native-stack"
 import { observer } from "mobx-react-lite"
 import * as Screens from "@/screens"
 import Config from "../config"
 import { useStores } from "../models"
-import { DemoNavigator, DemoTabParamList } from "./DemoNavigator"
+import { TabNavigator, TabParamList } from "./TabNavigator"
 import { navigationRef, useBackButtonHandler } from "./navigationUtilities"
 import { useAppTheme, useThemeProvider } from "@/utils/useAppTheme"
 import { ComponentProps } from "react"
+import { BottomSheetModalProvider } from "@gorhom/bottom-sheet"
+
+import { GestureHandlerRootView } from "react-native-gesture-handler"
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context"
 
 /**
  * This type allows TypeScript to know what routes are defined in this navigator
@@ -31,7 +37,7 @@ import { ComponentProps } from "react"
 export type AppStackParamList = {
   Welcome: undefined
   Login: undefined
-  Demo: NavigatorScreenParams<DemoTabParamList>
+  Tabs: NavigatorScreenParams<TabParamList>
   // 🔥 Your screens go here
   // IGNITE_GENERATOR_ANCHOR_APP_STACK_PARAM_LIST
 }
@@ -68,13 +74,11 @@ const AppStack = observer(function AppStack() {
           backgroundColor: colors.background,
         },
       }}
-      initialRouteName={isAuthenticated ? "Welcome" : "Login"}
+      initialRouteName={isAuthenticated ? "Tabs" : "Login"}
     >
       {isAuthenticated ? (
         <>
-          <Stack.Screen name="Welcome" component={Screens.WelcomeScreen} />
-
-          <Stack.Screen name="Demo" component={DemoNavigator} />
+          <Stack.Screen name="Tabs" component={TabNavigator} />
         </>
       ) : (
         <>
@@ -98,9 +102,15 @@ export const AppNavigator = observer(function AppNavigator(props: NavigationProp
 
   return (
     <ThemeProvider value={{ themeScheme, setThemeContextOverride }}>
-      <NavigationContainer ref={navigationRef} theme={navigationTheme} {...props}>
-        <AppStack />
-      </NavigationContainer>
+      <SafeAreaProvider>
+        <GestureHandlerRootView>
+          <BottomSheetModalProvider>
+            <NavigationContainer ref={navigationRef} theme={navigationTheme} {...props}>
+              <AppStack />
+            </NavigationContainer>
+          </BottomSheetModalProvider>
+        </GestureHandlerRootView>
+      </SafeAreaProvider>
     </ThemeProvider>
   )
 })
