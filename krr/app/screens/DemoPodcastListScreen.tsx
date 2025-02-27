@@ -34,7 +34,7 @@ import {
 import { isRTL, translate } from "@/i18n"
 import { useStores } from "../models"
 import { Episode } from "../models/Episode"
-import { DemoTabScreenProps } from "../navigators/DemoNavigator"
+import { DemoTabScreenProps } from "../navigators/TabNavigator"
 import type { ThemedStyle } from "@/theme"
 import { $styles } from "../theme"
 import { delay } from "../utils/delay"
