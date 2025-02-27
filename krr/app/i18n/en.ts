@@ -73,7 +73,7 @@ const en = {
     hireUsLink: "Send us a message",
   },
   demoShowroomScreen: {
-    jumpStart: "Components to jump start your project!",
+    jumpStart: "Thrive AI",
     lorem2Sentences:
       "Nulla cupidatat deserunt amet quis aliquip nostrud do adipisicing. Adipisicing excepteur elit laborum Lorem adipisicing do duis.",
     demoHeaderTxExample: "Yay",

@@ -37,7 +37,7 @@
   "include": [
     "**/*.ts",
     "**/*.tsx"
-  ],
+, "ReactotronConfig.js"  ],
   "exclude": [
     "node_modules",
     "test/**/*"
