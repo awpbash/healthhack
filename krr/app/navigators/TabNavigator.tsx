@@ -7,19 +7,35 @@ import { translate } from "@/i18n"
 import { DemoShowroomScreen, DemoDebugScreen } from "../screens"
 import { VitalsLogger } from "@/screens/VitalsLogger"
 import { ProfileScreen } from "@/screens/ProfileScreen"
+<<<<<<< HEAD
+=======
+import { ActivityLogger } from "@/screens/ActivityLogger"
+>>>>>>> origin/main
 import { DemoPodcastListScreen } from "../screens/DemoPodcastListScreen"
 import type { ThemedStyle } from "@/theme"
 import { AppStackParamList, AppStackScreenProps } from "./AppNavigator"
 import { useAppTheme } from "@/utils/useAppTheme"
 import { DietLogger } from "@/screens/DietLogger"
 
+<<<<<<< HEAD
 // Keep the existing param list structure but rename DemoCommunity to Profile
 export type DemoTabParamList = {
+=======
+export type TabParamList = {
+  DemoCommunity: undefined
+>>>>>>> origin/main
   DemoShowroom: { queryIndex?: string; itemIndex?: string }
   Profile: undefined  // Only changing this name
   VitalsLogger: undefined
   DemoPodcastList: undefined
   DemoDebug: undefined
+<<<<<<< HEAD
+=======
+  ActivityLogger: undefined
+  DietLogger: undefined
+  Chat: undefined
+  Dashboard: undefined
+>>>>>>> origin/main
 }
 
 /**

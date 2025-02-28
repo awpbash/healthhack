@@ -1,3 +1,4 @@
+/*
 import { observer } from "mobx-react-lite"
 import { ComponentType, FC, useCallback, useEffect, useMemo, useState } from "react"
 import {
@@ -189,6 +190,7 @@ const EpisodeCard = observer(function EpisodeCard({
    * Android has a "longpress" accessibility action. iOS does not, so we just have to use a hint.
    * @see https://reactnative.dev/docs/accessibility#accessibilityactions
    */
+  /*
   const accessibilityHintProps = useMemo(
     () =>
       Platform.select<AccessibilityProps>({
@@ -383,4 +385,6 @@ const $emptyState: ThemedStyle<ViewStyle> = ({ spacing }) => ({
 const $emptyStateImage: ImageStyle = {
   transform: [{ scaleX: isRTL ? -1 : 1 }],
 }
-// #endregion
+*/
+
+
