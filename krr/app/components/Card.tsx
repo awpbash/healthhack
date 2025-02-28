@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { ComponentType, Fragment, ReactElement } from "react"
 import {
   StyleProp,
@@ -14,6 +15,71 @@ import { Text, TextProps } from "./Text"
 import { useAppTheme } from "@/utils/useAppTheme"
 
 type Presets = "default" | "reversed"
+
+// Keep your existing Card component untouched
+// Add these additional exports at the end of your file:
+
+// Add these additional components after your existing Card component code
+
+const CardHeader = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className = "", ...props }, ref) => (
+  <div
+    ref={ref}
+    className={`flex flex-col space-y-1.5 p-6 ${className}`}
+    {...props}
+  />
+))
+CardHeader.displayName = "CardHeader"
+
+const CardTitle = React.forwardRef<
+  HTMLHeadingElement,
+  React.HTMLAttributes<HTMLHeadingElement>
+>(({ className = "", ...props }, ref) => (
+  <h3
+    ref={ref}
+    className={`text-lg font-semibold leading-none tracking-tight ${className}`}
+    {...props}
+  />
+))
+CardTitle.displayName = "CardTitle"
+
+const CardDescription = React.forwardRef<
+  HTMLParagraphElement,
+  React.HTMLAttributes<HTMLParagraphElement>
+>(({ className = "", ...props }, ref) => (
+  <p
+    ref={ref}
+    className={`text-sm text-gray-500 ${className}`}
+    {...props}
+  />
+))
+CardDescription.displayName = "CardDescription"
+
+const CardContent = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className = "", ...props }, ref) => (
+  <div ref={ref} className={`p-6 pt-0 ${className}`} {...props} />
+))
+CardContent.displayName = "CardContent"
+
+const CardFooter = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className = "", ...props }, ref) => (
+  <div
+    ref={ref}
+    className={`flex items-center p-6 pt-0 ${className}`}
+    {...props}
+  />
+))
+CardFooter.displayName = "CardFooter"
+
+// Update your export statement to include these new components
+// If you already have an export statement, add these new components to it
+export { CardHeader, CardFooter, CardTitle, CardDescription, CardContent }
 
 interface CardProps extends TouchableOpacityProps {
   /**
@@ -310,3 +376,5 @@ const $footerPresets: Record<Presets, ThemedStyleArray<TextStyle>> = {
   default: [],
   reversed: [(theme) => ({ color: theme.colors.palette.neutral100 })],
 }
+
+

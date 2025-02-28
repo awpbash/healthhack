@@ -5,37 +5,22 @@ import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { Icon } from "../components"
 import { translate } from "@/i18n"
 import { DemoShowroomScreen, DemoDebugScreen } from "../screens"
+import { ActivityLogger } from "@/screens/ActivityLogger"
 import { VitalsLogger } from "@/screens/VitalsLogger"
 import { ProfileScreen } from "@/screens/ProfileScreen"
-<<<<<<< HEAD
-=======
-import { ActivityLogger } from "@/screens/ActivityLogger"
->>>>>>> origin/main
-import { DemoPodcastListScreen } from "../screens/DemoPodcastListScreen"
+import { DashboardScreen } from "../screens/DashboardScreen"
 import type { ThemedStyle } from "@/theme"
 import { AppStackParamList, AppStackScreenProps } from "./AppNavigator"
 import { useAppTheme } from "@/utils/useAppTheme"
 import { DietLogger } from "@/screens/DietLogger"
 
-<<<<<<< HEAD
 // Keep the existing param list structure but rename DemoCommunity to Profile
 export type DemoTabParamList = {
-=======
-export type TabParamList = {
-  DemoCommunity: undefined
->>>>>>> origin/main
   DemoShowroom: { queryIndex?: string; itemIndex?: string }
   Profile: undefined  // Only changing this name
-  VitalsLogger: undefined
+  ActivityLogger: undefined
   DemoPodcastList: undefined
   DemoDebug: undefined
-<<<<<<< HEAD
-=======
-  ActivityLogger: undefined
-  DietLogger: undefined
-  Chat: undefined
-  Dashboard: undefined
->>>>>>> origin/main
 }
 
 /**
@@ -99,8 +84,8 @@ export function TabNavigator() {
       />
 
       <Tab.Screen
-        name="VitalsLogger"
-        component={VitalsLogger}
+        name="ActivityLogger"
+        component={Logger}
         options={{
           tabBarLabel: translate("demoNavigator:loggerTab"),
           tabBarIcon: ({ focused }) => (
@@ -132,11 +117,10 @@ export function TabNavigator() {
       />
 
       <Tab.Screen
-        name="DemoPodcastList"
-        component={DemoPodcastListScreen}
+        name="Dashboard"
+        component={DashboardScreen}
         options={{
-          tabBarAccessibilityLabel: translate("demoNavigator:podcastListTab"),
-          tabBarLabel: translate("demoNavigator:podcastListTab"),
+          tabBarLabel: translate("demoNavigator:dashboardTab"),
           tabBarIcon: ({ focused }) => (
             <Icon icon="podcast" color={focused ? colors.tint : colors.tintInactive} size={30} />
           ),

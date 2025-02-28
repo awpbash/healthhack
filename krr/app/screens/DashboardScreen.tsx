@@ -1,390 +1,338 @@
-/*
-import { observer } from "mobx-react-lite"
-import { ComponentType, FC, useCallback, useEffect, useMemo, useState } from "react"
-import {
-  AccessibilityProps,
-  ActivityIndicator,
-  Image,
-  ImageSourcePropType,
-  ImageStyle,
-  Platform,
-  StyleSheet,
-  TextStyle,
-  View,
-  ViewStyle,
-} from "react-native"
-import { type ContentStyle } from "@shopify/flash-list"
-import Animated, {
-  Extrapolation,
-  interpolate,
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-} from "react-native-reanimated"
-import {
-  Button,
-  ButtonAccessoryProps,
-  Card,
-  EmptyState,
-  Icon,
-  ListView,
-  Screen,
-  Switch,
-  Text,
-} from "@/components"
-import { isRTL, translate } from "@/i18n"
-import { useStores } from "../models"
-import { Episode } from "../models/Episode"
-import { DemoTabScreenProps } from "../navigators/TabNavigator"
-import type { ThemedStyle } from "@/theme"
-import { $styles } from "../theme"
-import { delay } from "../utils/delay"
-import { openLinkInBrowser } from "../utils/openLinkInBrowser"
-import { useAppTheme } from "@/utils/useAppTheme"
+import React, { useState } from 'react';
+import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ComposedChart, Area } from 'recharts';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/Card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/Tabs';
+import { Activity, Heart, Scale, Utensils, TrendingUp, Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
 
-const ICON_SIZE = 14
+export const DashboardScreen = () => {
+  // component code...
+  const [timeframe, setTimeframe] = useState('week');
+  
+  // Sample data for visualizations
+  const vitalsData = [
+    { date: 'Feb 22', heartRate: 72, systolic: 122, diastolic: 78, weight: 78.2 },
+    { date: 'Feb 23', heartRate: 74, systolic: 124, diastolic: 80, weight: 78.0 },
+    { date: 'Feb 24', heartRate: 70, systolic: 120, diastolic: 76, weight: 77.8 },
+    { date: 'Feb 25', heartRate: 75, systolic: 126, diastolic: 82, weight: 77.9 },
+    { date: 'Feb 26', heartRate: 71, systolic: 118, diastolic: 75, weight: 77.5 },
+    { date: 'Feb 27', heartRate: 73, systolic: 121, diastolic: 77, weight: 77.7 },
+    { date: 'Feb 28', heartRate: 69, systolic: 119, diastolic: 76, weight: 77.4 },
+  ];
 
-const rnrImage1 = require("../../assets/images/demo/rnr-image-1.png")
-const rnrImage2 = require("../../assets/images/demo/rnr-image-2.png")
-const rnrImage3 = require("../../assets/images/demo/rnr-image-3.png")
-const rnrImages = [rnrImage1, rnrImage2, rnrImage3]
+  const activityData = [
+    { date: 'Feb 22', activity: 'Run', minutes: 30 },
+    { date: 'Feb 23', activity: 'Swim', minutes: 45 },
+    { date: 'Feb 24', activity: 'Rest', minutes: 0 },
+    { date: 'Feb 25', activity: 'Cycle', minutes: 60 },
+    { date: 'Feb 26', activity: 'Pilates', minutes: 40 },
+    { date: 'Feb 27', activity: 'Gym', minutes: 50 },
+    { date: 'Feb 28', activity: 'Run', minutes: 35 },
+  ];
 
-export const DemoPodcastListScreen: FC<DemoTabScreenProps<"DemoPodcastList">> = observer(
-  function DemoPodcastListScreen(_props) {
-    const { episodeStore } = useStores()
-    const { themed } = useAppTheme()
+  // Transform activity data for the stacked bar chart
+  const transformActivityData = () => {
+    const dates = [...new Set(activityData.map(item => item.date))];
+    const activities = [...new Set(activityData.filter(item => item.activity !== 'Rest').map(item => item.activity))];
+    
+    return dates.map(date => {
+      const dateData = { date };
+      activities.forEach(activity => {
+        const match = activityData.find(item => item.date === date && item.activity === activity);
+        const dateData: Record<string, any> = { date };
+      });
+      return dateData;
+    });
+  };
 
-    const [refreshing, setRefreshing] = useState(false)
-    const [isLoading, setIsLoading] = useState(false)
+  const nutritionData = [
+    { date: 'Feb 22', vegetables: 3, fruits: 2, wholeGrains: 2, sugaryBeverages: 1 },
+    { date: 'Feb 23', vegetables: 4, fruits: 1, wholeGrains: 3, sugaryBeverages: 0 },
+    { date: 'Feb 24', vegetables: 2, fruits: 3, wholeGrains: 1, sugaryBeverages: 2 },
+    { date: 'Feb 25', vegetables: 5, fruits: 2, wholeGrains: 4, sugaryBeverages: 0 },
+    { date: 'Feb 26', vegetables: 3, fruits: 4, wholeGrains: 2, sugaryBeverages: 1 },
+    { date: 'Feb 27', vegetables: 4, fruits: 2, wholeGrains: 3, sugaryBeverages: 0 },
+    { date: 'Feb 28', vegetables: 3, fruits: 3, wholeGrains: 2, sugaryBeverages: 1 },
+  ];
 
-    // initially, kick off a background refresh without the refreshing UI
-    useEffect(() => {
-      ;(async function load() {
-        setIsLoading(true)
-        await episodeStore.fetchEpisodes()
-        setIsLoading(false)
-      })()
-    }, [episodeStore])
+  // Aggregated activity minutes by type
+  const activitySummary = [
+    { name: 'Run', total: 65 },
+    { name: 'Swim', total: 45 },
+    { name: 'Cycle', total: 60 },
+    { name: 'Pilates', total: 40 },
+    { name: 'Gym', total: 50 },
+  ];
 
-    // simulate a longer refresh, if the refresh is too fast for UX
-    async function manualRefresh() {
-      setRefreshing(true)
-      await Promise.all([episodeStore.fetchEpisodes(), delay(750)])
-      setRefreshing(false)
-    }
+  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
+  type ActivityType = 'Run' | 'Swim' | 'Cycle' | 'Pilates' | 'Gym';
+  
+  const ACTIVITY_COLORS: Record<ActivityType, string> = {
+    'Run': '#FF8042',
+    'Swim': '#0088FE',
+    'Cycle': '#00C49F',
+    'Pilates': '#FFBB28',
+    'Gym': '#8884d8'
+  };
 
-    return (
-      <Screen preset="fixed" safeAreaEdges={["top"]} contentContainerStyle={$styles.flex1}>
-        <ListView<Episode>
-          contentContainerStyle={themed([$styles.container, $listContentContainer])}
-          data={episodeStore.episodesForList.slice()}
-          extraData={episodeStore.favorites.length + episodeStore.episodes.length}
-          refreshing={refreshing}
-          estimatedItemSize={177}
-          onRefresh={manualRefresh}
-          ListEmptyComponent={
-            isLoading ? (
-              <ActivityIndicator />
-            ) : (
-              <EmptyState
-                preset="generic"
-                style={themed($emptyState)}
-                headingTx={
-                  episodeStore.favoritesOnly
-                    ? "demoPodcastListScreen:noFavoritesEmptyState.heading"
-                    : undefined
-                }
-                contentTx={
-                  episodeStore.favoritesOnly
-                    ? "demoPodcastListScreen:noFavoritesEmptyState.content"
-                    : undefined
-                }
-                button={episodeStore.favoritesOnly ? "" : undefined}
-                buttonOnPress={manualRefresh}
-                imageStyle={$emptyStateImage}
-                ImageProps={{ resizeMode: "contain" }}
-              />
-            )
-          }
-          ListHeaderComponent={
-            <View style={themed($heading)}>
-              <Text preset="heading" tx="demoPodcastListScreen:title" />
-              {(episodeStore.favoritesOnly || episodeStore.episodesForList.length > 0) && (
-                <View style={themed($toggle)}>
-                  <Switch
-                    value={episodeStore.favoritesOnly}
-                    onValueChange={() =>
-                      episodeStore.setProp("favoritesOnly", !episodeStore.favoritesOnly)
-                    }
-                    labelTx="demoPodcastListScreen:onlyFavorites"
-                    labelPosition="left"
-                    labelStyle={$labelStyle}
-                    accessibilityLabel={translate("demoPodcastListScreen:accessibility.switch")}
-                  />
-                </View>
-              )}
-            </View>
-          }
-          renderItem={({ item }) => (
-            <EpisodeCard
-              episode={item}
-              isFavorite={episodeStore.hasFavorite(item)}
-              onPressFavorite={() => episodeStore.toggleFavorite(item)}
-            />
-          )}
-        />
-      </Screen>
-    )
-  },
-)
-
-const EpisodeCard = observer(function EpisodeCard({
-  episode,
-  isFavorite,
-  onPressFavorite,
-}: {
-  episode: Episode
-  onPressFavorite: () => void
-  isFavorite: boolean
-}) {
-  const {
-    theme: { colors },
-    themed,
-  } = useAppTheme()
-
-  const liked = useSharedValue(isFavorite ? 1 : 0)
-  const imageUri = useMemo<ImageSourcePropType>(() => {
-    return rnrImages[Math.floor(Math.random() * rnrImages.length)]
-  }, [])
-
-  // Grey heart
-  const animatedLikeButtonStyles = useAnimatedStyle(() => {
-    return {
-      transform: [
-        {
-          scale: interpolate(liked.value, [0, 1], [1, 0], Extrapolation.EXTEND),
-        },
-      ],
-      opacity: interpolate(liked.value, [0, 1], [1, 0], Extrapolation.CLAMP),
-    }
-  })
-
-  // Pink heart
-  const animatedUnlikeButtonStyles = useAnimatedStyle(() => {
-    return {
-      transform: [
-        {
-          scale: liked.value,
-        },
-      ],
-      opacity: liked.value,
-    }
-  })
-
-  const handlePressFavorite = useCallback(() => {
-    onPressFavorite()
-    liked.value = withSpring(liked.value ? 0 : 1)
-  }, [liked, onPressFavorite])
-
-  /**
-   * Android has a "longpress" accessibility action. iOS does not, so we just have to use a hint.
-   * @see https://reactnative.dev/docs/accessibility#accessibilityactions
-   */
-  /*
-  const accessibilityHintProps = useMemo(
-    () =>
-      Platform.select<AccessibilityProps>({
-        ios: {
-          accessibilityLabel: episode.title,
-          accessibilityHint: translate("demoPodcastListScreen:accessibility.cardHint", {
-            action: isFavorite ? "unfavorite" : "favorite",
-          }),
-        },
-        android: {
-          accessibilityLabel: episode.title,
-          accessibilityActions: [
-            {
-              name: "longpress",
-              label: translate("demoPodcastListScreen:accessibility.favoriteAction"),
-            },
-          ],
-          onAccessibilityAction: ({ nativeEvent }) => {
-            if (nativeEvent.actionName === "longpress") {
-              handlePressFavorite()
-            }
-          },
-        },
-      }),
-    [episode.title, handlePressFavorite, isFavorite],
-  )
-
-  const handlePressCard = () => {
-    openLinkInBrowser(episode.enclosure.link)
-  }
-
-  const ButtonLeftAccessory: ComponentType<ButtonAccessoryProps> = useMemo(
-    () =>
-      function ButtonLeftAccessory() {
-        return (
-          <View>
-            <Animated.View
-              style={[
-                $styles.row,
-                themed($iconContainer),
-                StyleSheet.absoluteFill,
-                animatedLikeButtonStyles,
-              ]}
-            >
-              <Icon
-                icon="heart"
-                size={ICON_SIZE}
-                color={colors.palette.neutral800} // dark grey
-              />
-            </Animated.View>
-            <Animated.View
-              style={[$styles.row, themed($iconContainer), animatedUnlikeButtonStyles]}
-            >
-              <Icon
-                icon="heart"
-                size={ICON_SIZE}
-                color={colors.palette.primary400} // pink
-              />
-            </Animated.View>
-          </View>
-        )
-      },
-    [animatedLikeButtonStyles, animatedUnlikeButtonStyles, colors, themed],
-  )
-
+  // Weekly summary calculations
+  const avgHeartRate = Math.round(vitalsData.reduce((acc, curr) => acc + curr.heartRate, 0) / vitalsData.length);
+  const avgBloodPressure = {
+    systolic: Math.round(vitalsData.reduce((acc, curr) => acc + curr.systolic, 0) / vitalsData.length),
+    diastolic: Math.round(vitalsData.reduce((acc, curr) => acc + curr.diastolic, 0) / vitalsData.length)
+  };
+  const totalActivityMinutes = activityData.reduce((acc, curr) => acc + curr.minutes, 0);
+  const totalVeggies = nutritionData.reduce((acc, curr) => acc + curr.vegetables, 0);
+  const totalFruits = nutritionData.reduce((acc, curr) => acc + curr.fruits, 0);
+  const totalWholeGrains = nutritionData.reduce((acc, curr) => acc + curr.wholeGrains, 0);
+  const totalSugaryBeverages = nutritionData.reduce((acc, curr) => acc + curr.sugaryBeverages, 0);
+  
   return (
-    <Card
-      style={themed($item)}
-      verticalAlignment="force-footer-bottom"
-      onPress={handlePressCard}
-      onLongPress={handlePressFavorite}
-      HeadingComponent={
-        <View style={[$styles.row, themed($metadata)]}>
-          <Text
-            style={themed($metadataText)}
-            size="xxs"
-            accessibilityLabel={episode.datePublished.accessibilityLabel}
-          >
-            {episode.datePublished.textLabel}
-          </Text>
-          <Text
-            style={themed($metadataText)}
-            size="xxs"
-            accessibilityLabel={episode.duration.accessibilityLabel}
-          >
-            {episode.duration.textLabel}
-          </Text>
-        </View>
-      }
-      content={`${episode.parsedTitleAndSubtitle.title} - ${episode.parsedTitleAndSubtitle.subtitle}`}
-      {...accessibilityHintProps}
-      RightComponent={<Image source={imageUri} style={themed($itemThumbnail)} />}
-      FooterComponent={
-        <Button
-          onPress={handlePressFavorite}
-          onLongPress={handlePressFavorite}
-          style={themed([$favoriteButton, isFavorite && $unFavoriteButton])}
-          accessibilityLabel={
-            isFavorite
-              ? translate("demoPodcastListScreen:accessibility.unfavoriteIcon")
-              : translate("demoPodcastListScreen:accessibility.favoriteIcon")
-          }
-          LeftAccessory={ButtonLeftAccessory}
-        >
-          <Text
-            size="xxs"
-            accessibilityLabel={episode.duration.accessibilityLabel}
-            weight="medium"
-            text={
-              isFavorite
-                ? translate("demoPodcastListScreen:unfavoriteButton")
-                : translate("demoPodcastListScreen:favoriteButton")
-            }
-          />
-        </Button>
-      }
-    />
-  )
-})
+    <div className="p-4 max-w-6xl mx-auto">
+      <div className="flex items-center mb-6">
+        <div>
+          <h1 className="text-2xl font-bold">Health Dashboard</h1>
+          <p className="text-gray-500">February 22 - 28, 2025</p>
+        </div>
+        <div className="ml-auto flex items-center gap-4">
+          <div className="flex items-center bg-gray-100 rounded-lg p-1">
+            <button className="p-1 rounded-md hover:bg-gray-200">
+              <ChevronLeft className="h-5 w-5" />
+            </button>
+            <div className="px-2">
+              <select 
+                className="bg-transparent border-none focus:outline-none text-sm"
+                value={timeframe}
+                onChange={(e) => setTimeframe(e.target.value)}
+              >
+                <option value="week">Weekly</option>
+                <option value="month">Monthly</option>
+                <option value="year">Yearly</option>
+              </select>
+            </div>
+            <button className="p-1 rounded-md hover:bg-gray-200">
+              <ChevronRight className="h-5 w-5" />
+            </button>
+          </div>
+        </div>
+      </div>
 
-// #region Styles
-const $listContentContainer: ThemedStyle<ContentStyle> = ({ spacing }) => ({
-  paddingHorizontal: spacing.lg,
-  paddingTop: spacing.lg + spacing.xl,
-  paddingBottom: spacing.lg,
-})
+      {/* Summary Cards */}
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+        <Card>
+          <CardContent className="pt-6">
+            <div className="text-center">
+              <div className="flex justify-center mb-2">
+                <Heart className="h-6 w-6 text-red-500" />
+              </div>
+              <p className="text-gray-500 text-sm">Heart Rate</p>
+              <h3 className="text-2xl font-bold">{avgHeartRate} <span className="text-sm font-normal">bpm</span></h3>
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardContent className="pt-6">
+            <div className="text-center">
+              <div className="flex justify-center mb-2">
+                <TrendingUp className="h-6 w-6 text-blue-500" />
+              </div>
+              <p className="text-gray-500 text-sm">Blood Pressure</p>
+              <h3 className="text-2xl font-bold">{avgBloodPressure.systolic}/{avgBloodPressure.diastolic}</h3>
+            </div>
+          </CardContent>
+        </Card>
 
-const $heading: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  marginBottom: spacing.md,
-})
+        <Card>
+          <CardContent className="pt-6">
+            <div className="text-center">
+              <div className="flex justify-center mb-2">
+                <Scale className="h-6 w-6 text-purple-500" />
+              </div>
+              <p className="text-gray-500 text-sm">Weight</p>
+              <h3 className="text-2xl font-bold">{vitalsData[vitalsData.length - 1].weight} <span className="text-sm font-normal">kg</span></h3>
+            </div>
+          </CardContent>
+        </Card>
 
-const $item: ThemedStyle<ViewStyle> = ({ colors, spacing }) => ({
-  padding: spacing.md,
-  marginTop: spacing.md,
-  minHeight: 120,
-  backgroundColor: colors.palette.neutral100,
-})
+        <Card>
+          <CardContent className="pt-6">
+            <div className="text-center">
+              <div className="flex justify-center mb-2">
+                <Activity className="h-6 w-6 text-orange-500" />
+              </div>
+              <p className="text-gray-500 text-sm">Activity</p>
+              <h3 className="text-2xl font-bold">{totalActivityMinutes} <span className="text-sm font-normal">min</span></h3>
+            </div>
+          </CardContent>
+        </Card>
 
-const $itemThumbnail: ThemedStyle<ImageStyle> = ({ spacing }) => ({
-  marginTop: spacing.sm,
-  borderRadius: 50,
-  alignSelf: "flex-start",
-})
+        <Card>
+          <CardContent className="pt-6">
+            <div className="text-center">
+              <div className="flex justify-center mb-2">
+                <Utensils className="h-6 w-6 text-green-500" />
+              </div>
+              <p className="text-gray-500 text-sm">Nutrition</p>
+              <h3 className="text-2xl font-bold">{totalVeggies + totalFruits} <span className="text-sm font-normal">servings</span></h3>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
 
-const $toggle: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  marginTop: spacing.md,
-})
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg flex items-center">
+              <Heart className="mr-2 h-4 w-4 text-red-500" />
+              Vitals Tracking
+            </CardTitle>
+            <CardDescription>Heart rate, blood pressure, weight</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Tabs defaultValue="heartRate">
+              <TabsList className="mb-4">
+                <TabsTrigger value="heartRate">Heart Rate</TabsTrigger>
+                <TabsTrigger value="bloodPressure">Blood Pressure</TabsTrigger>
+                <TabsTrigger value="weight">Weight</TabsTrigger>
+              </TabsList>
+            
+              <TabsContent value="heartRate">
+                <ResponsiveContainer width="100%" height={250}>
+                  <LineChart data={vitalsData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="date" />
+                    <YAxis domain={['dataMin - 5', 'dataMax + 5']} />
+                    <Tooltip />
+                    <Line type="monotone" dataKey="heartRate" stroke="#ef4444" strokeWidth={2} />
+                  </LineChart>
+                </ResponsiveContainer>
+              </TabsContent>
+              
+              <TabsContent value="bloodPressure">
+                <ResponsiveContainer width="100%" height={250}>
+                  <LineChart data={vitalsData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="date" />
+                    <YAxis domain={['dataMin - 10', 'dataMax + 10']} />
+                    <Tooltip />
+                    <Legend />
+                    <Line type="monotone" dataKey="systolic" stroke="#3b82f6" strokeWidth={2} name="Systolic" />
+                    <Line type="monotone" dataKey="diastolic" stroke="#93c5fd" strokeWidth={2} name="Diastolic" />
+                  </LineChart>
+                </ResponsiveContainer>
+              </TabsContent>
+              
+              <TabsContent value="weight">
+                <ResponsiveContainer width="100%" height={250}>
+                  <LineChart data={vitalsData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="date" />
+                    <YAxis domain={['dataMin - 1', 'dataMax + 1']} />
+                    <Tooltip />
+                    <Line type="monotone" dataKey="weight" stroke="#a855f7" strokeWidth={2} />
+                  </LineChart>
+                </ResponsiveContainer>
+              </TabsContent>
+            </Tabs>
+          </CardContent>
+        </Card>
 
-const $labelStyle: TextStyle = {
-  textAlign: "left",
-}
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg flex items-center">
+              <Activity className="mr-2 h-4 w-4 text-orange-500" />
+              Activity Breakdown
+            </CardTitle>
+            <CardDescription>Minutes by activity type</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 gap-6">
+              <div>
+                <ResponsiveContainer width="100%" height={250}>
+                  <BarChart data={transformActivityData()} margin={{ top: 10, right: 30, left: 0, bottom: 5 }}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="date" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    {Object.keys(ACTIVITY_COLORS).map((activity) => (
+                      <Bar key={activity} dataKey={activity} stackId="a" fill={ACTIVITY_COLORS[activity as ActivityType]} />
+                    ))}
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
 
-const $iconContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  height: ICON_SIZE,
-  width: ICON_SIZE,
-  marginEnd: spacing.sm,
-})
+      <div className="grid grid-cols-1 gap-6">
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg flex items-center">
+              <Utensils className="mr-2 h-4 w-4 text-green-500" />
+              Nutrition Tracking
+            </CardTitle>
+            <CardDescription>Daily servings of vegetables and fruits</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={250}>
+              <ComposedChart data={nutritionData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="date" />
+                <YAxis yAxisId="left" domain={[0, 'dataMax + 1']} />
+                <YAxis yAxisId="right" orientation="right" domain={[0, 5]} />
+                <Tooltip />
+                <Legend />
+                <Bar yAxisId="left" dataKey="vegetables" fill="#22c55e" name="Vegetables" />
+                <Bar yAxisId="left" dataKey="fruits" fill="#eab308" name="Fruits" />
+                <Bar yAxisId="left" dataKey="wholeGrains" fill="#8b5cf6" name="Whole Grains" />
+                <Line yAxisId="right" type="monotone" dataKey="sugaryBeverages" stroke="#ef4444" name="Sugary Beverages" strokeWidth={2} />
+              </ComposedChart>
+            </ResponsiveContainer>
+            
+            <div className="mt-4 grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4">
+                <div className="bg-green-50 p-4 rounded-lg">
+                  <h4 className="text-sm font-medium mb-2 text-green-700">Vegetables</h4>
+                  <div className="flex items-end">
+                    <span className="text-3xl font-bold text-green-600">{totalVeggies}</span>
+                    <span className="ml-2 text-sm text-green-700">servings this week</span>
+                  </div>
+                </div>
+                
+                <div className="bg-yellow-50 p-4 rounded-lg">
+                  <h4 className="text-sm font-medium mb-2 text-yellow-700">Fruits</h4>
+                  <div className="flex items-end">
+                    <span className="text-3xl font-bold text-yellow-600">{totalFruits}</span>
+                    <span className="ml-2 text-sm text-yellow-700">servings this week</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 gap-4">
+                <div className="bg-purple-50 p-4 rounded-lg">
+                  <h4 className="text-sm font-medium mb-2 text-purple-700">Whole Grains</h4>
+                  <div className="flex items-end">
+                    <span className="text-3xl font-bold text-purple-600">{totalWholeGrains}</span>
+                    <span className="ml-2 text-sm text-purple-700">servings this week</span>
+                  </div>
+                </div>
+                
+                <div className="bg-red-50 p-4 rounded-lg">
+                  <h4 className="text-sm font-medium mb-2 text-red-700">Sugary Beverages</h4>
+                  <div className="flex items-end">
+                    <span className="text-3xl font-bold text-red-600">{totalSugaryBeverages}</span>
+                    <span className="ml-2 text-sm text-red-700">servings this week</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+};
 
-const $metadata: ThemedStyle<TextStyle> = ({ colors, spacing }) => ({
-  color: colors.textDim,
-  marginTop: spacing.xs,
-})
-
-const $metadataText: ThemedStyle<TextStyle> = ({ colors, spacing }) => ({
-  color: colors.textDim,
-  marginEnd: spacing.md,
-  marginBottom: spacing.xs,
-})
-
-const $favoriteButton: ThemedStyle<ViewStyle> = ({ colors, spacing }) => ({
-  borderRadius: 17,
-  marginTop: spacing.md,
-  justifyContent: "flex-start",
-  backgroundColor: colors.palette.neutral300,
-  borderColor: colors.palette.neutral300,
-  paddingHorizontal: spacing.md,
-  paddingTop: spacing.xxxs,
-  paddingBottom: 0,
-  minHeight: 32,
-  alignSelf: "flex-start",
-})
-
-const $unFavoriteButton: ThemedStyle<ViewStyle> = ({ colors }) => ({
-  borderColor: colors.palette.primary100,
-  backgroundColor: colors.palette.primary100,
-})
-
-const $emptyState: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  marginTop: spacing.xxl,
-})
-
-const $emptyStateImage: ImageStyle = {
-  transform: [{ scaleX: isRTL ? -1 : 1 }],
-}
-*/
-
-
+export default DashboardScreen;
