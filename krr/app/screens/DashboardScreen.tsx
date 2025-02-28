@@ -10,7 +10,7 @@ export const DashboardScreen = () => {
   
   // Sample data for visualizations
   const vitalsData = [
-    { date: 'Feb 22', heartRate: 72, systolic: 122, diastolic: 78, weight: 78.2 },
+    { date: "Feb 22", heartRate: 72, systolic: 122, diastolic: 78, weight: 78.2 },
     { date: 'Feb 23', heartRate: 74, systolic: 124, diastolic: 80, weight: 78.0 },
     { date: 'Feb 24', heartRate: 70, systolic: 120, diastolic: 76, weight: 77.8 },
     { date: 'Feb 25', heartRate: 75, systolic: 126, diastolic: 82, weight: 77.9 },
@@ -332,7 +332,7 @@ export const DashboardScreen = () => {
         </Card>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default DashboardScreen;
+export default DashboardScreen

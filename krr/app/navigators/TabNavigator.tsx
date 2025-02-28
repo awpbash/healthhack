@@ -3,24 +3,27 @@ import { CompositeScreenProps } from "@react-navigation/native"
 import { TextStyle, ViewStyle } from "react-native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { Icon } from "../components"
-import { translate } from "@/i18n"
+import { translate } from "../i18n"
 import { DemoShowroomScreen, DemoDebugScreen } from "../screens"
-import { ActivityLogger } from "@/screens/ActivityLogger"
-import { VitalsLogger } from "@/screens/VitalsLogger"
-import { ProfileScreen } from "@/screens/ProfileScreen"
+import { ProfileScreen } from "../screens/ProfileScreen"
 import { DashboardScreen } from "../screens/DashboardScreen"
 import type { ThemedStyle } from "@/theme"
 import { AppStackParamList, AppStackScreenProps } from "./AppNavigator"
-import { useAppTheme } from "@/utils/useAppTheme"
-import { DietLogger } from "@/screens/DietLogger"
+import { useAppTheme } from "../utils/useAppTheme"
+import { LogsNavigator } from "./LogsNavigator"
 
 // Keep the existing param list structure but rename DemoCommunity to Profile
-export type DemoTabParamList = {
+export type TabParamList = {
   DemoShowroom: { queryIndex?: string; itemIndex?: string }
-  Profile: undefined  // Only changing this name
-  ActivityLogger: undefined
+  Profile: undefined // Only changing this name
+  // ActivityLogger: undefined
+  // DietLogger: undefined
+  // VitalsLogger: undefined
   DemoPodcastList: undefined
   DemoDebug: undefined
+  Logger: undefined
+  Dashboard: undefined
+  Logs: undefined
 }
 
 /**
@@ -28,6 +31,7 @@ export type DemoTabParamList = {
  *
  * More info: https://reactnavigation.org/docs/typescript/#organizing-types
  */
+
 export type DemoTabScreenProps<T extends keyof TabParamList> = CompositeScreenProps<
   BottomTabScreenProps<TabParamList, T>,
   AppStackScreenProps<keyof AppStackParamList>
@@ -73,19 +77,20 @@ export function TabNavigator() {
       />
 
       <Tab.Screen
-        name="Profile"  // Changed from DemoCommunity to Profile
+        name="Profile" // Changed from DemoCommunity to Profile
         component={ProfileScreen}
         options={{
-          tabBarLabel: translate("demoNavigator:profileTab"),  // Use profileTab instead of communityTab
+          tabBarLabel: translate("demoNavigator:profileTab"), // Use profileTab instead of communityTab
           tabBarIcon: ({ focused }) => (
             <Icon icon="community" color={focused ? colors.tint : colors.tintInactive} size={30} />
           ),
         }}
       />
 
-      <Tab.Screen
-        name="ActivityLogger"
-        component={Logger}
+      {/* navigated using LogsNavigator */}
+      {/* <Tab.Screen
+        name="VitalsLogger"
+        component={VitalsLogger}
         options={{
           tabBarLabel: translate("demoNavigator:loggerTab"),
           tabBarIcon: ({ focused }) => (
@@ -108,6 +113,16 @@ export function TabNavigator() {
       <Tab.Screen
         name="DietLogger"
         component={DietLogger}
+        options={{
+          tabBarLabel: translate("demoNavigator:loggerTab"),
+          tabBarIcon: ({ focused }) => (
+            <Icon icon="menu" color={focused ? colors.tint : colors.tintInactive} size={30} />
+          ),
+        }}
+      /> */}
+      <Tab.Screen
+        name="Logs"
+        component={LogsNavigator}
         options={{
           tabBarLabel: translate("demoNavigator:loggerTab"),
           tabBarIcon: ({ focused }) => (
