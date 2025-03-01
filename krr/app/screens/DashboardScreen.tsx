@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
+import React from "react";
+import { useState, FC } from "react";
+import { DemoTabScreenProps } from "../navigators/TabNavigator";
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ComposedChart, Area } from 'recharts';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/Card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/Tabs';
 import { Activity, Heart, Scale, Utensils, TrendingUp, Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
 
-export const DashboardScreen = () => {
-  // component code...
+// Define the component with DemoTabScreenProps but using type assertion to avoid errors
+export const DashboardScreen: FC<DemoTabScreenProps<"DashboardScreen">> = function DashboardScreen(_props) {
   const [timeframe, setTimeframe] = useState('week');
   
   // Sample data for visualizations
@@ -35,10 +37,10 @@ export const DashboardScreen = () => {
     const activities = [...new Set(activityData.filter(item => item.activity !== 'Rest').map(item => item.activity))];
     
     return dates.map(date => {
-      const dateData = { date };
+      const dateData: Record<string, any> = { date };
       activities.forEach(activity => {
         const match = activityData.find(item => item.date === date && item.activity === activity);
-        const dateData: Record<string, any> = { date };
+        dateData[activity] = match ? match.minutes : 0;
       });
       return dateData;
     });
@@ -332,7 +334,8 @@ export const DashboardScreen = () => {
         </Card>
       </div>
     </div>
-  )
+  );
 }
 
-export default DashboardScreen
+// Export the component as default
+export default DashboardScreen;

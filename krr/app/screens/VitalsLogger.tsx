@@ -1,15 +1,14 @@
 import { FC, useState } from "react"
 import { ViewStyle } from "react-native"
-import { Screen, TextField, Icon, Button } from "../components"
-import { DemoTabScreenProps } from "../navigators/TabNavigator"
-import { $styles } from "../theme"
+import { Screen, TextField, Icon, Button } from "@/components"
+import { $styles } from "@/theme"
 import type { ThemedStyle } from "@/theme"
 import { useAppTheme } from "@/utils/useAppTheme"
+import theme from "@/theme/theme"
+import { ThemeProvider } from "@shopify/restyle"
+import { VitalsLoggerProps } from "@/navigators/types"
 
-import theme, { Theme } from "@/theme/theme"
-import { ThemeProvider} from "@shopify/restyle"
-
-export const VitalsLogger: FC<DemoTabScreenProps<"VitalsLogger">> = function VitalsLogger(_props) {
+export const VitalsLoggerScreen: FC<VitalsLoggerProps> = function VitalsLoggerScreen(_props) {
   const { themed } = useAppTheme()
 
   const [heart_rate, set_heart_rate] = useState("")
@@ -19,7 +18,7 @@ export const VitalsLogger: FC<DemoTabScreenProps<"VitalsLogger">> = function Vit
 
   return (
     <ThemeProvider theme={theme}>
-      <Screen preset="scroll" contentContainerStyle={$styles.container} safeAreaEdges={["top"]}>
+      <Screen preset="scroll" contentContainerStyle={$styles.container} safeAreaEdges={[]}>
         <TextField
           value={heart_rate}
           onChangeText={set_heart_rate}
@@ -30,9 +29,6 @@ export const VitalsLogger: FC<DemoTabScreenProps<"VitalsLogger">> = function Vit
           keyboardType="email-address"
           labelTx="vitalLoggerScreen:heartRateLabel"
           placeholderTx="vitalLoggerScreen:heartRatePlaceholder"
-          // helper={"lol"}
-          // status={"lol" ? "error" : undefined}
-          // onSubmitEditing={() => authPasswordInput.current?.focus()}
         />
         <TextField
           value={blood_pressure}
@@ -44,9 +40,6 @@ export const VitalsLogger: FC<DemoTabScreenProps<"VitalsLogger">> = function Vit
           keyboardType="email-address"
           labelTx="vitalLoggerScreen:bloodPressureLabel"
           placeholderTx="vitalLoggerScreen:bloodPressurePlaceholder"
-          // helper={"lol"}
-          // status={"lol" ? "error" : undefined}
-          // onSubmitEditing={() => authPasswordInput.current?.focus()}
         />
         <TextField
           value={weight}
@@ -58,9 +51,6 @@ export const VitalsLogger: FC<DemoTabScreenProps<"VitalsLogger">> = function Vit
           keyboardType="email-address"
           labelTx="vitalLoggerScreen:weightLabel"
           placeholderTx="vitalLoggerScreen:weightPlaceholder"
-          // helper={"lol"}
-          // status={"lol" ? "error" : undefined}
-          // onSubmitEditing={() => authPasswordInput.current?.focus()}
         />
         <TextField
           value={log}
@@ -82,3 +72,6 @@ export const VitalsLogger: FC<DemoTabScreenProps<"VitalsLogger">> = function Vit
 const $textField: ThemedStyle<ViewStyle> = () => ({
   marginBottom: 10,
 })
+
+// Export the old name for backward compatibility
+export const VitalsLogger = VitalsLoggerScreen

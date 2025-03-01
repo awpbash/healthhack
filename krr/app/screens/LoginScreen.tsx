@@ -3,7 +3,7 @@ import { ComponentType, FC, useEffect, useMemo, useRef, useState } from "react"
 import { TextInput, TextStyle, ViewStyle } from "react-native"
 import { Button, Icon, Screen, Text, TextField, TextFieldAccessoryProps } from "../components"
 import { useStores } from "../models"
-import { AppStackScreenProps } from "../navigators"
+import { AppStackScreenProps } from "../navigators/types"
 import type { ThemedStyle } from "@/theme"
 import { useAppTheme } from "@/utils/useAppTheme"
 

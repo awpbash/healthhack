@@ -1,13 +1,13 @@
-// top tab navigator to switch between Vitals, Activity & Diet forms
-
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs"
-import { VitalsLogger } from "../screens/VitalsLogger"
-import { ActivityLogger } from "../screens/ActivityLogger"
-import { DietLogger } from "../screens/DietLogger"
+import { VitalsLoggerScreen } from "../screens/VitalsLogger"
+import { ActivityLoggerScreen } from "../screens/ActivityLogger"
+import { DietLoggerScreen } from "../screens/DietLogger"
 import { useAppTheme } from "../utils/useAppTheme"
 import { translate } from "../i18n"
+import { LogsTabParamList } from "../navigators/types"
 
-const LogsTab = createMaterialTopTabNavigator()
+// Create navigator with proper typing
+const LogsTab = createMaterialTopTabNavigator<LogsTabParamList>()
 
 export function LogsNavigator() {
   const { theme } = useAppTheme()
@@ -23,18 +23,29 @@ export function LogsNavigator() {
     >
       <LogsTab.Screen
         name="Vitals"
-        component={VitalsLogger}
-        options={{ tabBarLabel: translate("LogsNavigator:vitalsTab") }}
+        component={VitalsLoggerScreen}
+        options={{ 
+          // Use hardcoded string instead of translate until you add the translation keys
+          tabBarLabel: "Vitals" 
+          // Alternatively, add the keys to your i18n files and use:
+          // tabBarLabel: translate("logsNavigator.vitalsTab") 
+        }}
       />
       <LogsTab.Screen
         name="Activity"
-        component={ActivityLogger}
-        options={{ tabBarLabel: translate("LogsNavigator:activityTab") }}
+        component={ActivityLoggerScreen}
+        options={{ 
+          tabBarLabel: "Activity" 
+          // tabBarLabel: translate("logsNavigator.activityTab") 
+        }}
       />
       <LogsTab.Screen
         name="Diet"
-        component={DietLogger}
-        options={{ tabBarLabel: translate("LogsNavigator:dietTab") }}
+        component={DietLoggerScreen}
+        options={{ 
+          tabBarLabel: "Diet" 
+          // tabBarLabel: translate("logsNavigator.dietTab") 
+        }}
       />
     </LogsTab.Navigator>
   )

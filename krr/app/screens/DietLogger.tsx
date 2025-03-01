@@ -1,15 +1,14 @@
 import { FC, useState } from "react"
 import { ViewStyle } from "react-native"
-import { Screen, TextField, Icon, Button } from "../components"
-import { DemoTabScreenProps } from "../navigators/TabNavigator"
-import { $styles } from "../theme"
+import { Screen, TextField, Icon, Button } from "@/components"
+import { $styles } from "@/theme"
 import type { ThemedStyle } from "@/theme"
 import { useAppTheme } from "@/utils/useAppTheme"
+import theme from "@/theme/theme"
+import { ThemeProvider } from "@shopify/restyle"
+import { DietLoggerProps } from "@/navigators/types"
 
-import theme, { Theme } from "@/theme/theme"
-import { ThemeProvider} from "@shopify/restyle"
-
-export const DietLogger: FC<DemoTabScreenProps<"DietLogger">> = function DietLogger(_props) {
+export const DietLoggerScreen: FC<DietLoggerProps> = function DietLoggerScreen(_props) {
   const { themed } = useAppTheme()
 
   const [servings_of_vege_and_fruit, set_servings_of_vege_and_fruit] = useState("")
@@ -20,7 +19,7 @@ export const DietLogger: FC<DemoTabScreenProps<"DietLogger">> = function DietLog
 
   return (
     <ThemeProvider theme={theme}>
-      <Screen preset="scroll" contentContainerStyle={$styles.container} safeAreaEdges={["top"]}>
+      <Screen preset="scroll" contentContainerStyle={$styles.container} safeAreaEdges={[]}>
         <TextField
           value={servings_of_vege_and_fruit}
           onChangeText={set_servings_of_vege_and_fruit}
@@ -31,9 +30,6 @@ export const DietLogger: FC<DemoTabScreenProps<"DietLogger">> = function DietLog
           keyboardType="email-address"
           labelTx="dietLoggerScreen:vegeFruitLabel"
           placeholderTx="dietLoggerScreen:vegeFruitPlaceholder"
-          // helper={"lol"}
-          // status={"lol" ? "error" : undefined}
-          // onSubmitEditing={() => authPasswordInput.current?.focus()}
         />
         <TextField
           value={wholegrains}
@@ -45,9 +41,6 @@ export const DietLogger: FC<DemoTabScreenProps<"DietLogger">> = function DietLog
           keyboardType="email-address"
           labelTx="dietLoggerScreen:wholegrainLabel"
           placeholderTx="dietLoggerScreen:wholegrainPlaceholder"
-          // helper={"lol"}
-          // status={"lol" ? "error" : undefined}
-          // onSubmitEditing={() => authPasswordInput.current?.focus()}
         />
         <TextField
           value={sugary_beverages}
@@ -59,9 +52,6 @@ export const DietLogger: FC<DemoTabScreenProps<"DietLogger">> = function DietLog
           keyboardType="email-address"
           labelTx="dietLoggerScreen:sugaryBeveragesLabel"
           placeholderTx="dietLoggerScreen:sugaryBeveragesPlaceholder"
-          // helper={"lol"}
-          // status={"lol" ? "error" : undefined}
-          // onSubmitEditing={() => authPasswordInput.current?.focus()}
         />
         <TextField
           value={dessert}
@@ -73,9 +63,6 @@ export const DietLogger: FC<DemoTabScreenProps<"DietLogger">> = function DietLog
           keyboardType="email-address"
           labelTx="dietLoggerScreen:dessertLabel"
           placeholderTx="dietLoggerScreen:dessertPlaceholder"
-          // helper={"lol"}
-          // status={"lol" ? "error" : undefined}
-          // onSubmitEditing={() => authPasswordInput.current?.focus()}
         />
         <TextField
           value={log}
@@ -97,3 +84,6 @@ export const DietLogger: FC<DemoTabScreenProps<"DietLogger">> = function DietLog
 const $textField: ThemedStyle<ViewStyle> = () => ({
   marginBottom: 10,
 })
+
+// Export the old name for backward compatibility
+export const DietLogger = DietLoggerScreen

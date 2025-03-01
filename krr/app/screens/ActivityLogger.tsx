@@ -1,26 +1,16 @@
 import { FC, useState } from "react"
 import { ViewStyle, View } from "react-native"
-import { Screen, TextField, Icon, Button } from "../components"
-import { DemoTabScreenProps } from "../navigators/TabNavigator"
-import { $styles } from "../theme"
+import { Screen, Button } from "@/components"
+import { $styles } from "@/theme"
 import type { ThemedStyle } from "@/theme"
 import { useAppTheme } from "@/utils/useAppTheme"
-
-import theme, { Theme } from "@/theme/theme"
+import theme from "@/theme/theme"
 import { ThemeProvider } from "@shopify/restyle"
 import { SelectField } from "@/components/SelectField"
-// import { DoubleSelectField } from "@/components/DoubleSelectField"
-// import { View } from "react-native-reanimated/lib/typescript/Animated"
+import { ActivityLoggerProps } from "@/navigators/types"
 
-export const ActivityLogger: FC<DemoTabScreenProps<"ActivityLogger">> = function ActivityLogger(
-  _props,
-) {
+export const ActivityLoggerScreen: FC<ActivityLoggerProps> = function ActivityLoggerScreen(_props) {
   const { themed } = useAppTheme()
-
-  const [heart_rate, set_heart_rate] = useState("")
-  const [blood_pressure, set_blood_pressure] = useState("")
-  const [weight, set_weight] = useState("")
-  const [log, set_log] = useState("")
 
   const [selected_activity, set_selected_activity] = useState<string[]>([])
   const activities = [
@@ -40,7 +30,7 @@ export const ActivityLogger: FC<DemoTabScreenProps<"ActivityLogger">> = function
 
   return (
     <ThemeProvider theme={theme}>
-      <Screen preset="scroll" contentContainerStyle={$styles.container} safeAreaEdges={["top"]}>
+      <Screen preset="scroll" contentContainerStyle={$styles.container} safeAreaEdges={[]}>
         <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
           <View style={{ width: "65%" }}>
             <SelectField
@@ -76,3 +66,6 @@ export const ActivityLogger: FC<DemoTabScreenProps<"ActivityLogger">> = function
 const $textField: ThemedStyle<ViewStyle> = () => ({
   marginBottom: 10,
 })
+
+// Export the old name for backward compatibility
+export const ActivityLogger = ActivityLoggerScreen
