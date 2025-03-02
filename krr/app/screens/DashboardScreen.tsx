@@ -1,18 +1,99 @@
-import React from "react";
-import { useState, FC } from "react";
-import { DemoTabScreenProps } from "../navigators/TabNavigator";
-import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ComposedChart, Area } from 'recharts';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/Card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/Tabs';
-import { Activity, Heart, Scale, Utensils, TrendingUp, Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
+import React, { useState, useEffect, ReactNode } from "react";
+import type { FC } from "react";
+import type { DemoTabScreenProps } from "../navigators/TabNavigator";
+import { Activity, Heart, Scale, Utensils, TrendingUp, ChevronLeft, ChevronRight } from "lucide-react";
 
-// Define the component with DemoTabScreenProps but using type assertion to avoid errors
-export const DashboardScreen: FC<DemoTabScreenProps<"DashboardScreen">> = function DashboardScreen(_props) {
+// Define TypeScript interfaces for better type safety
+interface VitalsDataPoint {
+  date: string;
+  heartRate: number;
+  systolic: number;
+  diastolic: number;
+  weight: number;
+}
+
+interface ActivityDataPoint {
+  date: string;
+  activity: string;
+  minutes: number;
+}
+
+interface NutritionDataPoint {
+  date: string;
+  vegetables: number;
+  fruits: number;
+  wholeGrains: number;
+  sugaryBeverages: number;
+}
+
+interface DataTableItem {
+  label: string;
+  value: number | string;
+}
+
+interface CardProps {
+  children: ReactNode;
+  style?: React.CSSProperties;
+}
+
+interface CardHeaderProps {
+  children: ReactNode;
+  style?: React.CSSProperties;
+}
+
+interface CardTitleProps {
+  children: ReactNode;
+  style?: React.CSSProperties;
+}
+
+interface CardDescriptionProps {
+  children: ReactNode;
+  style?: React.CSSProperties;
+}
+
+interface CardContentProps {
+  children: ReactNode;
+  style?: React.CSSProperties;
+}
+
+interface TabButtonProps {
+  children: ReactNode;
+  active: boolean;
+  onClick: () => void;
+}
+
+interface DataTableProps {
+  title: string;
+  data: DataTableItem[];
+  color: string;
+  unit?: string;
+}
+
+interface NutritionSummaryProps {
+  title: string;
+  value: number;
+  color: string;
+  bgColor: string;
+}
+
+// Safe type definition for activity colors
+const ACTIVITY_COLORS: Record<string, string> = {
+  'Run': '#FF8042',
+  'Swim': '#0088FE',
+  'Cycle': '#00C49F',
+  'Pilates': '#FFBB28',
+  'Gym': '#8884d8',
+  'Rest': '#CCCCCC'
+};
+
+// Main Dashboard Component with type-safe implementation
+const DashboardScreen: FC<DemoTabScreenProps<"DashboardScreen">> = (_props) => {
   const [timeframe, setTimeframe] = useState('week');
+  const [activeTab, setActiveTab] = useState('heartRate');
   
   // Sample data for visualizations
-  const vitalsData = [
-    { date: "Feb 22", heartRate: 72, systolic: 122, diastolic: 78, weight: 78.2 },
+  const vitalsData: VitalsDataPoint[] = [
+    { date: 'Feb 22', heartRate: 72, systolic: 122, diastolic: 78, weight: 78.2 },
     { date: 'Feb 23', heartRate: 74, systolic: 124, diastolic: 80, weight: 78.0 },
     { date: 'Feb 24', heartRate: 70, systolic: 120, diastolic: 76, weight: 77.8 },
     { date: 'Feb 25', heartRate: 75, systolic: 126, diastolic: 82, weight: 77.9 },
@@ -21,7 +102,7 @@ export const DashboardScreen: FC<DemoTabScreenProps<"DashboardScreen">> = functi
     { date: 'Feb 28', heartRate: 69, systolic: 119, diastolic: 76, weight: 77.4 },
   ];
 
-  const activityData = [
+  const activityData: ActivityDataPoint[] = [
     { date: 'Feb 22', activity: 'Run', minutes: 30 },
     { date: 'Feb 23', activity: 'Swim', minutes: 45 },
     { date: 'Feb 24', activity: 'Rest', minutes: 0 },
@@ -31,22 +112,7 @@ export const DashboardScreen: FC<DemoTabScreenProps<"DashboardScreen">> = functi
     { date: 'Feb 28', activity: 'Run', minutes: 35 },
   ];
 
-  // Transform activity data for the stacked bar chart
-  const transformActivityData = () => {
-    const dates = [...new Set(activityData.map(item => item.date))];
-    const activities = [...new Set(activityData.filter(item => item.activity !== 'Rest').map(item => item.activity))];
-    
-    return dates.map(date => {
-      const dateData: Record<string, any> = { date };
-      activities.forEach(activity => {
-        const match = activityData.find(item => item.date === date && item.activity === activity);
-        dateData[activity] = match ? match.minutes : 0;
-      });
-      return dateData;
-    });
-  };
-
-  const nutritionData = [
+  const nutritionData: NutritionDataPoint[] = [
     { date: 'Feb 22', vegetables: 3, fruits: 2, wholeGrains: 2, sugaryBeverages: 1 },
     { date: 'Feb 23', vegetables: 4, fruits: 1, wholeGrains: 3, sugaryBeverages: 0 },
     { date: 'Feb 24', vegetables: 2, fruits: 3, wholeGrains: 1, sugaryBeverages: 2 },
@@ -56,25 +122,8 @@ export const DashboardScreen: FC<DemoTabScreenProps<"DashboardScreen">> = functi
     { date: 'Feb 28', vegetables: 3, fruits: 3, wholeGrains: 2, sugaryBeverages: 1 },
   ];
 
-  // Aggregated activity minutes by type
-  const activitySummary = [
-    { name: 'Run', total: 65 },
-    { name: 'Swim', total: 45 },
-    { name: 'Cycle', total: 60 },
-    { name: 'Pilates', total: 40 },
-    { name: 'Gym', total: 50 },
-  ];
-
-  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
-  type ActivityType = 'Run' | 'Swim' | 'Cycle' | 'Pilates' | 'Gym';
-  
-  const ACTIVITY_COLORS: Record<ActivityType, string> = {
-    'Run': '#FF8042',
-    'Swim': '#0088FE',
-    'Cycle': '#00C49F',
-    'Pilates': '#FFBB28',
-    'Gym': '#8884d8'
-  };
+  // Get latest nutrition data for detailed view
+  const latestNutrition = nutritionData[nutritionData.length - 1];
 
   // Weekly summary calculations
   const avgHeartRate = Math.round(vitalsData.reduce((acc, curr) => acc + curr.heartRate, 0) / vitalsData.length);
@@ -87,255 +136,634 @@ export const DashboardScreen: FC<DemoTabScreenProps<"DashboardScreen">> = functi
   const totalFruits = nutritionData.reduce((acc, curr) => acc + curr.fruits, 0);
   const totalWholeGrains = nutritionData.reduce((acc, curr) => acc + curr.wholeGrains, 0);
   const totalSugaryBeverages = nutritionData.reduce((acc, curr) => acc + curr.sugaryBeverages, 0);
-  
+
   return (
-    <div className="p-4 max-w-6xl mx-auto">
-      <div className="flex items-center mb-6">
-        <div>
-          <h1 className="text-2xl font-bold">Health Dashboard</h1>
-          <p className="text-gray-500">February 22 - 28, 2025</p>
-        </div>
-        <div className="ml-auto flex items-center gap-4">
-          <div className="flex items-center bg-gray-100 rounded-lg p-1">
-            <button className="p-1 rounded-md hover:bg-gray-200">
-              <ChevronLeft className="h-5 w-5" />
+    <div style={{ 
+      backgroundColor: "#000", 
+      color: "#fff",
+      width: "100%",
+      height: "100%",
+      position: "absolute",
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      overflow: "auto",
+      fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"
+    }}>
+      <div style={{ padding: 16 }}>
+        <div style={{ 
+          display: "flex", 
+          alignItems: "center", 
+          marginBottom: 16,
+          justifyContent: "space-between"
+        }}>
+          <div>
+            <h1 style={{ 
+              fontSize: 32, 
+              fontWeight: 500, 
+              margin: 0, 
+              marginBottom: 4,
+              letterSpacing: "-0.5px"
+            }}>
+              Health Dashboard
+            </h1>
+            <p style={{ 
+              color: "#999", 
+              margin: 0,
+              fontSize: 16
+            }}>
+              February 22 - 28, 2025
+            </p>
+          </div>
+          <div style={{ 
+            display: "flex", 
+            alignItems: "center", 
+            backgroundColor: "#1a1a1a",
+            borderRadius: 24,
+            padding: "4px 4px"
+          }}>
+            <button style={{ 
+              width: 32,
+              height: 32,
+              borderRadius: 16,
+              backgroundColor: "transparent",
+              border: "none",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center"
+            }}>
+              <ChevronLeft color="#fff" size={18} />
             </button>
-            <div className="px-2">
-              <select 
-                className="bg-transparent border-none focus:outline-none text-sm"
-                value={timeframe}
-                onChange={(e) => setTimeframe(e.target.value)}
-              >
-                <option value="week">Weekly</option>
-                <option value="month">Monthly</option>
-                <option value="year">Yearly</option>
-              </select>
+            <div style={{ 
+              padding: "0 8px"
+            }}>
+              <span style={{
+                color: "#fff",
+                fontSize: 16,
+                fontWeight: 500
+              }}>
+                {timeframe === 'week' ? 'Weekly' : timeframe === 'month' ? 'Monthly' : 'Yearly'}
+              </span>
             </div>
-            <button className="p-1 rounded-md hover:bg-gray-200">
-              <ChevronRight className="h-5 w-5" />
+            <button style={{ 
+              width: 32,
+              height: 32,
+              borderRadius: 16,
+              backgroundColor: "transparent",
+              border: "none",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center"
+            }}>
+              <ChevronRight color="#fff" size={18} />
             </button>
           </div>
         </div>
-      </div>
 
-      {/* Summary Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-center">
-              <div className="flex justify-center mb-2">
-                <Heart className="h-6 w-6 text-red-500" />
-              </div>
-              <p className="text-gray-500 text-sm">Heart Rate</p>
-              <h3 className="text-2xl font-bold">{avgHeartRate} <span className="text-sm font-normal">bpm</span></h3>
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-center">
-              <div className="flex justify-center mb-2">
-                <TrendingUp className="h-6 w-6 text-blue-500" />
-              </div>
-              <p className="text-gray-500 text-sm">Blood Pressure</p>
-              <h3 className="text-2xl font-bold">{avgBloodPressure.systolic}/{avgBloodPressure.diastolic}</h3>
-            </div>
-          </CardContent>
-        </Card>
+        {/* Summary Cards - Grid layout for larger screens, flexbox for smaller screens */}
+        <div style={{ 
+          display: "grid", 
+          gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", 
+          gap: 12,
+          marginBottom: 16
+        }}>
+          <SummaryCard
+            icon={<Heart color="#ef4444" size={24} />}
+            title="Heart Rate"
+            value={avgHeartRate}
+            unit="bpm"
+          />
+          
+          <SummaryCard
+            icon={<TrendingUp color="#3b82f6" size={24} />}
+            title="Blood Pressure"
+            value={`${avgBloodPressure.systolic}/${avgBloodPressure.diastolic}`}
+          />
 
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-center">
-              <div className="flex justify-center mb-2">
-                <Scale className="h-6 w-6 text-purple-500" />
-              </div>
-              <p className="text-gray-500 text-sm">Weight</p>
-              <h3 className="text-2xl font-bold">{vitalsData[vitalsData.length - 1].weight} <span className="text-sm font-normal">kg</span></h3>
-            </div>
-          </CardContent>
-        </Card>
+          <SummaryCard
+            icon={<Scale color="#a855f7" size={24} />}
+            title="Weight"
+            value={vitalsData[vitalsData.length - 1].weight}
+            unit="kg"
+          />
 
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-center">
-              <div className="flex justify-center mb-2">
-                <Activity className="h-6 w-6 text-orange-500" />
-              </div>
-              <p className="text-gray-500 text-sm">Activity</p>
-              <h3 className="text-2xl font-bold">{totalActivityMinutes} <span className="text-sm font-normal">min</span></h3>
-            </div>
-          </CardContent>
-        </Card>
+          <SummaryCard
+            icon={<Activity color="#f97316" size={24} />}
+            title="Activity"
+            value={totalActivityMinutes}
+            unit="min"
+          />
 
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-center">
-              <div className="flex justify-center mb-2">
-                <Utensils className="h-6 w-6 text-green-500" />
-              </div>
-              <p className="text-gray-500 text-sm">Nutrition</p>
-              <h3 className="text-2xl font-bold">{totalVeggies + totalFruits} <span className="text-sm font-normal">servings</span></h3>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+          <SummaryCard
+            icon={<Utensils color="#22c55e" size={24} />}
+            title="Nutrition"
+            value={totalVeggies + totalFruits + totalWholeGrains}
+            unit="servings"
+          />
+        </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg flex items-center">
-              <Heart className="mr-2 h-4 w-4 text-red-500" />
-              Vitals Tracking
-            </CardTitle>
-            <CardDescription>Heart rate, blood pressure, weight</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Tabs defaultValue="heartRate">
-              <TabsList className="mb-4">
-                <TabsTrigger value="heartRate">Heart Rate</TabsTrigger>
-                <TabsTrigger value="bloodPressure">Blood Pressure</TabsTrigger>
-                <TabsTrigger value="weight">Weight</TabsTrigger>
-              </TabsList>
-            
-              <TabsContent value="heartRate">
-                <ResponsiveContainer width="100%" height={250}>
-                  <LineChart data={vitalsData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="date" />
-                    <YAxis domain={['dataMin - 5', 'dataMax + 5']} />
-                    <Tooltip />
-                    <Line type="monotone" dataKey="heartRate" stroke="#ef4444" strokeWidth={2} />
-                  </LineChart>
-                </ResponsiveContainer>
-              </TabsContent>
+        {/* Today's Nutrition */}
+        <div style={{ marginBottom: 16 }}>
+          <Card>
+            <CardHeader>
+              <div style={{ 
+                display: "flex", 
+                justifyContent: "space-between",
+                alignItems: "center"
+              }}>
+                <div style={{ fontSize: 18, fontWeight: 500 }}>Feb 28</div>
+                <div style={{ fontSize: 16 }}>{latestNutrition.vegetables + latestNutrition.fruits + latestNutrition.wholeGrains} servings</div>
+              </div>
+            </CardHeader>
+            <CardContent style={{ padding: 16 }}>
+              <div style={{ marginBottom: 14 }}>
+                <div style={{ 
+                  display: "flex", 
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginBottom: 4
+                }}>
+                  <span style={{ color: "#22c55e", fontSize: 16 }}>Vegetables</span>
+                  <span style={{ fontSize: 16 }}>{latestNutrition.vegetables}</span>
+                </div>
+                <div style={{ 
+                  height: 8, 
+                  backgroundColor: "#222",
+                  borderRadius: 4,
+                  overflow: "hidden"
+                }}>
+                  <div style={{ 
+                    height: "100%", 
+                    width: `${(latestNutrition.vegetables / 5) * 100}%`,
+                    backgroundColor: "#22c55e",
+                    borderRadius: 4
+                  }}></div>
+                </div>
+              </div>
               
-              <TabsContent value="bloodPressure">
-                <ResponsiveContainer width="100%" height={250}>
-                  <LineChart data={vitalsData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="date" />
-                    <YAxis domain={['dataMin - 10', 'dataMax + 10']} />
-                    <Tooltip />
-                    <Legend />
-                    <Line type="monotone" dataKey="systolic" stroke="#3b82f6" strokeWidth={2} name="Systolic" />
-                    <Line type="monotone" dataKey="diastolic" stroke="#93c5fd" strokeWidth={2} name="Diastolic" />
-                  </LineChart>
-                </ResponsiveContainer>
-              </TabsContent>
+              <div style={{ marginBottom: 14 }}>
+                <div style={{ 
+                  display: "flex", 
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginBottom: 4
+                }}>
+                  <span style={{ color: "#eab308", fontSize: 16 }}>Fruits</span>
+                  <span style={{ fontSize: 16 }}>{latestNutrition.fruits}</span>
+                </div>
+                <div style={{ 
+                  height: 8, 
+                  backgroundColor: "#222",
+                  borderRadius: 4,
+                  overflow: "hidden"
+                }}>
+                  <div style={{ 
+                    height: "100%", 
+                    width: `${(latestNutrition.fruits / 5) * 100}%`,
+                    backgroundColor: "#eab308",
+                    borderRadius: 4
+                  }}></div>
+                </div>
+              </div>
               
-              <TabsContent value="weight">
-                <ResponsiveContainer width="100%" height={250}>
-                  <LineChart data={vitalsData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="date" />
-                    <YAxis domain={['dataMin - 1', 'dataMax + 1']} />
-                    <Tooltip />
-                    <Line type="monotone" dataKey="weight" stroke="#a855f7" strokeWidth={2} />
-                  </LineChart>
-                </ResponsiveContainer>
-              </TabsContent>
-            </Tabs>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg flex items-center">
-              <Activity className="mr-2 h-4 w-4 text-orange-500" />
-              Activity Breakdown
-            </CardTitle>
-            <CardDescription>Minutes by activity type</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 gap-6">
               <div>
-                <ResponsiveContainer width="100%" height={250}>
-                  <BarChart data={transformActivityData()} margin={{ top: 10, right: 30, left: 0, bottom: 5 }}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="date" />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    {Object.keys(ACTIVITY_COLORS).map((activity) => (
-                      <Bar key={activity} dataKey={activity} stackId="a" fill={ACTIVITY_COLORS[activity as ActivityType]} />
-                    ))}
-                  </BarChart>
-                </ResponsiveContainer>
+                <div style={{ 
+                  display: "flex", 
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginBottom: 4
+                }}>
+                  <span style={{ color: "#8b5cf6", fontSize: 16 }}>Whole Grains</span>
+                  <span style={{ fontSize: 16 }}>{latestNutrition.wholeGrains}</span>
+                </div>
+                <div style={{ 
+                  height: 8, 
+                  backgroundColor: "#222",
+                  borderRadius: 4,
+                  overflow: "hidden"
+                }}>
+                  <div style={{ 
+                    height: "100%", 
+                    width: `${(latestNutrition.wholeGrains / 5) * 100}%`,
+                    backgroundColor: "#8b5cf6",
+                    borderRadius: 4
+                  }}></div>
+                </div>
               </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+            </CardContent>
+          </Card>
+        </div>
 
-      <div className="grid grid-cols-1 gap-6">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg flex items-center">
-              <Utensils className="mr-2 h-4 w-4 text-green-500" />
-              Nutrition Tracking
-            </CardTitle>
-            <CardDescription>Daily servings of vegetables and fruits</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={250}>
-              <ComposedChart data={nutritionData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="date" />
-                <YAxis yAxisId="left" domain={[0, 'dataMax + 1']} />
-                <YAxis yAxisId="right" orientation="right" domain={[0, 5]} />
-                <Tooltip />
-                <Legend />
-                <Bar yAxisId="left" dataKey="vegetables" fill="#22c55e" name="Vegetables" />
-                <Bar yAxisId="left" dataKey="fruits" fill="#eab308" name="Fruits" />
-                <Bar yAxisId="left" dataKey="wholeGrains" fill="#8b5cf6" name="Whole Grains" />
-                <Line yAxisId="right" type="monotone" dataKey="sugaryBeverages" stroke="#ef4444" name="Sugary Beverages" strokeWidth={2} />
-              </ComposedChart>
-            </ResponsiveContainer>
-            
-            <div className="mt-4 grid grid-cols-2 gap-4">
-              <div className="grid grid-cols-1 gap-4">
-                <div className="bg-green-50 p-4 rounded-lg">
-                  <h4 className="text-sm font-medium mb-2 text-green-700">Vegetables</h4>
-                  <div className="flex items-end">
-                    <span className="text-3xl font-bold text-green-600">{totalVeggies}</span>
-                    <span className="ml-2 text-sm text-green-700">servings this week</span>
-                  </div>
-                </div>
-                
-                <div className="bg-yellow-50 p-4 rounded-lg">
-                  <h4 className="text-sm font-medium mb-2 text-yellow-700">Fruits</h4>
-                  <div className="flex items-end">
-                    <span className="text-3xl font-bold text-yellow-600">{totalFruits}</span>
-                    <span className="ml-2 text-sm text-yellow-700">servings this week</span>
-                  </div>
-                </div>
+        {/* Nutrition Summary */}
+        <div style={{ 
+          display: "grid", 
+          gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))",
+          gap: 12,
+          marginBottom: 16
+        }}>
+          <NutritionSummary
+            title="Vegetables"
+            value={totalVeggies}
+            color="#22c55e"
+            bgColor="rgba(34, 197, 94, 0.2)"
+          />
+          
+          <NutritionSummary
+            title="Fruits"
+            value={totalFruits}
+            color="#eab308"
+            bgColor="rgba(234, 179, 8, 0.2)"
+          />
+          
+          <NutritionSummary
+            title="Whole Grains"
+            value={totalWholeGrains}
+            color="#8b5cf6"
+            bgColor="rgba(139, 92, 246, 0.2)"
+          />
+          
+          <NutritionSummary
+            title="Sugary Beverages"
+            value={totalSugaryBeverages}
+            color="#ef4444"
+            bgColor="rgba(239, 68, 68, 0.2)"
+          />
+        </div>
+
+        {/* Vitals Tracking */}
+        <div style={{ marginBottom: 16 }}>
+          <Card>
+            <CardHeader>
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <Heart size={18} color="#ef4444" style={{ marginRight: 8 }} />
+                <CardTitle>Vitals Tracking</CardTitle>
+              </div>
+              <CardDescription>Heart rate, blood pressure, weight</CardDescription>
+            </CardHeader>
+            <CardContent style={{ padding: 0 }}>
+              <div style={{ 
+                display: "flex", 
+                borderBottom: "1px solid #222"
+              }}>
+                <TabButton 
+                  active={activeTab === 'heartRate'} 
+                  onClick={() => setActiveTab('heartRate')}
+                >
+                  Heart Rate
+                </TabButton>
+                <TabButton 
+                  active={activeTab === 'bloodPressure'} 
+                  onClick={() => setActiveTab('bloodPressure')}
+                >
+                  Blood Pressure
+                </TabButton>
+                <TabButton 
+                  active={activeTab === 'weight'} 
+                  onClick={() => setActiveTab('weight')}
+                >
+                  Weight
+                </TabButton>
               </div>
               
-              <div className="grid grid-cols-1 gap-4">
-                <div className="bg-purple-50 p-4 rounded-lg">
-                  <h4 className="text-sm font-medium mb-2 text-purple-700">Whole Grains</h4>
-                  <div className="flex items-end">
-                    <span className="text-3xl font-bold text-purple-600">{totalWholeGrains}</span>
-                    <span className="ml-2 text-sm text-purple-700">servings this week</span>
-                  </div>
-                </div>
+              <div style={{ padding: 16 }}>
+                {activeTab === 'heartRate' && (
+                  <DataTable
+                    title="Heart Rate (bpm)"
+                    data={vitalsData.map(item => ({
+                      label: item.date,
+                      value: item.heartRate
+                    }))}
+                    color="#ef4444"
+                    unit="bpm"
+                  />
+                )}
                 
-                <div className="bg-red-50 p-4 rounded-lg">
-                  <h4 className="text-sm font-medium mb-2 text-red-700">Sugary Beverages</h4>
-                  <div className="flex items-end">
-                    <span className="text-3xl font-bold text-red-600">{totalSugaryBeverages}</span>
-                    <span className="ml-2 text-sm text-red-700">servings this week</span>
+                {activeTab === 'bloodPressure' && (
+                  <DataTable
+                    title="Blood Pressure"
+                    data={vitalsData.map(item => ({
+                      label: item.date,
+                      value: `${item.systolic}/${item.diastolic}`
+                    }))}
+                    color="#3b82f6"
+                  />
+                )}
+                
+                {activeTab === 'weight' && (
+                  <DataTable
+                    title="Weight (kg)"
+                    data={vitalsData.map(item => ({
+                      label: item.date,
+                      value: item.weight
+                    }))}
+                    color="#a855f7"
+                    unit="kg"
+                  />
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Activity Breakdown */}
+        <div style={{ marginBottom: 16 }}>
+          <Card>
+            <CardHeader>
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <Activity size={18} color="#f97316" style={{ marginRight: 8 }} />
+                <CardTitle>Activity Breakdown</CardTitle>
+              </div>
+              <CardDescription>Minutes by activity type</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div style={{ marginBottom: 16 }}>
+                <h3 style={{ margin: "0 0 12px 0", fontSize: 16, fontWeight: 500 }}>Daily Minutes</h3>
+                {activityData.map((day, index) => (
+                  <div key={index} style={{ 
+                    display: "flex", 
+                    alignItems: "center", 
+                    marginBottom: 10 
+                  }}>
+                    <div style={{ width: 50, fontSize: 14 }}>{day.date.split(' ')[1]}</div>
+                    <div style={{ 
+                      flex: 1, 
+                      height: 24, 
+                      backgroundColor: "#222", 
+                      borderRadius: 12,
+                      position: "relative",
+                      overflow: "hidden"
+                    }}>
+                      {day.minutes > 0 && (
+                        <div style={{ 
+                          width: `${(day.minutes / 60) * 100}%`,
+                          maxWidth: "100%", 
+                          height: "100%", 
+                          backgroundColor: ACTIVITY_COLORS[day.activity] || "#999",
+                          borderRadius: 12,
+                          display: "flex",
+                          alignItems: "center",
+                          paddingLeft: 10
+                        }}>
+                          <span style={{ 
+                            fontSize: 12, 
+                            fontWeight: 500,
+                            color: "#fff",
+                            whiteSpace: "nowrap",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            maxWidth: "100%"
+                          }}>
+                            {day.activity} - {day.minutes}min
+                          </span>
+                        </div>
+                      )}
+                      {day.minutes === 0 && (
+                        <div style={{ 
+                          position: "absolute",
+                          left: 10,
+                          top: 0,
+                          height: "100%",
+                          display: "flex",
+                          alignItems: "center"
+                        }}>
+                          <span style={{ fontSize: 12 }}>Rest</span>
+                        </div>
+                      )}
+                    </div>
                   </div>
+                ))}
+              </div>
+              
+              <div>
+                <h3 style={{ margin: "0 0 12px 0", fontSize: 16, fontWeight: 500 }}>Activity Types</h3>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                  {Object.entries(ACTIVITY_COLORS).map(([activity, color]) => (
+                    <div key={activity} style={{ 
+                      display: "flex", 
+                      alignItems: "center",
+                      padding: "4px 8px",
+                      backgroundColor: "#222",
+                      borderRadius: 12
+                    }}>
+                      <div style={{ 
+                        width: 10, 
+                        height: 10, 
+                        backgroundColor: color,
+                        borderRadius: 5,
+                        marginRight: 6
+                      }}></div>
+                      <span style={{ fontSize: 13 }}>{activity}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );
-}
+};
 
-// Export the component as default
+// Component helper functions
+const SummaryCard: FC<{
+  icon: ReactNode;
+  title: string;
+  value: number | string;
+  unit?: string;
+}> = ({ icon, title, value, unit }) => (
+  <div style={{ 
+    backgroundColor: "#111", 
+    borderRadius: 12, 
+    padding: 16,
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    textAlign: "center"
+  }}>
+    <div style={{ marginBottom: 8 }}>
+      {icon}
+    </div>
+    <p style={{ 
+      color: "#888", 
+      fontSize: 14, 
+      margin: 0, 
+      marginBottom: 4 
+    }}>
+      {title}
+    </p>
+    <h3 style={{ 
+      fontSize: 24, 
+      fontWeight: 500, 
+      margin: 0, 
+      lineHeight: 1.2 
+    }}>
+      {value} {unit && <span style={{ fontSize: 14, fontWeight: "normal" }}>{unit}</span>}
+    </h3>
+  </div>
+);
+
+const Card: FC<CardProps> = ({ children, style = {} }) => (
+  <div style={{ 
+    backgroundColor: "#111", 
+    borderRadius: 12, 
+    overflow: "hidden",
+    ...style
+  }}>
+    {children}
+  </div>
+);
+
+const CardHeader: FC<CardHeaderProps> = ({ children, style = {} }) => (
+  <div style={{ 
+    padding: 16,
+    borderBottom: "1px solid #222",
+    ...style
+  }}>
+    {children}
+  </div>
+);
+
+const CardTitle: FC<CardTitleProps> = ({ children, style = {} }) => (
+  <h2 style={{ 
+    fontSize: 18, 
+    fontWeight: 500,
+    margin: 0,
+    ...style
+  }}>
+    {children}
+  </h2>
+);
+
+const CardDescription: FC<CardDescriptionProps> = ({ children, style = {} }) => (
+  <p style={{ 
+    fontSize: 14, 
+    color: "#888",
+    margin: 0,
+    marginTop: 4,
+    ...style
+  }}>
+    {children}
+  </p>
+);
+
+const CardContent: FC<CardContentProps> = ({ children, style = {} }) => (
+  <div style={{ 
+    padding: 16,
+    ...style
+  }}>
+    {children}
+  </div>
+);
+
+const TabButton: FC<TabButtonProps> = ({ children, active, onClick }) => (
+  <button
+    onClick={onClick}
+    style={{
+      padding: "10px 12px",
+      backgroundColor: active ? "#222" : "transparent",
+      border: "none",
+      color: active ? "#fff" : "#888",
+      fontWeight: active ? "500" : "normal",
+      cursor: "pointer",
+      fontSize: 14,
+      flex: 1,
+      textAlign: "center"
+    }}
+  >
+    {children}
+  </button>
+);
+
+const DataTable: FC<DataTableProps> = ({ title, data, color, unit = "" }) => {
+  // Safely calculate the maximum value for the bar widths
+  const numericData = data.filter((item): item is { label: string; value: number } => 
+    typeof item.value === 'number'
+  );
+  
+  const maxValue = numericData.length > 0 
+    ? Math.max(...numericData.map(item => item.value))
+    : 100;
+
+  return (
+    <div>
+      <h3 style={{ margin: "0 0 12px 0", fontSize: 16, fontWeight: 500 }}>{title}</h3>
+      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        {data.map((item, idx) => (
+          <div 
+            key={idx}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              padding: "8px",
+              backgroundColor: idx % 2 === 0 ? "#222" : "#191919",
+              borderRadius: 8
+            }}
+          >
+            <div style={{ width: 50, fontSize: 14 }}>{item.label.split(' ')[1]}</div>
+            <div 
+              style={{ 
+                flex: 1, 
+                height: 6, 
+                backgroundColor: "#333",
+                borderRadius: 3,
+                marginRight: 12
+              }}
+            >
+              <div 
+                style={{ 
+                  height: "100%", 
+                  width: typeof item.value === 'number' 
+                    ? `${(item.value / maxValue) * 100}%` 
+                    : "50%",
+                  backgroundColor: color,
+                  borderRadius: 3
+                }}
+              ></div>
+            </div>
+            <div style={{ 
+              fontWeight: 500,
+              fontSize: 16,
+              minWidth: 55,
+              textAlign: "right"
+            }}>
+              {item.value} {unit && <span style={{ fontSize: 12 }}>{unit}</span>}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const NutritionSummary: FC<NutritionSummaryProps> = ({ title, value, color, bgColor }) => (
+  <div style={{ 
+    padding: 16, 
+    borderRadius: 12, 
+    backgroundColor: bgColor 
+  }}>
+    <h4 style={{ 
+      fontSize: 16, 
+      fontWeight: 500, 
+      margin: 0,
+      marginBottom: 8, 
+      color: color 
+    }}>
+      {title}
+    </h4>
+    <div style={{ 
+      fontSize: 24, 
+      fontWeight: 500, 
+      color: color,
+      lineHeight: 1.2 
+    }}>
+      {value}
+    </div>
+  </div>
+);
+
 export default DashboardScreen;

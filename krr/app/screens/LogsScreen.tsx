@@ -1,7 +1,7 @@
 import React, { FC } from "react"
 import { View, ViewStyle, TextStyle } from "react-native"
 import { Header, Screen, Text } from "../components"
-import { TabScreenProps } from "../navigation/types"
+import { TabScreenProps } from "../navigators/types"
 import { useAppTheme } from "../utils/useAppTheme"
 import { LogsNavigator } from "../navigators/LogsNavigator"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
