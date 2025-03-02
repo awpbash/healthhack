@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ReactNode } from "react";
+import React, { useState, ReactNode } from "react";
 import type { FC } from "react";
 import type { DemoTabScreenProps } from "../navigators/TabNavigator";
 import { Activity, Heart, Scale, Utensils, TrendingUp, ChevronLeft, ChevronRight } from "lucide-react";
@@ -139,7 +139,7 @@ const DashboardScreen: FC<DemoTabScreenProps<"DashboardScreen">> = (_props) => {
 
   return (
     <div style={{ 
-      backgroundColor: "#000", 
+      backgroundColor: "#1a0e13", 
       color: "#fff",
       width: "100%",
       height: "100%",
@@ -150,20 +150,22 @@ const DashboardScreen: FC<DemoTabScreenProps<"DashboardScreen">> = (_props) => {
       bottom: 0,
       overflow: "auto",
       fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"
-    }}>
+    }}>      
       <div style={{ padding: 16 }}>
         <div style={{ 
           display: "flex", 
           alignItems: "center", 
-          marginBottom: 16,
-          justifyContent: "space-between"
+          marginBottom: 20,
+          justifyContent: "space-between",
+          flexWrap: "wrap",
+          gap: 12
         }}>
           <div>
             <h1 style={{ 
               fontSize: 32, 
               fontWeight: 500, 
               margin: 0, 
-              marginBottom: 4,
+              marginBottom: 6,
               letterSpacing: "-0.5px"
             }}>
               Health Dashboard
@@ -179,9 +181,10 @@ const DashboardScreen: FC<DemoTabScreenProps<"DashboardScreen">> = (_props) => {
           <div style={{ 
             display: "flex", 
             alignItems: "center", 
-            backgroundColor: "#1a1a1a",
+            backgroundColor: "#2a1a23",
             borderRadius: 24,
-            padding: "4px 4px"
+            padding: "4px 4px",
+            minWidth: 180
           }}>
             <button style={{ 
               width: 32,
@@ -197,15 +200,32 @@ const DashboardScreen: FC<DemoTabScreenProps<"DashboardScreen">> = (_props) => {
               <ChevronLeft color="#fff" size={18} />
             </button>
             <div style={{ 
-              padding: "0 8px"
+              flex: 1,
+              textAlign: "center"
             }}>
-              <span style={{
-                color: "#fff",
-                fontSize: 16,
-                fontWeight: 500
-              }}>
-                {timeframe === 'week' ? 'Weekly' : timeframe === 'month' ? 'Monthly' : 'Yearly'}
-              </span>
+              <select 
+                style={{
+                  backgroundColor: "transparent",
+                  border: "none",
+                  color: "#fff",
+                  fontSize: 16,
+                  fontWeight: 500,
+                  outline: "none",
+                  cursor: "pointer",
+                  WebkitAppearance: "none",
+                  MozAppearance: "none",
+                  appearance: "none",
+                  textAlign: "center",
+                  textAlignLast: "center",
+                  paddingRight: 16
+                }}
+                value={timeframe}
+                onChange={(e) => setTimeframe(e.target.value)}
+              >
+                <option value="day">Daily</option>
+                <option value="week">Weekly</option>
+                <option value="month">Monthly</option>
+              </select>
             </div>
             <button style={{ 
               width: 32,
@@ -223,12 +243,12 @@ const DashboardScreen: FC<DemoTabScreenProps<"DashboardScreen">> = (_props) => {
           </div>
         </div>
 
-        {/* Summary Cards - Grid layout for larger screens, flexbox for smaller screens */}
+        {/* Summary Cards */}
         <div style={{ 
           display: "grid", 
           gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", 
           gap: 12,
-          marginBottom: 16
+          marginBottom: 20
         }}>
           <SummaryCard
             icon={<Heart color="#ef4444" size={24} />}
@@ -266,7 +286,7 @@ const DashboardScreen: FC<DemoTabScreenProps<"DashboardScreen">> = (_props) => {
         </div>
 
         {/* Today's Nutrition */}
-        <div style={{ marginBottom: 16 }}>
+        <div style={{ marginBottom: 20 }}>
           <Card>
             <CardHeader>
               <div style={{ 
@@ -275,7 +295,9 @@ const DashboardScreen: FC<DemoTabScreenProps<"DashboardScreen">> = (_props) => {
                 alignItems: "center"
               }}>
                 <div style={{ fontSize: 18, fontWeight: 500 }}>Feb 28</div>
-                <div style={{ fontSize: 16 }}>{latestNutrition.vegetables + latestNutrition.fruits + latestNutrition.wholeGrains} servings</div>
+                <div style={{ fontSize: 16 }}>
+                  {latestNutrition.vegetables + latestNutrition.fruits + latestNutrition.wholeGrains} servings
+                </div>
               </div>
             </CardHeader>
             <CardContent style={{ padding: 16 }}>
@@ -291,7 +313,7 @@ const DashboardScreen: FC<DemoTabScreenProps<"DashboardScreen">> = (_props) => {
                 </div>
                 <div style={{ 
                   height: 8, 
-                  backgroundColor: "#222",
+                  backgroundColor: "#2a1a23",
                   borderRadius: 4,
                   overflow: "hidden"
                 }}>
@@ -316,7 +338,7 @@ const DashboardScreen: FC<DemoTabScreenProps<"DashboardScreen">> = (_props) => {
                 </div>
                 <div style={{ 
                   height: 8, 
-                  backgroundColor: "#222",
+                  backgroundColor: "#2a1a23",
                   borderRadius: 4,
                   overflow: "hidden"
                 }}>
@@ -341,7 +363,7 @@ const DashboardScreen: FC<DemoTabScreenProps<"DashboardScreen">> = (_props) => {
                 </div>
                 <div style={{ 
                   height: 8, 
-                  backgroundColor: "#222",
+                  backgroundColor: "#2a1a23",
                   borderRadius: 4,
                   overflow: "hidden"
                 }}>
@@ -362,39 +384,39 @@ const DashboardScreen: FC<DemoTabScreenProps<"DashboardScreen">> = (_props) => {
           display: "grid", 
           gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))",
           gap: 12,
-          marginBottom: 16
+          marginBottom: 20
         }}>
           <NutritionSummary
             title="Vegetables"
             value={totalVeggies}
             color="#22c55e"
-            bgColor="rgba(34, 197, 94, 0.2)"
+            bgColor="rgba(34, 197, 94, 0.15)"
           />
           
           <NutritionSummary
             title="Fruits"
             value={totalFruits}
             color="#eab308"
-            bgColor="rgba(234, 179, 8, 0.2)"
+            bgColor="rgba(234, 179, 8, 0.15)"
           />
           
           <NutritionSummary
             title="Whole Grains"
             value={totalWholeGrains}
             color="#8b5cf6"
-            bgColor="rgba(139, 92, 246, 0.2)"
+            bgColor="rgba(139, 92, 246, 0.15)"
           />
           
           <NutritionSummary
             title="Sugary Beverages"
             value={totalSugaryBeverages}
             color="#ef4444"
-            bgColor="rgba(239, 68, 68, 0.2)"
+            bgColor="rgba(239, 68, 68, 0.15)"
           />
         </div>
 
         {/* Vitals Tracking */}
-        <div style={{ marginBottom: 16 }}>
+        <div style={{ marginBottom: 20 }}>
           <Card>
             <CardHeader>
               <div style={{ display: "flex", alignItems: "center" }}>
@@ -406,7 +428,7 @@ const DashboardScreen: FC<DemoTabScreenProps<"DashboardScreen">> = (_props) => {
             <CardContent style={{ padding: 0 }}>
               <div style={{ 
                 display: "flex", 
-                borderBottom: "1px solid #222"
+                borderBottom: "1px solid #2a1a23"
               }}>
                 <TabButton 
                   active={activeTab === 'heartRate'} 
@@ -469,7 +491,7 @@ const DashboardScreen: FC<DemoTabScreenProps<"DashboardScreen">> = (_props) => {
         </div>
 
         {/* Activity Breakdown */}
-        <div style={{ marginBottom: 16 }}>
+        <div style={{ marginBottom: 20 }}>
           <Card>
             <CardHeader>
               <div style={{ display: "flex", alignItems: "center" }}>
@@ -480,58 +502,77 @@ const DashboardScreen: FC<DemoTabScreenProps<"DashboardScreen">> = (_props) => {
             </CardHeader>
             <CardContent>
               <div style={{ marginBottom: 16 }}>
-                <h3 style={{ margin: "0 0 12px 0", fontSize: 16, fontWeight: 500 }}>Daily Minutes</h3>
+                <h3 style={{ margin: "0 0 12px 0", fontSize: 16, fontWeight: 500 }}>Daily Activity</h3>
                 {activityData.map((day, index) => (
                   <div key={index} style={{ 
-                    display: "flex", 
-                    alignItems: "center", 
-                    marginBottom: 10 
+                    marginBottom: 16
                   }}>
-                    <div style={{ width: 50, fontSize: 14 }}>{day.date.split(' ')[1]}</div>
                     <div style={{ 
-                      flex: 1, 
-                      height: 24, 
-                      backgroundColor: "#222", 
-                      borderRadius: 12,
-                      position: "relative",
-                      overflow: "hidden"
+                      fontWeight: 500,
+                      fontSize: 14,
+                      marginBottom: 6,
+                      color: "#ccc"
                     }}>
-                      {day.minutes > 0 && (
-                        <div style={{ 
-                          width: `${(day.minutes / 60) * 100}%`,
-                          maxWidth: "100%", 
-                          height: "100%", 
-                          backgroundColor: ACTIVITY_COLORS[day.activity] || "#999",
-                          borderRadius: 12,
-                          display: "flex",
-                          alignItems: "center",
-                          paddingLeft: 10
-                        }}>
-                          <span style={{ 
-                            fontSize: 12, 
-                            fontWeight: 500,
-                            color: "#fff",
-                            whiteSpace: "nowrap",
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                            maxWidth: "100%"
+                      {day.date}
+                    </div>
+                    <div style={{ 
+                      display: "flex", 
+                      alignItems: "center" 
+                    }}>
+                      <div style={{ 
+                        flex: 1, 
+                        height: 24, 
+                        backgroundColor: "#2a1a23", 
+                        borderRadius: 12,
+                        position: "relative",
+                        overflow: "hidden"
+                      }}>
+                        {day.minutes > 0 && (
+                          <div style={{ 
+                            width: `${(day.minutes / 120) * 100}%`,
+                            maxWidth: "100%", 
+                            height: "100%", 
+                            backgroundColor: ACTIVITY_COLORS[day.activity] || "#999",
+                            borderRadius: 12,
+                            display: "flex",
+                            alignItems: "center",
+                            paddingLeft: 10
                           }}>
-                            {day.activity} - {day.minutes}min
-                          </span>
-                        </div>
-                      )}
-                      {day.minutes === 0 && (
-                        <div style={{ 
-                          position: "absolute",
-                          left: 10,
-                          top: 0,
-                          height: "100%",
-                          display: "flex",
-                          alignItems: "center"
-                        }}>
-                          <span style={{ fontSize: 12 }}>Rest</span>
-                        </div>
-                      )}
+                            <span style={{ 
+                              fontSize: 12, 
+                              fontWeight: 500,
+                              color: "#fff",
+                              whiteSpace: "nowrap",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              maxWidth: "100%"
+                            }}>
+                              {day.activity} - {day.minutes} minutes
+                            </span>
+                          </div>
+                        )}
+                        {day.minutes === 0 && (
+                          <div style={{ 
+                            position: "absolute",
+                            left: 10,
+                            top: 0,
+                            height: "100%",
+                            display: "flex",
+                            alignItems: "center"
+                          }}>
+                            <span style={{ fontSize: 12 }}>Rest Day</span>
+                          </div>
+                        )}
+                      </div>
+                      <div style={{ 
+                        minWidth: 50, 
+                        textAlign: "right", 
+                        marginLeft: 8,
+                        fontSize: 14,
+                        fontWeight: 500
+                      }}>
+                        {day.minutes} min
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -545,7 +586,7 @@ const DashboardScreen: FC<DemoTabScreenProps<"DashboardScreen">> = (_props) => {
                       display: "flex", 
                       alignItems: "center",
                       padding: "4px 8px",
-                      backgroundColor: "#222",
+                      backgroundColor: "#2a1a23",
                       borderRadius: 12
                     }}>
                       <div style={{ 
@@ -576,7 +617,7 @@ const SummaryCard: FC<{
   unit?: string;
 }> = ({ icon, title, value, unit }) => (
   <div style={{ 
-    backgroundColor: "#111", 
+    backgroundColor: "#2a1a23", 
     borderRadius: 12, 
     padding: 16,
     display: "flex",
@@ -609,7 +650,7 @@ const SummaryCard: FC<{
 
 const Card: FC<CardProps> = ({ children, style = {} }) => (
   <div style={{ 
-    backgroundColor: "#111", 
+    backgroundColor: "#2a1a23", 
     borderRadius: 12, 
     overflow: "hidden",
     ...style
@@ -621,7 +662,7 @@ const Card: FC<CardProps> = ({ children, style = {} }) => (
 const CardHeader: FC<CardHeaderProps> = ({ children, style = {} }) => (
   <div style={{ 
     padding: 16,
-    borderBottom: "1px solid #222",
+    borderBottom: "1px solid #3a2a33",
     ...style
   }}>
     {children}
@@ -665,7 +706,7 @@ const TabButton: FC<TabButtonProps> = ({ children, active, onClick }) => (
     onClick={onClick}
     style={{
       padding: "10px 12px",
-      backgroundColor: active ? "#222" : "transparent",
+      backgroundColor: active ? "#3a2a33" : "transparent",
       border: "none",
       color: active ? "#fff" : "#888",
       fontWeight: active ? "500" : "normal",
@@ -700,16 +741,16 @@ const DataTable: FC<DataTableProps> = ({ title, data, color, unit = "" }) => {
               display: "flex",
               alignItems: "center",
               padding: "8px",
-              backgroundColor: idx % 2 === 0 ? "#222" : "#191919",
+              backgroundColor: idx % 2 === 0 ? "#3a2a33" : "#2a1a23",
               borderRadius: 8
             }}
           >
-            <div style={{ width: 50, fontSize: 14 }}>{item.label.split(' ')[1]}</div>
+            <div style={{ width: 80, fontSize: 14 }}>{item.label}</div>
             <div 
               style={{ 
                 flex: 1, 
                 height: 6, 
-                backgroundColor: "#333",
+                backgroundColor: "#4a3a43",
                 borderRadius: 3,
                 marginRight: 12
               }}
