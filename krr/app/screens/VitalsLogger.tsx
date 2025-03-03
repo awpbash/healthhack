@@ -16,54 +16,69 @@ export const VitalsLoggerScreen: FC<VitalsLoggerProps> = function VitalsLoggerSc
   const [weight, set_weight] = useState("")
   const [log, set_log] = useState("")
 
+  const inputFieldStyle: ViewStyle = {
+    backgroundColor: "#e9e7e3",
+    borderRadius: 10,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: "#ddd",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  }
+
   return (
     <ThemeProvider theme={theme}>
       <Screen preset="scroll" contentContainerStyle={$styles.container} safeAreaEdges={[]}>
         <TextField
           value={heart_rate}
           onChangeText={set_heart_rate}
-          containerStyle={themed($textField)}
+          containerStyle={themed($textField), inputFieldStyle}
           autoCapitalize="none"
-          autoComplete="email"
           autoCorrect={false}
-          keyboardType="email-address"
+          keyboardType="numeric"
           labelTx="vitalLoggerScreen:heartRateLabel"
           placeholderTx="vitalLoggerScreen:heartRatePlaceholder"
         />
+        <br></br>
         <TextField
           value={blood_pressure}
           onChangeText={set_blood_pressure}
-          containerStyle={themed($textField)}
+          containerStyle={themed($textField), inputFieldStyle}
           autoCapitalize="none"
-          autoComplete="email"
           autoCorrect={false}
-          keyboardType="email-address"
+          keyboardType="numeric"
           labelTx="vitalLoggerScreen:bloodPressureLabel"
           placeholderTx="vitalLoggerScreen:bloodPressurePlaceholder"
         />
+         <br></br>
         <TextField
           value={weight}
           onChangeText={set_weight}
-          containerStyle={themed($textField)}
+          containerStyle={themed($textField), inputFieldStyle}
           autoCapitalize="none"
-          autoComplete="email"
           autoCorrect={false}
-          keyboardType="email-address"
+          keyboardType="numeric"
           labelTx="vitalLoggerScreen:weightLabel"
           placeholderTx="vitalLoggerScreen:weightPlaceholder"
         />
+         <br></br>
         <TextField
           value={log}
           onChangeText={set_log}
           labelTx="vitalLoggerScreen:logLabel"
           labelTxOptions={{ prop: "label" }}
-          helperTx="demoTextField:useCase.passingContent.supportsMultiline.helper"
           helperTxOptions={{ prop: "helper" }}
           placeholderTx="vitalLoggerScreen:logPlaceholder"
           multiline
-          RightAccessory={(props) => <Icon icon="ladybug" containerStyle={props.style} size={21} />}
+          style={{ minHeight: 40, maxHeight: 120 }}
+          containerStyle={themed($textField), inputFieldStyle}
+          // RightAccessory={(props) => <Icon icon="ladybug" containerStyle={props.style} size={21} />}
         />
-        <Button preset="filled">{"Submit"}</Button>
+        <br></br>
+        <Button preset="filled">{"Add"}</Button>
       </Screen>
     </ThemeProvider>
   )

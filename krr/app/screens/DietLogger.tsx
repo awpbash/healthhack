@@ -17,13 +17,26 @@ export const DietLoggerScreen: FC<DietLoggerProps> = function DietLoggerScreen(_
   const [dessert, set_dessert] = useState("")
   const [log, set_log] = useState("")
 
+  const inputFieldStyle: ViewStyle = {
+    backgroundColor: "#e9e7e3",
+    borderRadius: 10,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: "#ddd",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  }
+
   return (
     <ThemeProvider theme={theme}>
       <Screen preset="scroll" contentContainerStyle={$styles.container} safeAreaEdges={[]}>
         <TextField
           value={servings_of_vege_and_fruit}
           onChangeText={set_servings_of_vege_and_fruit}
-          containerStyle={themed($textField)}
+          containerStyle={themed($textField), inputFieldStyle}
           autoCapitalize="none"
           autoComplete="email"
           autoCorrect={false}
@@ -31,10 +44,11 @@ export const DietLoggerScreen: FC<DietLoggerProps> = function DietLoggerScreen(_
           labelTx="dietLoggerScreen:vegeFruitLabel"
           placeholderTx="dietLoggerScreen:vegeFruitPlaceholder"
         />
+        <br></br>
         <TextField
           value={wholegrains}
           onChangeText={set_whole_grains}
-          containerStyle={themed($textField)}
+          containerStyle={themed($textField), inputFieldStyle}
           autoCapitalize="none"
           autoComplete="email"
           autoCorrect={false}
@@ -42,10 +56,11 @@ export const DietLoggerScreen: FC<DietLoggerProps> = function DietLoggerScreen(_
           labelTx="dietLoggerScreen:wholegrainLabel"
           placeholderTx="dietLoggerScreen:wholegrainPlaceholder"
         />
+        <br></br>
         <TextField
           value={sugary_beverages}
           onChangeText={set_sugary_beverages}
-          containerStyle={themed($textField)}
+          containerStyle={themed($textField), inputFieldStyle}
           autoCapitalize="none"
           autoComplete="email"
           autoCorrect={false}
@@ -53,29 +68,32 @@ export const DietLoggerScreen: FC<DietLoggerProps> = function DietLoggerScreen(_
           labelTx="dietLoggerScreen:sugaryBeveragesLabel"
           placeholderTx="dietLoggerScreen:sugaryBeveragesPlaceholder"
         />
+        <br></br>
         <TextField
           value={dessert}
           onChangeText={set_dessert}
-          containerStyle={themed($textField)}
-          autoCapitalize="none"
+          containerStyle={themed($textField), inputFieldStyle}
           autoComplete="email"
           autoCorrect={false}
           keyboardType="email-address"
           labelTx="dietLoggerScreen:dessertLabel"
           placeholderTx="dietLoggerScreen:dessertPlaceholder"
         />
+        <br></br>
         <TextField
           value={log}
           onChangeText={set_log}
           labelTx="dietLoggerScreen:logLabel"
           labelTxOptions={{ prop: "label" }}
-          helperTx="demoTextField:useCase.passingContent.supportsMultiline.helper"
           helperTxOptions={{ prop: "helper" }}
           placeholderTx="dietLoggerScreen:logPlaceholder"
           multiline
-          RightAccessory={(props) => <Icon icon="ladybug" containerStyle={props.style} size={21} />}
+          containerStyle={themed($textField), inputFieldStyle}
+          autoCapitalize="none"
+          // RightAccessory={(props) => <Icon icon="ladybug" containerStyle={props.style} size={21} />}
         />
-        <Button preset="filled">{"Submit"}</Button>
+        <br></br>
+        <Button preset="filled">{"Add"}</Button>
       </Screen>
     </ThemeProvider>
   )

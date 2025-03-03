@@ -19,16 +19,17 @@ export function LogsNavigator() {
         tabBarIndicatorStyle: { backgroundColor: theme.colors.tint },
         tabBarActiveTintColor: theme.colors.tint,
         tabBarInactiveTintColor: theme.colors.textDim,
+        swipeEnabled: false,
       }}
     >
       <LogsTab.Screen
         name="Vitals"
         component={VitalsLoggerScreen}
-        options={{ 
+        options={{
           // Use hardcoded string instead of translate until you add the translation keys
-          tabBarLabel: "Vitals" 
+          tabBarLabel: "Vitals"
           // Alternatively, add the keys to your i18n files and use:
-          // tabBarLabel: translate("logsNavigator.vitalsTab") 
+          // tabBarLabel: translate("logsNavigator.vitalsTab")
         }}
       />
       <LogsTab.Screen

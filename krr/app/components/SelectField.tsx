@@ -82,7 +82,14 @@ export const SelectField = forwardRef(function SelectField(
 
   return (
     <>
-      <TouchableOpacity activeOpacity={1} onPress={presentOptions}>
+      <TouchableOpacity
+        activeOpacity={1}
+        onPress={(e) => {
+          e.stopPropagation() // Stop event propagation
+          presentOptions()
+        }}
+        disabled={disabled}
+      >
         <View pointerEvents="none">
           <TextField
             {...TextFieldProps}

@@ -34,26 +34,26 @@ const en = {
     },
     vitalLoggerScreen: {
         heartRateLabel: "Heart Rate",
-        heartRatePlaceholder: "Enter you resting heart rate",
+        heartRatePlaceholder: "Enter your resting heart rate",
         bloodPressureLabel: "Blood Pressure",
-        bloodPressurePlaceholder: "Enter you blood pressure",
+        bloodPressurePlaceholder: "Enter your blood pressure",
         weightLabel: "Weight",
         weightPlaceholder: "Enter your weight",
         logLabel: "Log",
-        logPlaceholder: "Enter some remarks about your vitals logged"
+        logPlaceholder: "Write any additional notes here",
     },
     ActivityLogger: {
         heartRateLabel: "Heart Rate",
-        heartRatePlaceholder: "Enter you resting heart rate",
+        heartRatePlaceholder: "Enter your resting heart rate",
         bloodPressureLabel: "Blood Pressure",
-        bloodPressurePlaceholder: "Enter you blood pressure",
+        bloodPressurePlaceholder: "Enter your blood pressure",
         weightLabel: "Weight",
         weightPlaceholder: "Enter your weight",
         logLabel: "Log",
-        logPlaceholder: "Enter some remarks about your vitals logged"
+        logPlaceholder: "Enter some remarks about your vitals logged",
     },
     dietLoggerScreen: {
-        vegeFruitLabel: "Servings of Vegetables and Fruit",
+        vegeFruitLabel: "Servings of Fruits and Vegetables",
         vegeFruitPlaceholder: "e.g. 1",
         wholegrainLabel: "Servings of Wholegrain",
         wholegrainPlaceholder: "e.g. 1",
@@ -62,7 +62,7 @@ const en = {
         dessertLabel: "Servings of Dessert",
         dessertPlaceholder: "e.g. 1",
         logLabel: "Log",
-        logPlaceholder: "Enter some remarks about your vitals logged"
+        logPlaceholder: "Write any additional notes here",
     },
     loginScreen: {
         logIn: "Log In",

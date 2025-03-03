@@ -1,7 +1,6 @@
 import { NavigatorScreenParams } from "@react-navigation/native"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs"
-import { MaterialTopTabScreenProps } from "@react-navigation/material-top-tabs"
 import { CompositeScreenProps, RouteProp, NavigationProp } from "@react-navigation/native"
 
 // Define the AppStack navigator params (from your existing AppNavigator)

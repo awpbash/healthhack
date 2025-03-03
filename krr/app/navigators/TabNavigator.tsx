@@ -65,7 +65,7 @@ export function TabNavigator() {
         component={LogsScreen}
         options={{
           // Using a hardcoded string as a temporary solution
-          tabBarLabel: "Logs", 
+          tabBarLabel: "Logs",
           // You'll need to add "logsTab" to your translation file
           // tabBarLabel: translate("demoNavigator:logsTab"),
           tabBarIcon: ({ focused }) => (
