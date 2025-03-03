@@ -1,7 +1,94 @@
-import React, { useState, ReactNode } from "react";
+import React, { useState, useEffect, ReactNode, createContext, useContext } from "react";
 import type { FC } from "react";
 import type { DemoTabScreenProps } from "../navigators/TabNavigator";
 import { Activity, Heart, Scale, Utensils, TrendingUp, ChevronLeft, ChevronRight } from "lucide-react";
+
+// Theme Context and Provider
+interface ThemeContextType {
+  isDark: boolean;
+  colors: {
+    background: string;
+    cardBackground: string;
+    cardBackgroundAlt: string;
+    tabActive: string;
+    border: string;
+    text: {
+      primary: string;
+      secondary: string;
+    };
+    progressBackground: string;
+  };
+  toggleTheme: () => void;
+}
+
+const defaultTheme: ThemeContextType = {
+  isDark: true,
+  colors: {
+    background: "#1a0e13",
+    cardBackground: "#2a1a23",
+    cardBackgroundAlt: "#3a2a33",
+    tabActive: "#3a2a33",
+    border: "#3a2a33",
+    text: {
+      primary: "#fff",
+      secondary: "#888",
+    },
+    progressBackground: "#4a3a43",
+  },
+  toggleTheme: () => {},
+};
+
+const ThemeContext = createContext<ThemeContextType>(defaultTheme);
+
+const ThemeProvider: FC<{ children: ReactNode }> = ({ children }) => {
+  const [isDark, setIsDark] = useState(true);
+  
+  // Effect to detect system theme preference
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    setIsDark(mediaQuery.matches);
+    
+    const handler = (e: MediaQueryListEvent) => setIsDark(e.matches);
+    mediaQuery.addEventListener('change', handler);
+    return () => mediaQuery.removeEventListener('change', handler);
+  }, []);
+
+  const colors = isDark
+    ? {
+        background: "#1a0e13",
+        cardBackground: "#2a1a23",
+        cardBackgroundAlt: "#3a2a33",
+        tabActive: "#3a2a33",
+        border: "#3a2a33",
+        text: {
+          primary: "#fff",
+          secondary: "#888",
+        },
+        progressBackground: "#4a3a43",
+      }
+    : {
+        background: "#f5f5f7",
+        cardBackground: "#ffffff",
+        cardBackgroundAlt: "#f0f0f2",
+        tabActive: "#e6e6e9",
+        border: "#e0e0e3",
+        text: {
+          primary: "#111",
+          secondary: "#666",
+        },
+        progressBackground: "#e6e6e9",
+      };
+
+  const toggleTheme = () => setIsDark(!isDark);
+
+  return (
+    <ThemeContext.Provider value={{ isDark, colors, toggleTheme }}>
+      {children}
+    </ThemeContext.Provider>
+  );
+};
+
+const useTheme = () => useContext(ThemeContext);
 
 // Define TypeScript interfaces for better type safety
 interface VitalsDataPoint {
@@ -77,19 +164,32 @@ interface NutritionSummaryProps {
 }
 
 // Safe type definition for activity colors
-const ACTIVITY_COLORS: Record<string, string> = {
+const getActivityColors = (isDark: boolean): Record<string, string> => ({
   'Run': '#FF8042',
   'Swim': '#0088FE',
   'Cycle': '#00C49F',
   'Pilates': '#FFBB28',
   'Gym': '#8884d8',
-  'Rest': '#CCCCCC'
-};
+  'Rest': isDark ? '#CCCCCC' : '#999999'
+});
 
-// Main Dashboard Component with type-safe implementation
+// Main Dashboard Component with theme support
 const DashboardScreen: FC<DemoTabScreenProps<"DashboardScreen">> = (_props) => {
+  const { isDark, colors, toggleTheme } = useTheme();
   const [timeframe, setTimeframe] = useState('week');
   const [activeTab, setActiveTab] = useState('heartRate');
+  
+  // Theme-aware color constants
+  const themeAwareColors = {
+    heartRate: "#ef4444",
+    bloodPressure: "#3b82f6",
+    weight: "#a855f7",
+    activity: "#f97316",
+    vegetables: "#22c55e",
+    fruits: "#eab308",
+    wholeGrains: "#8b5cf6",
+    sugaryBeverages: "#ef4444"
+  };
   
   // Sample data for visualizations
   const vitalsData: VitalsDataPoint[] = [
@@ -139,8 +239,8 @@ const DashboardScreen: FC<DemoTabScreenProps<"DashboardScreen">> = (_props) => {
 
   return (
     <div style={{ 
-      backgroundColor: "#1a0e13", 
-      color: "#fff",
+      backgroundColor: colors.background, 
+      color: colors.text.primary,
       width: "100%",
       height: "100%",
       position: "absolute",
@@ -166,80 +266,103 @@ const DashboardScreen: FC<DemoTabScreenProps<"DashboardScreen">> = (_props) => {
               fontWeight: 500, 
               margin: 0, 
               marginBottom: 6,
-              letterSpacing: "-0.5px"
+              letterSpacing: "-0.5px",
+              color: colors.text.primary
             }}>
               Health Dashboard
             </h1>
             <p style={{ 
-              color: "#999", 
+              color: colors.text.secondary, 
               margin: 0,
               fontSize: 16
             }}>
               February 22 - 28, 2025
             </p>
           </div>
-          <div style={{ 
-            display: "flex", 
-            alignItems: "center", 
-            backgroundColor: "#2a1a23",
-            borderRadius: 24,
-            padding: "4px 4px",
-            minWidth: 180
+          <div style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 12
           }}>
-            <button style={{ 
-              width: 32,
-              height: 32,
-              borderRadius: 16,
-              backgroundColor: "transparent",
-              border: "none",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center"
-            }}>
-              <ChevronLeft color="#fff" size={18} />
+            {/* Theme Toggle Button */}
+            <button 
+              style={{
+                backgroundColor: colors.cardBackground,
+                color: colors.text.primary,
+                border: "none",
+                borderRadius: 20,
+                padding: "8px 12px",
+                cursor: "pointer",
+                fontSize: 14
+              }}
+              onClick={toggleTheme}
+            >
+              {isDark ? "🌙 Dark" : "☀️ Light"}
             </button>
+            
             <div style={{ 
-              flex: 1,
-              textAlign: "center"
+              display: "flex", 
+              alignItems: "center", 
+              backgroundColor: colors.cardBackground,
+              borderRadius: 24,
+              padding: "4px 4px",
+              minWidth: 180
             }}>
-              <select 
-                style={{
-                  backgroundColor: "transparent",
-                  border: "none",
-                  color: "#fff",
-                  fontSize: 16,
-                  fontWeight: 500,
-                  outline: "none",
-                  cursor: "pointer",
-                  WebkitAppearance: "none",
-                  MozAppearance: "none",
-                  appearance: "none",
-                  textAlign: "center",
-                  textAlignLast: "center",
-                  paddingRight: 16
-                }}
-                value={timeframe}
-                onChange={(e) => setTimeframe(e.target.value)}
-              >
-                <option value="day">Daily</option>
-                <option value="week">Weekly</option>
-                <option value="month">Monthly</option>
-              </select>
+              <button style={{ 
+                width: 32,
+                height: 32,
+                borderRadius: 16,
+                backgroundColor: "transparent",
+                border: "none",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center"
+              }}>
+                <ChevronLeft color={colors.text.primary} size={18} />
+              </button>
+              <div style={{ 
+                flex: 1,
+                textAlign: "center"
+              }}>
+                <select 
+                  style={{
+                    backgroundColor: "transparent",
+                    border: "none",
+                    color: colors.text.primary,
+                    fontSize: 16,
+                    fontWeight: 500,
+                    outline: "none",
+                    cursor: "pointer",
+                    WebkitAppearance: "none",
+                    MozAppearance: "none",
+                    appearance: "none",
+                    textAlign: "center",
+                    textAlignLast: "center",
+                    paddingRight: 16
+                  }}
+                  value={timeframe}
+                  onChange={(e) => setTimeframe(e.target.value)}
+                >
+                  <option value="day">Daily</option>
+                  <option value="week">Weekly</option>
+                  <option value="month">Monthly</option>
+                </select>
+              </div>
+              <button style={{ 
+                width: 32,
+                height: 32,
+                borderRadius: 16,
+                backgroundColor: "transparent",
+                border: "none",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center"
+              }}>
+                <ChevronRight color={colors.text.primary} size={18} />
+              </button>
             </div>
-            <button style={{ 
-              width: 32,
-              height: 32,
-              borderRadius: 16,
-              backgroundColor: "transparent",
-              border: "none",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center"
-            }}>
-              <ChevronRight color="#fff" size={18} />
-            </button>
           </div>
         </div>
 
@@ -251,34 +374,34 @@ const DashboardScreen: FC<DemoTabScreenProps<"DashboardScreen">> = (_props) => {
           marginBottom: 20
         }}>
           <SummaryCard
-            icon={<Heart color="#ef4444" size={24} />}
+            icon={<Heart color={themeAwareColors.heartRate} size={24} />}
             title="Heart Rate"
             value={avgHeartRate}
             unit="bpm"
           />
           
           <SummaryCard
-            icon={<TrendingUp color="#3b82f6" size={24} />}
+            icon={<TrendingUp color={themeAwareColors.bloodPressure} size={24} />}
             title="Blood Pressure"
             value={`${avgBloodPressure.systolic}/${avgBloodPressure.diastolic}`}
           />
 
           <SummaryCard
-            icon={<Scale color="#a855f7" size={24} />}
+            icon={<Scale color={themeAwareColors.weight} size={24} />}
             title="Weight"
             value={vitalsData[vitalsData.length - 1].weight}
             unit="kg"
           />
 
           <SummaryCard
-            icon={<Activity color="#f97316" size={24} />}
+            icon={<Activity color={themeAwareColors.activity} size={24} />}
             title="Activity"
             value={totalActivityMinutes}
             unit="min"
           />
 
           <SummaryCard
-            icon={<Utensils color="#22c55e" size={24} />}
+            icon={<Utensils color={themeAwareColors.vegetables} size={24} />}
             title="Nutrition"
             value={totalVeggies + totalFruits + totalWholeGrains}
             unit="servings"
@@ -308,19 +431,19 @@ const DashboardScreen: FC<DemoTabScreenProps<"DashboardScreen">> = (_props) => {
                   alignItems: "center",
                   marginBottom: 4
                 }}>
-                  <span style={{ color: "#22c55e", fontSize: 16 }}>Vegetables</span>
+                  <span style={{ color: themeAwareColors.vegetables, fontSize: 16 }}>Vegetables</span>
                   <span style={{ fontSize: 16 }}>{latestNutrition.vegetables}</span>
                 </div>
                 <div style={{ 
                   height: 8, 
-                  backgroundColor: "#2a1a23",
+                  backgroundColor: colors.cardBackground,
                   borderRadius: 4,
                   overflow: "hidden"
                 }}>
                   <div style={{ 
                     height: "100%", 
                     width: `${(latestNutrition.vegetables / 5) * 100}%`,
-                    backgroundColor: "#22c55e",
+                    backgroundColor: themeAwareColors.vegetables,
                     borderRadius: 4
                   }}></div>
                 </div>
@@ -333,19 +456,19 @@ const DashboardScreen: FC<DemoTabScreenProps<"DashboardScreen">> = (_props) => {
                   alignItems: "center",
                   marginBottom: 4
                 }}>
-                  <span style={{ color: "#eab308", fontSize: 16 }}>Fruits</span>
+                  <span style={{ color: themeAwareColors.fruits, fontSize: 16 }}>Fruits</span>
                   <span style={{ fontSize: 16 }}>{latestNutrition.fruits}</span>
                 </div>
                 <div style={{ 
                   height: 8, 
-                  backgroundColor: "#2a1a23",
+                  backgroundColor: colors.cardBackground,
                   borderRadius: 4,
                   overflow: "hidden"
                 }}>
                   <div style={{ 
                     height: "100%", 
                     width: `${(latestNutrition.fruits / 5) * 100}%`,
-                    backgroundColor: "#eab308",
+                    backgroundColor: themeAwareColors.fruits,
                     borderRadius: 4
                   }}></div>
                 </div>
@@ -358,19 +481,19 @@ const DashboardScreen: FC<DemoTabScreenProps<"DashboardScreen">> = (_props) => {
                   alignItems: "center",
                   marginBottom: 4
                 }}>
-                  <span style={{ color: "#8b5cf6", fontSize: 16 }}>Whole Grains</span>
+                  <span style={{ color: themeAwareColors.wholeGrains, fontSize: 16 }}>Whole Grains</span>
                   <span style={{ fontSize: 16 }}>{latestNutrition.wholeGrains}</span>
                 </div>
                 <div style={{ 
                   height: 8, 
-                  backgroundColor: "#2a1a23",
+                  backgroundColor: colors.cardBackground,
                   borderRadius: 4,
                   overflow: "hidden"
                 }}>
                   <div style={{ 
                     height: "100%", 
                     width: `${(latestNutrition.wholeGrains / 5) * 100}%`,
-                    backgroundColor: "#8b5cf6",
+                    backgroundColor: themeAwareColors.wholeGrains,
                     borderRadius: 4
                   }}></div>
                 </div>
@@ -389,29 +512,29 @@ const DashboardScreen: FC<DemoTabScreenProps<"DashboardScreen">> = (_props) => {
           <NutritionSummary
             title="Vegetables"
             value={totalVeggies}
-            color="#22c55e"
-            bgColor="rgba(34, 197, 94, 0.15)"
+            color={themeAwareColors.vegetables}
+            bgColor={isDark ? "rgba(34, 197, 94, 0.15)" : "rgba(34, 197, 94, 0.08)"}
           />
           
           <NutritionSummary
             title="Fruits"
             value={totalFruits}
-            color="#eab308"
-            bgColor="rgba(234, 179, 8, 0.15)"
+            color={themeAwareColors.fruits}
+            bgColor={isDark ? "rgba(234, 179, 8, 0.15)" : "rgba(234, 179, 8, 0.08)"}
           />
           
           <NutritionSummary
             title="Whole Grains"
             value={totalWholeGrains}
-            color="#8b5cf6"
-            bgColor="rgba(139, 92, 246, 0.15)"
+            color={themeAwareColors.wholeGrains}
+            bgColor={isDark ? "rgba(139, 92, 246, 0.15)" : "rgba(139, 92, 246, 0.08)"}
           />
           
           <NutritionSummary
             title="Sugary Beverages"
             value={totalSugaryBeverages}
-            color="#ef4444"
-            bgColor="rgba(239, 68, 68, 0.15)"
+            color={themeAwareColors.sugaryBeverages}
+            bgColor={isDark ? "rgba(239, 68, 68, 0.15)" : "rgba(239, 68, 68, 0.08)"}
           />
         </div>
 
@@ -420,7 +543,7 @@ const DashboardScreen: FC<DemoTabScreenProps<"DashboardScreen">> = (_props) => {
           <Card>
             <CardHeader>
               <div style={{ display: "flex", alignItems: "center" }}>
-                <Heart size={18} color="#ef4444" style={{ marginRight: 8 }} />
+                <Heart size={18} color={themeAwareColors.heartRate} style={{ marginRight: 8 }} />
                 <CardTitle>Vitals Tracking</CardTitle>
               </div>
               <CardDescription>Heart rate, blood pressure, weight</CardDescription>
@@ -428,7 +551,7 @@ const DashboardScreen: FC<DemoTabScreenProps<"DashboardScreen">> = (_props) => {
             <CardContent style={{ padding: 0 }}>
               <div style={{ 
                 display: "flex", 
-                borderBottom: "1px solid #2a1a23"
+                borderBottom: `1px solid ${colors.border}`
               }}>
                 <TabButton 
                   active={activeTab === 'heartRate'} 
@@ -458,7 +581,7 @@ const DashboardScreen: FC<DemoTabScreenProps<"DashboardScreen">> = (_props) => {
                       label: item.date,
                       value: item.heartRate
                     }))}
-                    color="#ef4444"
+                    color={themeAwareColors.heartRate}
                     unit="bpm"
                   />
                 )}
@@ -470,7 +593,7 @@ const DashboardScreen: FC<DemoTabScreenProps<"DashboardScreen">> = (_props) => {
                       label: item.date,
                       value: `${item.systolic}/${item.diastolic}`
                     }))}
-                    color="#3b82f6"
+                    color={themeAwareColors.bloodPressure}
                   />
                 )}
                 
@@ -481,7 +604,7 @@ const DashboardScreen: FC<DemoTabScreenProps<"DashboardScreen">> = (_props) => {
                       label: item.date,
                       value: item.weight
                     }))}
-                    color="#a855f7"
+                    color={themeAwareColors.weight}
                     unit="kg"
                   />
                 )}
@@ -495,7 +618,7 @@ const DashboardScreen: FC<DemoTabScreenProps<"DashboardScreen">> = (_props) => {
           <Card>
             <CardHeader>
               <div style={{ display: "flex", alignItems: "center" }}>
-                <Activity size={18} color="#f97316" style={{ marginRight: 8 }} />
+                <Activity size={18} color={themeAwareColors.activity} style={{ marginRight: 8 }} />
                 <CardTitle>Activity Breakdown</CardTitle>
               </div>
               <CardDescription>Minutes by activity type</CardDescription>
@@ -511,7 +634,7 @@ const DashboardScreen: FC<DemoTabScreenProps<"DashboardScreen">> = (_props) => {
                       fontWeight: 500,
                       fontSize: 14,
                       marginBottom: 6,
-                      color: "#ccc"
+                      color: colors.text.secondary
                     }}>
                       {day.date}
                     </div>
@@ -522,7 +645,7 @@ const DashboardScreen: FC<DemoTabScreenProps<"DashboardScreen">> = (_props) => {
                       <div style={{ 
                         flex: 1, 
                         height: 24, 
-                        backgroundColor: "#2a1a23", 
+                        backgroundColor: colors.cardBackground, 
                         borderRadius: 12,
                         position: "relative",
                         overflow: "hidden"
@@ -532,7 +655,7 @@ const DashboardScreen: FC<DemoTabScreenProps<"DashboardScreen">> = (_props) => {
                             width: `${(day.minutes / 120) * 100}%`,
                             maxWidth: "100%", 
                             height: "100%", 
-                            backgroundColor: ACTIVITY_COLORS[day.activity] || "#999",
+                            backgroundColor: getActivityColors(isDark)[day.activity] || "#999",
                             borderRadius: 12,
                             display: "flex",
                             alignItems: "center",
@@ -541,7 +664,7 @@ const DashboardScreen: FC<DemoTabScreenProps<"DashboardScreen">> = (_props) => {
                             <span style={{ 
                               fontSize: 12, 
                               fontWeight: 500,
-                              color: "#fff",
+                              color: isDark ? "#fff" : "#000",
                               whiteSpace: "nowrap",
                               overflow: "hidden",
                               textOverflow: "ellipsis",
@@ -581,12 +704,12 @@ const DashboardScreen: FC<DemoTabScreenProps<"DashboardScreen">> = (_props) => {
               <div>
                 <h3 style={{ margin: "0 0 12px 0", fontSize: 16, fontWeight: 500 }}>Activity Types</h3>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                  {Object.entries(ACTIVITY_COLORS).map(([activity, color]) => (
+                  {Object.entries(getActivityColors(isDark)).map(([activity, color]) => (
                     <div key={activity} style={{ 
                       display: "flex", 
                       alignItems: "center",
                       padding: "4px 8px",
-                      backgroundColor: "#2a1a23",
+                      backgroundColor: colors.cardBackground,
                       borderRadius: 12
                     }}>
                       <div style={{ 
@@ -615,82 +738,104 @@ const SummaryCard: FC<{
   title: string;
   value: number | string;
   unit?: string;
-}> = ({ icon, title, value, unit }) => (
-  <div style={{ 
-    backgroundColor: "#2a1a23", 
-    borderRadius: 12, 
-    padding: 16,
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    textAlign: "center"
-  }}>
-    <div style={{ marginBottom: 8 }}>
-      {icon}
+}> = ({ icon, title, value, unit }) => {
+  const { colors } = useTheme();
+  
+  return (
+    <div style={{ 
+      backgroundColor: colors.cardBackground, 
+      borderRadius: 12, 
+      padding: 16,
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center",
+      textAlign: "center"
+    }}>
+      <div style={{ marginBottom: 8 }}>
+        {icon}
+      </div>
+      <p style={{ 
+        color: colors.text.secondary, 
+        fontSize: 14, 
+        margin: 0, 
+        marginBottom: 4 
+      }}>
+        {title}
+      </p>
+      <h3 style={{ 
+        fontSize: 24, 
+        fontWeight: 500, 
+        margin: 0, 
+        lineHeight: 1.2,
+        color: colors.text.primary
+      }}>
+        {value} {unit && <span style={{ fontSize: 14, fontWeight: "normal" }}>{unit}</span>}
+      </h3>
     </div>
+  );
+};
+
+const Card: FC<CardProps> = ({ children, style = {} }) => {
+  const { colors } = useTheme();
+  
+  return (
+    <div style={{ 
+      backgroundColor: colors.cardBackground, 
+      borderRadius: 12, 
+      overflow: "hidden",
+      ...style
+    }}>
+      {children}
+    </div>
+  );
+};
+
+const CardHeader: FC<CardHeaderProps> = ({ children, style = {} }) => {
+  const { colors } = useTheme();
+  
+  return (
+    <div style={{ 
+      padding: 16,
+      borderBottom: `1px solid ${colors.border}`,
+      ...style
+    }}>
+      {children}
+    </div>
+  );
+};
+
+const CardTitle: FC<CardTitleProps> = ({ children, style = {} }) => {
+  const { colors } = useTheme();
+  
+  return (
+    <h2 style={{ 
+      fontSize: 18, 
+      fontWeight: 500,
+      margin: 0,
+      color: colors.text.primary,
+      ...style
+    }}>
+      {children}
+    </h2>
+  );
+};
+
+const CardDescription: FC<CardDescriptionProps> = ({ children, style = {} }) => {
+  const { colors } = useTheme();
+  
+  return (
     <p style={{ 
-      color: "#888", 
       fontSize: 14, 
-      margin: 0, 
-      marginBottom: 4 
+      color: colors.text.secondary,
+      margin: 0,
+      marginTop: 4,
+      ...style
     }}>
-      {title}
+      {children}
     </p>
-    <h3 style={{ 
-      fontSize: 24, 
-      fontWeight: 500, 
-      margin: 0, 
-      lineHeight: 1.2 
-    }}>
-      {value} {unit && <span style={{ fontSize: 14, fontWeight: "normal" }}>{unit}</span>}
-    </h3>
-  </div>
-);
-
-const Card: FC<CardProps> = ({ children, style = {} }) => (
-  <div style={{ 
-    backgroundColor: "#2a1a23", 
-    borderRadius: 12, 
-    overflow: "hidden",
-    ...style
-  }}>
-    {children}
-  </div>
-);
-
-const CardHeader: FC<CardHeaderProps> = ({ children, style = {} }) => (
-  <div style={{ 
-    padding: 16,
-    borderBottom: "1px solid #3a2a33",
-    ...style
-  }}>
-    {children}
-  </div>
-);
-
-const CardTitle: FC<CardTitleProps> = ({ children, style = {} }) => (
-  <h2 style={{ 
-    fontSize: 18, 
-    fontWeight: 500,
-    margin: 0,
-    ...style
-  }}>
-    {children}
-  </h2>
-);
-
-const CardDescription: FC<CardDescriptionProps> = ({ children, style = {} }) => (
-  <p style={{ 
-    fontSize: 14, 
-    color: "#888",
-    margin: 0,
-    marginTop: 4,
-    ...style
-  }}>
-    {children}
-  </p>
-);
+  );
+};
 
 const CardContent: FC<CardContentProps> = ({ children, style = {} }) => (
   <div style={{ 
@@ -701,26 +846,32 @@ const CardContent: FC<CardContentProps> = ({ children, style = {} }) => (
   </div>
 );
 
-const TabButton: FC<TabButtonProps> = ({ children, active, onClick }) => (
-  <button
-    onClick={onClick}
-    style={{
-      padding: "10px 12px",
-      backgroundColor: active ? "#3a2a33" : "transparent",
-      border: "none",
-      color: active ? "#fff" : "#888",
-      fontWeight: active ? "500" : "normal",
-      cursor: "pointer",
-      fontSize: 14,
-      flex: 1,
-      textAlign: "center"
-    }}
-  >
-    {children}
-  </button>
-);
+const TabButton: FC<TabButtonProps> = ({ children, active, onClick }) => {
+  const { colors } = useTheme();
+  
+  return (
+    <button
+      onClick={onClick}
+      style={{
+        padding: "10px 12px",
+        backgroundColor: active ? colors.tabActive : "transparent",
+        border: "none",
+        color: active ? colors.text.primary : colors.text.secondary,
+        fontWeight: active ? "500" : "normal",
+        cursor: "pointer",
+        fontSize: 14,
+        flex: 1,
+        textAlign: "center"
+      }}
+    >
+      {children}
+    </button>
+  );
+};
 
 const DataTable: FC<DataTableProps> = ({ title, data, color, unit = "" }) => {
+  const { colors, isDark } = useTheme();
+  
   // Safely calculate the maximum value for the bar widths
   const numericData = data.filter((item): item is { label: string; value: number } => 
     typeof item.value === 'number'
@@ -732,7 +883,7 @@ const DataTable: FC<DataTableProps> = ({ title, data, color, unit = "" }) => {
 
   return (
     <div>
-      <h3 style={{ margin: "0 0 12px 0", fontSize: 16, fontWeight: 500 }}>{title}</h3>
+      <h3 style={{ margin: "0 0 12px 0", fontSize: 16, fontWeight: 500, color: colors.text.primary }}>{title}</h3>
       <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
         {data.map((item, idx) => (
           <div 
@@ -741,16 +892,16 @@ const DataTable: FC<DataTableProps> = ({ title, data, color, unit = "" }) => {
               display: "flex",
               alignItems: "center",
               padding: "8px",
-              backgroundColor: idx % 2 === 0 ? "#3a2a33" : "#2a1a23",
+              backgroundColor: idx % 2 === 0 ? colors.cardBackgroundAlt : colors.cardBackground,
               borderRadius: 8
             }}
           >
-            <div style={{ width: 80, fontSize: 14 }}>{item.label}</div>
+            <div style={{ width: 80, fontSize: 14, color: colors.text.primary }}>{item.label}</div>
             <div 
               style={{ 
                 flex: 1, 
                 height: 6, 
-                backgroundColor: "#4a3a43",
+                backgroundColor: colors.progressBackground,
                 borderRadius: 3,
                 marginRight: 12
               }}
@@ -770,7 +921,8 @@ const DataTable: FC<DataTableProps> = ({ title, data, color, unit = "" }) => {
               fontWeight: 500,
               fontSize: 16,
               minWidth: 55,
-              textAlign: "right"
+              textAlign: "right",
+              color: colors.text.primary
             }}>
               {item.value} {unit && <span style={{ fontSize: 12 }}>{unit}</span>}
             </div>
@@ -781,30 +933,43 @@ const DataTable: FC<DataTableProps> = ({ title, data, color, unit = "" }) => {
   );
 };
 
-const NutritionSummary: FC<NutritionSummaryProps> = ({ title, value, color, bgColor }) => (
-  <div style={{ 
-    padding: 16, 
-    borderRadius: 12, 
-    backgroundColor: bgColor 
-  }}>
-    <h4 style={{ 
-      fontSize: 16, 
-      fontWeight: 500, 
-      margin: 0,
-      marginBottom: 8, 
-      color: color 
-    }}>
-      {title}
-    </h4>
+const NutritionSummary: FC<NutritionSummaryProps> = ({ title, value, color, bgColor }) => {
+  const { colors } = useTheme();
+  
+  return (
     <div style={{ 
-      fontSize: 24, 
-      fontWeight: 500, 
-      color: color,
-      lineHeight: 1.2 
+      padding: 16, 
+      borderRadius: 12, 
+      backgroundColor: bgColor 
     }}>
-      {value}
+      <h4 style={{ 
+        fontSize: 16, 
+        fontWeight: 500, 
+        margin: 0,
+        marginBottom: 8, 
+        color: color 
+      }}>
+        {title}
+      </h4>
+      <div style={{ 
+        fontSize: 24, 
+        fontWeight: 500, 
+        color: color,
+        lineHeight: 1.2 
+      }}>
+        {value}
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
-export default DashboardScreen;
+// Export ThemeProvider wrapped Dashboard Component
+const ThemedDashboardScreen: FC<DemoTabScreenProps<"DashboardScreen">> = (props) => {
+  return (
+    <ThemeProvider>
+      <DashboardScreen {...props} />
+    </ThemeProvider>
+  );
+};
+
+export default ThemedDashboardScreen;
