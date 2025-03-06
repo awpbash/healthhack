@@ -113,11 +113,6 @@ function ProfileScreen(_props) {
           <Text preset="heading" text="Profile" style={{ flex: 1 }} />
         </View>
 
-        {/* Health Profile */}
-        <View style={themed($profileHeader)}>
-          <Text preset="heading" text="Main Health Profile" style={themed($headerText)} />
-        </View>
-
         {/* Name */}
         <Text preset="subheading" text="Name" style={themed($labelText)} />
         <TextField
