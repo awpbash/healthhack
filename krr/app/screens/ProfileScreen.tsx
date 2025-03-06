@@ -113,6 +113,11 @@ function ProfileScreen(_props) {
           <Text preset="heading" text="Profile" style={{ flex: 1 }} />
         </View>
 
+        {/* Health Profile */}
+        {/* <View style={themed($profileHeader)}>
+          <Text preset="heading" text="Main Health Profile" style={themed($headerText)} />
+        </View> */}
+
         {/* Name */}
         <Text preset="subheading" text="Name" style={themed($labelText)} />
         <TextField
@@ -348,14 +353,14 @@ function ProfileScreen(_props) {
         {/* Submit or Edit Button */}
         {!isSubmitted ? (
           <TouchableOpacity style={themed($submitContainer)} onPress={handleSubmit}>
-            <Text text="Submit" style={themed($submitText)} />
+            <Text text="SUBMIT" style={themed($submitText)} />
           </TouchableOpacity>
         ) : (
           <TouchableOpacity 
             style={themed(isEditing ? $editActiveContainer : $editContainer)} 
             onPress={isEditing ? handleSubmit : handleEditPress}
           >
-            <Text text={isEditing ? "Save" : "Edit"} style={themed($editText)} />
+            <Text text={isEditing ? "SAVE" : "EDIT"} style={themed($editText)} />
           </TouchableOpacity>
         )}
       </Screen>
@@ -426,9 +431,9 @@ const $button: ThemedStyle<ViewStyle> = () => ({
   marginHorizontal: 4,
 })
 
-const $selectedButton: ThemedStyle<ViewStyle> = () => ({
+const $selectedButton: ThemedStyle<ViewStyle> = ({ colors }) => ({
   flex: 1,
-  backgroundColor: '#333333',  // Dark gray/almost black
+  backgroundColor: colors.tint, // Dark gray/almost black
   borderRadius: 20,
   padding: 12,
   alignItems: 'center',
@@ -466,26 +471,27 @@ const $listItem: ThemedStyle<ViewStyle> = ({ spacing }) => ({
 })
 
 // New dropdown styles
-const $dropdownButton: ThemedStyle<ViewStyle> = () => ({
+const $dropdownButton: ThemedStyle<ViewStyle> = ({ colors, spacing }) => ({
   flexDirection: 'row',
   alignItems: 'center',
   justifyContent: 'space-between',
-  paddingHorizontal: 16,
-  paddingVertical: 12,
-  backgroundColor: 'white',
+  paddingHorizontal: spacing.md,
+  paddingVertical: spacing.sm,
+  backgroundColor: colors.background,
   borderWidth: 1,
-  borderColor: '#ECECEC',
+  borderColor: colors.border,
   borderRadius: 4,
-  marginBottom: 16,
+  marginBottom: spacing.md,
 })
 
-const $dropdownButtonText: ThemedStyle<TextStyle> = () => ({
+const $dropdownButtonText: ThemedStyle<TextStyle> = ({ colors }) => ({
   fontSize: 16,
+  color: colors.text,
 })
 
-const $dropdownArrow: ThemedStyle<TextStyle> = () => ({
+const $dropdownArrow: ThemedStyle<TextStyle> = ({ colors }) => ({
   fontSize: 12,
-  color: '#555',
+  color: colors.textDim,
 })
 
 const $modalOverlay: ThemedStyle<ViewStyle> = () => ({
@@ -494,41 +500,43 @@ const $modalOverlay: ThemedStyle<ViewStyle> = () => ({
   backgroundColor: 'rgba(0, 0, 0, 0.2)',
 })
 
-const $dropdownContainer: ThemedStyle<ViewStyle> = () => ({
+const $dropdownContainer: ThemedStyle<ViewStyle> = ({ colors }) => ({
   position: 'absolute',
   width: '92%',
-  backgroundColor: 'white',
+  backgroundColor: colors.background,
   borderWidth: 1,
-  borderColor: '#ECECEC',
+  borderColor: colors.border,
   borderRadius: 4,
   maxHeight: 250,
   top: 50,
   marginHorizontal: '4%',
-  shadowColor: '#000',
+  shadowColor: colors.palette.neutral900,
   shadowOffset: { width: 0, height: 2 },
   shadowOpacity: 0.1,
   shadowRadius: 3,
   elevation: 5,
 })
 
-const $dropdownItem: ThemedStyle<ViewStyle> = () => ({
-  paddingHorizontal: 16,
-  paddingVertical: 14,
-  backgroundColor: 'white',
+const $dropdownItem: ThemedStyle<ViewStyle> = ({ colors, spacing }) => ({
+  paddingHorizontal: spacing.md,
+  paddingVertical: spacing.sm,
+  backgroundColor: colors.background,
 })
 
-const $borderBottom: ThemedStyle<ViewStyle> = () => ({
-  borderBottomWidth: 1, 
-  borderBottomColor: '#ECECEC',
+const $borderBottom: ThemedStyle<ViewStyle> = ({ colors }) => ({
+  borderBottomWidth: 1,
+  borderBottomColor: colors.border,
 })
 
-const $dropdownText: ThemedStyle<TextStyle> = () => ({
+const $dropdownText: ThemedStyle<TextStyle> = ({ colors }) => ({
   fontSize: 16,
+  color: colors.text,
 })
 
-const $selectedDropdownText: ThemedStyle<TextStyle> = () => ({
+const $selectedDropdownText: ThemedStyle<TextStyle> = ({ colors }) => ({
   fontSize: 16,
   fontWeight: 'bold',
+  color: colors.tint,
 })
 
 // Old picker styles (can be removed)
@@ -607,8 +615,8 @@ const $arrowText: ThemedStyle<TextStyle> = () => ({
   fontSize: 18,
 })
 
-const $submitContainer: ThemedStyle<ViewStyle> = () => ({
-  backgroundColor: '#4CAF50',  // Green
+const $submitContainer: ThemedStyle<ViewStyle> = ({ colors }) => ({
+  backgroundColor: colors.palette.neutral300,
   padding: 16,
   alignItems: 'center',
   borderRadius: 8,

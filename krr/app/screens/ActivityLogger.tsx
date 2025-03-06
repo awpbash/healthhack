@@ -27,16 +27,11 @@ export const ActivityLoggerScreen: FC<ActivityLoggerProps> = function ActivityLo
 
   // Dropdown Options for activities & times
   const activities = [
-    { label: "Bodyweight Exercises", value: "Bodyweight Exercises" },
+    { label: "Gym", value: "Gym" },
     { label: "Cycle", value: "Cycle" },
-    { label: "High Intensity Interval Training", value: "High Intensity Interval Training" },
     { label: "Pilates", value: "Pilates" },
     { label: "Run", value: "Run" },
     { label: "Swim", value: "Swim" },
-    { label: "Tai Chi", value: "Tai Chi" },
-    { label: "Walk", value: "Walk" },
-    { label: "Yoga", value: "Yoga" },
-    { label: "Dance Fitness", value: "Dance Fitness" },
   ]
 
   const times = [...Array(36).keys()].map((ind) => {
