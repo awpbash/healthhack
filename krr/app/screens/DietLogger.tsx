@@ -8,6 +8,8 @@ import theme from "@/theme/theme"
 import { ThemeProvider } from "@shopify/restyle"
 import { DietLoggerProps } from "@/navigators/types"
 
+import { Api } from "@/services/api/api"
+
 export const DietLoggerScreen: FC<DietLoggerProps> = function DietLoggerScreen(_props) {
   const { themed } = useAppTheme()
 
