@@ -80,6 +80,7 @@ const en = {
         debugTab: "Debug",
         profileTab: "Profile",
         dashboardTab: "Dashboard",
+        chatTab: "Chat",
         loggerTab: "Log",
     },
     demoCommunityScreen: {
