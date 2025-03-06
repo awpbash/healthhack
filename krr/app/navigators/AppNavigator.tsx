@@ -21,6 +21,8 @@ import { GestureHandlerRootView } from "react-native-gesture-handler"
 import { SafeAreaProvider } from "react-native-safe-area-context"
 import { AppStackParamList } from "../navigators/types"
 
+import { ParamListBase, NavigationContainerRef } from "@react-navigation/native"
+
 /**
  * This is a list of all the route names that will exit the app if the back button
  * is pressed while in that screen. Only affects Android.
@@ -79,7 +81,7 @@ export const AppNavigator = observer(function AppNavigator(props: NavigationProp
       <SafeAreaProvider>
         <GestureHandlerRootView style={{ flex: 1 }}>
           <BottomSheetModalProvider>
-            <NavigationContainer ref={navigationRef} theme={navigationTheme} {...props}>
+            <NavigationContainer ref={navigationRef as unknown as React.RefObject<NavigationContainerRef<{}>>} theme={navigationTheme} {...props}>
               <AppStack />
             </NavigationContainer>
           </BottomSheetModalProvider>

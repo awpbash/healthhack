@@ -5,7 +5,8 @@ import { Drawer } from "react-native-drawer-layout"
 import { type ContentStyle } from "@shopify/flash-list"
 import { ListItem, ListView, ListViewRef, Screen, Text } from "../../components"
 import { TxKeyPath, isRTL, translate } from "@/i18n"
-import { TabParamList, DemoTabScreenProps } from "../../navigators/TabNavigator"
+import { DemoTabScreenProps } from "../../navigators/TabNavigator"
+import { DemoTabParamList } from "@/navigators/types"
 import type { Theme, ThemedStyle } from "@/theme"
 import { $styles } from "@/theme"
 import { useSafeAreaInsetsStyle } from "../../utils/useSafeAreaInsetsStyle"
@@ -41,14 +42,14 @@ const WebListItem: FC<DemoListItem> = ({ item, sectionIndex }) => {
   const { themed } = useAppTheme()
   return (
     <View>
-      <Link to={`/showroom/${sectionSlug}`} style={themed($menuContainer)}>
+      <Link screen={`/showroom/${sectionSlug}`} style={themed($menuContainer)} params={[]}>
         <Text preset="bold">{item.name}</Text>
       </Link>
       {item.useCases.map((u) => {
         const itemSlug = slugify(u)
 
         return (
-          <Link key={`section${sectionIndex}-${u}`} to={`/showroom/${sectionSlug}/${itemSlug}`}>
+          <Link key={`section${sectionIndex}-${u}`} screen={`/showroom/${sectionSlug}/${itemSlug}`} params={[]}>
             <Text>{u}</Text>
           </Link>
         )

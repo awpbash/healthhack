@@ -17,6 +17,61 @@ export const VitalsLoggerScreen: FC<VitalsLoggerProps> = function VitalsLoggerSc
   const [log, set_log] = useState("")
 
   const inputFieldStyle: ViewStyle = {
+  }
+
+  return (
+    <ThemeProvider theme={theme}>
+      <Screen preset="scroll" contentContainerStyle={$styles.container} safeAreaEdges={[]}>
+        <TextField
+          value={heart_rate}
+          onChangeText={set_heart_rate}
+          containerStyle={themed($textField)}
+          autoCapitalize="none"
+          autoCorrect={false}
+          keyboardType="numeric"
+          labelTx="vitalLoggerScreen:heartRateLabel"
+          placeholderTx="vitalLoggerScreen:heartRatePlaceholder"
+        />
+        <TextField
+          value={blood_pressure}
+          onChangeText={set_blood_pressure}
+          containerStyle={themed($textField)}
+          autoCapitalize="none"
+          autoCorrect={false}
+          keyboardType="numeric"
+          labelTx="vitalLoggerScreen:bloodPressureLabel"
+          placeholderTx="vitalLoggerScreen:bloodPressurePlaceholder"
+        />
+        <TextField
+          value={weight}
+          onChangeText={set_weight}
+          containerStyle={themed($textField)}
+          autoCapitalize="none"
+          autoCorrect={false}
+          keyboardType="numeric"
+          labelTx="vitalLoggerScreen:weightLabel"
+          placeholderTx="vitalLoggerScreen:weightPlaceholder"
+        />
+        <TextField
+          value={log}
+          onChangeText={set_log}
+          labelTx="vitalLoggerScreen:logLabel"
+          labelTxOptions={{ prop: "label" }}
+          helperTxOptions={{ prop: "helper" }}
+          placeholderTx="vitalLoggerScreen:logPlaceholder"
+          multiline
+          style={{ minHeight: 40, maxHeight: 120 }}
+          containerStyle={themed($textField)}
+          // RightAccessory={(props) => <Icon icon="ladybug" containerStyle={props.style} size={21} />}
+        />
+        <Button preset="filled">{"Add"}</Button>
+      </Screen>
+    </ThemeProvider>
+  )
+}
+
+const $textField: ThemedStyle<ViewStyle> = () => ({
+  marginBottom: 10,
     backgroundColor: "#e9e7e3",
     borderRadius: 10,
     padding: 12,
@@ -27,65 +82,6 @@ export const VitalsLoggerScreen: FC<VitalsLoggerProps> = function VitalsLoggerSc
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
-  }
-
-  return (
-    <ThemeProvider theme={theme}>
-      <Screen preset="scroll" contentContainerStyle={$styles.container} safeAreaEdges={[]}>
-        <TextField
-          value={heart_rate}
-          onChangeText={set_heart_rate}
-          containerStyle={themed($textField), inputFieldStyle}
-          autoCapitalize="none"
-          autoCorrect={false}
-          keyboardType="numeric"
-          labelTx="vitalLoggerScreen:heartRateLabel"
-          placeholderTx="vitalLoggerScreen:heartRatePlaceholder"
-        />
-        <br></br>
-        <TextField
-          value={blood_pressure}
-          onChangeText={set_blood_pressure}
-          containerStyle={themed($textField), inputFieldStyle}
-          autoCapitalize="none"
-          autoCorrect={false}
-          keyboardType="numeric"
-          labelTx="vitalLoggerScreen:bloodPressureLabel"
-          placeholderTx="vitalLoggerScreen:bloodPressurePlaceholder"
-        />
-         <br></br>
-        <TextField
-          value={weight}
-          onChangeText={set_weight}
-          containerStyle={themed($textField), inputFieldStyle}
-          autoCapitalize="none"
-          autoCorrect={false}
-          keyboardType="numeric"
-          labelTx="vitalLoggerScreen:weightLabel"
-          placeholderTx="vitalLoggerScreen:weightPlaceholder"
-        />
-         <br></br>
-        <TextField
-          value={log}
-          onChangeText={set_log}
-          labelTx="vitalLoggerScreen:logLabel"
-          labelTxOptions={{ prop: "label" }}
-          helperTxOptions={{ prop: "helper" }}
-          placeholderTx="vitalLoggerScreen:logPlaceholder"
-          multiline
-          style={{ minHeight: 40, maxHeight: 120 }}
-          containerStyle={themed($textField), inputFieldStyle}
-          // RightAccessory={(props) => <Icon icon="ladybug" containerStyle={props.style} size={21} />}
-        />
-        <br></br>
-        <Button preset="filled">{"Add"}</Button>
-      </Screen>
-    </ThemeProvider>
-  )
-}
-
-const $textField: ThemedStyle<ViewStyle> = () => ({
-  marginBottom: 10,
 })
 
 // Export the old name for backward compatibility
