@@ -348,7 +348,7 @@ function ProfileScreen(_props) {
         {/* Submit or Edit Button */}
         {!isSubmitted ? (
           <TouchableOpacity style={themed($submitContainer)} onPress={handleSubmit}>
-            <Text text="SUBMIT" style={themed($submitText)} />
+            <Text text="Submit" style={themed($submitText)} />
           </TouchableOpacity>
         ) : (
           <TouchableOpacity 
