@@ -10,6 +10,7 @@ import Config from "../../config"
 import { GeneralApiProblem, getGeneralApiProblem } from "./apiProblem"
 import type { ApiConfig, ApiFeedResponse } from "./api.types"
 import type { EpisodeSnapshotIn } from "../../models/Episode"
+import axios from 'axios';
 
 /**
  * Configuring the apisauce instance.
@@ -76,5 +77,113 @@ export class Api {
   }
 }
 
-// Singleton instance of the API for convenience
-export const api = new Api()
+const BASE_URL = 'http://10.0.2.2:3000/api';
+ 
+// Insertion APIs
+export async function insertMedical(data: {
+  User_ID: string;
+  Symptom: string;
+  Diagnosis: string;
+  Datetime: string;
+}): Promise<any> {
+  try {
+    const response = await axios.post(`${BASE_URL}/insert/medical`, data);
+    return response.data;
+  } catch (error) {
+    console.error('Error inserting medical record:', error);
+    throw error;
+  }
+}
+
+export async function insertVitals(data: {
+  User_ID: string;
+  Temperature: number;
+  BloodPressure: string;
+  PulseRate: number;
+  Datetime: string;
+}): Promise<any> {
+  try {
+    const response = await axios.post(`${BASE_URL}/insert/vitals`, data);
+    return response.data;
+  } catch (error) {
+    console.error('Error inserting vitals:', error);
+    throw error;
+  }
+}
+
+export async function insertActivity(data: {
+  User_ID: string;
+  Activity: string;
+  Duration: number;
+  Datetime: string;
+}): Promise<any> {
+  try {
+    const response = await axios.post(`${BASE_URL}/insert/activity`, data);
+    return response.data;
+  } catch (error) {
+    console.error('Error inserting activity:', error);
+    throw error;
+  }
+}
+
+export async function insertPrompt(data: {
+  User_ID: string;
+  Summary: string;
+}): Promise<any> {
+  try {
+    const response = await axios.post(`${BASE_URL}/insert/prompt`, data);
+    return response.data;
+  } catch (error) {
+    console.error('Error inserting prompt:', error);
+    throw error;
+  }
+}
+
+// Query APIs
+export async function queryMedical(user: string, prompt: string): Promise<any> {
+  try {
+    const response = await axios.get(`${BASE_URL}/medical`, {
+      params: { user, prompt },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error querying medical records:', error);
+    throw error;
+  }
+}
+
+export async function queryVitals(user: string): Promise<any> {
+  try {
+    const response = await axios.get(`${BASE_URL}/vitals`, {
+      params: { user },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error querying vitals:', error);
+    throw error;
+  }
+}
+
+export async function queryActivity(user: string): Promise<any> {
+  try {
+    const response = await axios.get(`${BASE_URL}/activity`, {
+      params: { user },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error querying activity:', error);
+    throw error;
+  }
+}
+
+export async function queryPrompts(user: string): Promise<any> {
+  try {
+    const response = await axios.get(`${BASE_URL}/prompts`, {
+      params: { user },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error querying prompts:', error);
+    throw error;
+  }
+}

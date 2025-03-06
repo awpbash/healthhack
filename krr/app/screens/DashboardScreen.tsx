@@ -208,7 +208,7 @@ const DashboardScreen = () => {
           <Text style={[styles.subtitle, { color: colors.text.secondary }]}>February 22 - 28, 2025</Text>
         </View>
         <View style={styles.headerButtons}>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={[styles.themeButton, { backgroundColor: colors.cardBackground }]}
             onPress={toggleTheme}
           >
@@ -276,29 +276,29 @@ const DashboardScreen = () => {
             title="Vegetables"
             value={totalVeggies}
             color={themeAwareColors.vegetables}
-            bgColor={isDark ? "rgba(34, 197, 94, 0.15)" : "rgba(34, 197, 94, 0.08)"}
+            bgColor={colors.cardBackgroundAlt}
           />
           <NutritionSummary
             title="Fruits"
             value={totalFruits}
             color={themeAwareColors.fruits}
-            bgColor={isDark ? "rgba(234, 179, 8, 0.15)" : "rgba(234, 179, 8, 0.08)"}
+            bgColor={colors.cardBackgroundAlt}
           />
           <NutritionSummary
             title="Whole Grains"
             value={totalWholeGrains}
             color={themeAwareColors.wholeGrains}
-            bgColor={isDark ? "rgba(139, 92, 246, 0.15)" : "rgba(139, 92, 246, 0.08)"}
+            bgColor={colors.cardBackgroundAlt}
           />
           <NutritionSummary
             title="Sugary Beverages"
             value={totalSugaryBeverages}
             color={themeAwareColors.sugaryBeverages}
-            bgColor={isDark ? "rgba(239, 68, 68, 0.15)" : "rgba(239, 68, 68, 0.08)"}
+            bgColor={colors.cardBackgroundAlt}
           />
         </View>
       </View>
-      {/* Additional sections (Vitals Tracking, Activity Breakdown, etc.) can be converted in a similar way */}
+      {/* Additional sections (Vitals Tracking, Activity Breakdown, etc.) */}
     </ScrollView>
   );
 };

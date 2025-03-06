@@ -32,6 +32,8 @@ import { customFontsToLoad } from "./theme"
 import Config from "./config"
 import { KeyboardProvider } from "react-native-keyboard-controller"
 import { loadDateFnsLocale } from "./utils/formatDate"
+import { gestureHandlerRootHOC } from "react-native-gesture-handler"
+import { NavigationContainer } from "@react-navigation/native"
 
 export const NAVIGATION_PERSISTENCE_KEY = "NAVIGATION_STATE"
 
@@ -85,12 +87,7 @@ export function App() {
     setTimeout(SplashScreen.hideAsync, 500)
   })
 
-  // Before we show the app, we have to wait for our state to be ready.
-  // In the meantime, don't render anything. This will be the background
-  // color set in native by rootView's background color.
-  // In iOS: application:didFinishLaunchingWithOptions:
-  // In Android: https://stackoverflow.com/a/45838109/204044
-  // You can replace with your own loading component if you wish.
+  // Wait for state to be ready before rendering
   if (
     !rehydrated ||
     !isNavigationStateRestored ||
@@ -105,7 +102,6 @@ export function App() {
     config,
   }
 
-  // otherwise, we're ready to render the app
   return (
     <SafeAreaProvider initialMetrics={initialWindowMetrics}>
       <ErrorBoundary catchErrors={Config.catchErrors}>
@@ -120,3 +116,6 @@ export function App() {
     </SafeAreaProvider>
   )
 }
+
+// Wrap the App in gestureHandlerRootHOC for gesture compatibility
+export default gestureHandlerRootHOC(App)
