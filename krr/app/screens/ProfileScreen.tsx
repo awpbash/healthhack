@@ -355,7 +355,7 @@ function ProfileScreen(_props) {
             style={themed(isEditing ? $editActiveContainer : $editContainer)} 
             onPress={isEditing ? handleSubmit : handleEditPress}
           >
-            <Text text={isEditing ? "SAVE" : "EDIT"} style={themed($editText)} />
+            <Text text={isEditing ? "Save" : "Edit"} style={themed($editText)} />
           </TouchableOpacity>
         )}
       </Screen>
