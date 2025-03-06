@@ -4,10 +4,11 @@ import { TextStyle, ViewStyle } from "react-native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { Icon } from "../components"
 import { translate } from "@/i18n"
-import { DemoShowroomScreen} from "../screens"
+import { DemoShowroomScreen} from "@/screens/DemoShowroomScreen/DemoShowroomScreen"
 import { ProfileScreen } from "@/screens/ProfileScreen"
 import  DashboardScreen  from "@/screens/DashboardScreen"
 import { LogsScreen } from "@/screens/LogsScreen"
+import ChatScreen from "@/screens/ChatScreen"
 import type { ThemedStyle } from "@/theme"
 import { AppStackParamList, AppStackScreenProps, TabParamList } from "../navigators/types"
 import { useAppTheme } from "@/utils/useAppTheme"
@@ -77,6 +78,17 @@ export function TabNavigator() {
       <Tab.Screen
         name="Profile"
         component={ProfileScreen}
+        options={{
+          tabBarLabel: translate("demoNavigator:profileTab"),
+          tabBarIcon: ({ focused }) => (
+            <Icon icon="community" color={focused ? colors.tint : colors.tintInactive} size={30} />
+          ),
+        }}
+      />
+
+      <Tab.Screen
+        name="Chat"
+        component={ChatScreen}
         options={{
           tabBarLabel: translate("demoNavigator:profileTab"),
           tabBarIcon: ({ focused }) => (

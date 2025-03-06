@@ -4,7 +4,7 @@ import { Image, ImageStyle, TextStyle, View, ViewStyle } from "react-native"
 import { Button, Text, Screen } from "@/components"
 import { isRTL } from "@/i18n"
 import { useStores } from "../models"
-import { AppStackScreenProps } from "../navigators"
+import { AppStackScreenProps } from "../navigators/types"
 import { $styles, type ThemedStyle } from "@/theme"
 import { useHeader } from "../utils/useHeader"
 import { useSafeAreaInsetsStyle } from "../utils/useSafeAreaInsetsStyle"
@@ -24,7 +24,7 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeSc
   } = useStores()
 
   function goNext() {
-    navigation.navigate("Tabs", { screen: "VitalsLogger" })
+    navigation.navigate("Tabs", { screen: "Logs", params: { screen: "Vitals" } })
   }
 
   useHeader(

@@ -22,7 +22,6 @@ import {
 } from "lucide-react-native";
 import { Picker } from "@react-native-picker/picker";
 
-
 import theme from "@/theme/theme";
 
 // Type Definitions
@@ -244,6 +243,7 @@ const DashboardScreen: FC<DemoTabScreenProps<"DashboardScreen">> = (_props) => {
   const [activityViewMode, setActivityViewMode] = useState('chart');
   
   // Theme-aware color constants
+
   const themeAwareColors = {
     heartRate: theme.colors.primary,
     bloodPressure: theme.colors.secondary,
@@ -254,8 +254,7 @@ const DashboardScreen: FC<DemoTabScreenProps<"DashboardScreen">> = (_props) => {
     wholeGrains: "#8b5cf6",
     sugaryBeverages: "#ef4444"
   };
-  
-  // Sample data for visualizations
+
   const vitalsData: VitalsDataPoint[] = [
     { date: 'Feb 22', heartRate: 72, systolic: 122, diastolic: 78, weight: 78.2 },
     { date: 'Feb 23', heartRate: 74, systolic: 124, diastolic: 80, weight: 78.0 },
@@ -640,6 +639,7 @@ const styles = StyleSheet.create({
   summaryUnit: {
     fontSize: 14,
     fontWeight: "normal",
+
   },
   section: {
     marginBottom: 20,
