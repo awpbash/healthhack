@@ -1,96 +1,31 @@
-import React, { useState, useEffect, ReactNode, createContext, useContext } from "react";
+import React, { useState } from "react";
+import { 
+  View, 
+  Text, 
+  TouchableOpacity, 
+  ScrollView, 
+  SafeAreaView, 
+  StyleSheet, 
+  Dimensions 
+} from "react-native";
+import { LineChart, BarChart } from 'react-native-chart-kit';
 import type { FC } from "react";
 import type { DemoTabScreenProps } from "../navigators/TabNavigator";
-import { Activity, Heart, Scale, Utensils, TrendingUp, ChevronLeft, ChevronRight } from "lucide-react";
+import { 
+  Activity, 
+  Heart, 
+  Scale, 
+  Utensils, 
+  TrendingUp, 
+  ChevronLeft, 
+  ChevronRight 
+} from "lucide-react-native";
+import { Picker } from "@react-native-picker/picker";
 
-// Theme Context and Provider
-interface ThemeContextType {
-  isDark: boolean;
-  colors: {
-    background: string;
-    cardBackground: string;
-    cardBackgroundAlt: string;
-    tabActive: string;
-    border: string;
-    text: {
-      primary: string;
-      secondary: string;
-    };
-    progressBackground: string;
-  };
-  toggleTheme: () => void;
-}
 
-const defaultTheme: ThemeContextType = {
-  isDark: true,
-  colors: {
-    background: "#1a0e13",
-    cardBackground: "#2a1a23",
-    cardBackgroundAlt: "#3a2a33",
-    tabActive: "#3a2a33",
-    border: "#3a2a33",
-    text: {
-      primary: "#fff",
-      secondary: "#888",
-    },
-    progressBackground: "#4a3a43",
-  },
-  toggleTheme: () => {},
-};
+import theme from "@/theme/theme";
 
-const ThemeContext = createContext<ThemeContextType>(defaultTheme);
-
-const ThemeProvider: FC<{ children: ReactNode }> = ({ children }) => {
-  const [isDark, setIsDark] = useState(true);
-  
-  // Effect to detect system theme preference
-  useEffect(() => {
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    setIsDark(mediaQuery.matches);
-    
-    const handler = (e: MediaQueryListEvent) => setIsDark(e.matches);
-    mediaQuery.addEventListener('change', handler);
-    return () => mediaQuery.removeEventListener('change', handler);
-  }, []);
-
-  const colors = isDark
-    ? {
-        background: "#1a0e13",
-        cardBackground: "#2a1a23",
-        cardBackgroundAlt: "#3a2a33",
-        tabActive: "#3a2a33",
-        border: "#3a2a33",
-        text: {
-          primary: "#fff",
-          secondary: "#888",
-        },
-        progressBackground: "#4a3a43",
-      }
-    : {
-        background: "#f5f5f7",
-        cardBackground: "#ffffff",
-        cardBackgroundAlt: "#f0f0f2",
-        tabActive: "#e6e6e9",
-        border: "#e0e0e3",
-        text: {
-          primary: "#111",
-          secondary: "#666",
-        },
-        progressBackground: "#e6e6e9",
-      };
-
-  const toggleTheme = () => setIsDark(!isDark);
-
-  return (
-    <ThemeContext.Provider value={{ isDark, colors, toggleTheme }}>
-      {children}
-    </ThemeContext.Provider>
-  );
-};
-
-const useTheme = () => useContext(ThemeContext);
-
-// Define TypeScript interfaces for better type safety
+// Type Definitions
 interface VitalsDataPoint {
   date: string;
   heartRate: number;
@@ -113,79 +48,208 @@ interface NutritionDataPoint {
   sugaryBeverages: number;
 }
 
-interface DataTableItem {
-  label: string;
-  value: number | string;
-}
+// Chart Components
+const HeartRateChart: FC<{ data: VitalsDataPoint[], color?: string }> = ({ data, color }) => {
+  return (
+    <LineChart
+      data={{
+        labels: data.map(item => item.date.slice(-2)),
+        datasets: [
+          {
+            data: data.map(item => item.heartRate),
+            color: () => 'black',
+            strokeWidth: 2
+          }
+        ]
+      }}
+      width={Dimensions.get('window').width - 64}
+      height={220}
+      chartConfig={{
+        backgroundColor: 'white',
+        backgroundGradientFrom: 'white',
+        backgroundGradientTo: 'white',
+        decimalPlaces: 0,
+        color: () => theme.colors.text,
+        labelColor: () => theme.colors.text,
+        style: {
+          borderRadius: 16
+        },
+        propsForDots: {
+          r: '6',
+          strokeWidth: '2',
+          stroke: 'black',
+          fill: 'black'
+        }
+      }}
+      bezier = {false}
+      style={{
+        marginVertical: 8,
+        borderRadius: 16
+      }}
+    />
+  );
+};
 
-interface CardProps {
-  children: ReactNode;
-  style?: React.CSSProperties;
-}
+const BloodPressureChart: FC<{ data: VitalsDataPoint[], color?: string }> = ({ data, color }) => {
+  return (
+    <LineChart
+      data={{
+        labels: data.map(item => item.date.slice(-2)),
+        datasets: [
+          {
+            data: data.map(item => item.systolic),
+            color: () => 'black',
+            strokeWidth: 2
+          },
+          {
+            data: data.map(item => item.diastolic),
+            color: (opacity = 1) => '#FF6384',
+            strokeWidth: 2
+          }
+        ],
+        legend: ['Systolic', 'Diastolic']
+      }}
+      width={Dimensions.get('window').width - 64}
+      height={220}
+      chartConfig={{
+        backgroundColor: 'white',
+        backgroundGradientFrom: 'white',
+        backgroundGradientTo: 'white',
+        decimalPlaces: 0,
+        color: () => theme.colors.text,
+        labelColor: () => theme.colors.text,
+        style: {
+          borderRadius: 16
+        },
+        propsForDots: {
+          r: '6',
+          strokeWidth: '2',
+          stroke: 'black',
+          fill: 'black'
+        }
+      }}
+      bezier={false}
+      style={{
+        marginVertical: 8,
+        borderRadius: 16
+      }}
+    />
+  );
+};
 
-interface CardHeaderProps {
-  children: ReactNode;
-  style?: React.CSSProperties;
-}
+export const ActivityBarChart: FC<{ data: ActivityDataPoint[], color?: string }> = ({ data, color }) => {
+  // Group activities and sum their minutes
+  const activitySummary = data.reduce((acc, curr) => {
+    if (curr.minutes > 0) {
+      acc[curr.activity] = (acc[curr.activity] ?? 0) + curr.minutes;
+    }
+    return acc;
+  }, {} as { [key: string]: number });
 
-interface CardTitleProps {
-  children: ReactNode;
-  style?: React.CSSProperties;
-}
+  return (
+    <BarChart
+      data={{
+        labels: Object.keys(activitySummary),
+        datasets: [{
+          data: Object.values(activitySummary)
+        }]
+      }}
+      width={Dimensions.get('window').width - 64}
+      height={220}
+      yAxisLabel=""
+      yAxisSuffix=" min"
+      chartConfig={{
+        backgroundColor: 'white',
+        backgroundGradientFrom: 'white',
+        backgroundGradientTo: 'white',
+        decimalPlaces: 0,
+        color: () => theme.colors.text,
+        labelColor: () => theme.colors.text,
+        barPercentage: 1.0,
+        fillShadowGradient: theme.colors.primary,
+        fillShadowGradientOpacity: 0.8
+      }}
+      verticalLabelRotation={30}
+      fromZero={true} 
+      showValuesOnTopOfBars={true} 
+      style={{
+        marginVertical: 8,
+        borderRadius: 16
+      }}
+    />
+  );
+};
 
-interface CardDescriptionProps {
-  children: ReactNode;
-  style?: React.CSSProperties;
-}
-
-interface CardContentProps {
-  children: ReactNode;
-  style?: React.CSSProperties;
-}
-
-interface TabButtonProps {
-  children: ReactNode;
-  active: boolean;
-  onClick: () => void;
-}
-
-interface DataTableProps {
-  title: string;
-  data: DataTableItem[];
-  color: string;
-  unit?: string;
-}
-
-interface NutritionSummaryProps {
+// Helper Components
+const NutritionProgressBar: FC<{
   title: string;
   value: number;
   color: string;
-  bgColor: string;
-}
+  maxValue: number;
+}> = ({ title, value, color, maxValue }) => {
+  return (
+    <View style={styles.nutritionItem}>
+      <View style={styles.nutritionItemHeader}>
+        <Text style={[styles.nutritionItemTitle, { color }]}>{title}</Text>
+        <Text style={styles.nutritionItemValue}>{value}</Text>
+      </View>
+      <View style={styles.progressBar}>
+        <View 
+          style={[
+            styles.progressFill, 
+            { 
+              width: `${(value / maxValue) * 100}%`,
+              backgroundColor: color
+            }
+          ]} 
+        />
+      </View>
+    </View>
+  );
+};
 
-// Safe type definition for activity colors
-const getActivityColors = (isDark: boolean): Record<string, string> => ({
-  'Run': '#FF8042',
-  'Swim': '#0088FE',
-  'Cycle': '#00C49F',
-  'Pilates': '#FFBB28',
-  'Gym': '#8884d8',
-  'Rest': isDark ? '#CCCCCC' : '#999999'
-});
+const SummaryCard: FC<{
+  icon: React.ReactNode;
+  title: string;
+  value: number | string;
+  unit?: string;
+}> = ({ icon, title, value, unit }) => {
+  return (
+    <View style={styles.summaryCard}>
+      <View style={styles.summaryIcon}>{icon}</View>
+      <Text style={styles.summaryTitle}>{title}</Text>
+      <Text style={styles.summaryValue}>
+        {value} {unit && <Text style={styles.summaryUnit}>{unit}</Text>}
+      </Text>
+    </View>
+  );
+};
 
-// Main Dashboard Component with theme support
+const Card: FC<{ children: React.ReactNode }> = ({ children }) => {
+  return <View style={styles.card}>{children}</View>;
+};
+
+const CardHeader: FC<{ children: React.ReactNode }> = ({ children }) => {
+  return <View style={styles.cardHeader}>{children}</View>;
+};
+
+const CardContent: FC<{ children: React.ReactNode }> = ({ children }) => {
+  return <View style={styles.cardContent}>{children}</View>;
+};
+
+// Main Dashboard Component
 const DashboardScreen: FC<DemoTabScreenProps<"DashboardScreen">> = (_props) => {
-  const { isDark, colors, toggleTheme } = useTheme();
   const [timeframe, setTimeframe] = useState('week');
   const [activeTab, setActiveTab] = useState('heartRate');
+  const [activityViewMode, setActivityViewMode] = useState('chart');
   
   // Theme-aware color constants
   const themeAwareColors = {
-    heartRate: "#ef4444",
-    bloodPressure: "#3b82f6",
+    heartRate: theme.colors.primary,
+    bloodPressure: theme.colors.secondary,
     weight: "#a855f7",
-    activity: "#f97316",
-    vegetables: "#22c55e",
+    activity: theme.colors.primary,
+    vegetables: theme.colors.secondary,
     fruits: "#eab308",
     wholeGrains: "#8b5cf6",
     sugaryBeverages: "#ef4444"
@@ -222,10 +286,8 @@ const DashboardScreen: FC<DemoTabScreenProps<"DashboardScreen">> = (_props) => {
     { date: 'Feb 28', vegetables: 3, fruits: 3, wholeGrains: 2, sugaryBeverages: 1 },
   ];
 
-  // Get latest nutrition data for detailed view
   const latestNutrition = nutritionData[nutritionData.length - 1];
 
-  // Weekly summary calculations
   const avgHeartRate = Math.round(vitalsData.reduce((acc, curr) => acc + curr.heartRate, 0) / vitalsData.length);
   const avgBloodPressure = {
     systolic: Math.round(vitalsData.reduce((acc, curr) => acc + curr.systolic, 0) / vitalsData.length),
@@ -238,141 +300,40 @@ const DashboardScreen: FC<DemoTabScreenProps<"DashboardScreen">> = (_props) => {
   const totalSugaryBeverages = nutritionData.reduce((acc, curr) => acc + curr.sugaryBeverages, 0);
 
   return (
-    <div style={{ 
-      backgroundColor: colors.background, 
-      color: colors.text.primary,
-      width: "100%",
-      height: "100%",
-      position: "absolute",
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      overflow: "auto",
-      fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"
-    }}>      
-      <div style={{ padding: 16 }}>
-        <div style={{ 
-          display: "flex", 
-          alignItems: "center", 
-          marginBottom: 20,
-          justifyContent: "space-between",
-          flexWrap: "wrap",
-          gap: 12
-        }}>
-          <div>
-            <h1 style={{ 
-              fontSize: 32, 
-              fontWeight: 500, 
-              margin: 0, 
-              marginBottom: 6,
-              letterSpacing: "-0.5px",
-              color: colors.text.primary
-            }}>
-              Health Dashboard
-            </h1>
-            <p style={{ 
-              color: colors.text.secondary, 
-              margin: 0,
-              fontSize: 16
-            }}>
-              February 22 - 28, 2025
-            </p>
-          </div>
-          <div style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 12
-          }}>
-            {/* Theme Toggle Button */}
-            <button 
-              style={{
-                backgroundColor: colors.cardBackground,
-                color: colors.text.primary,
-                border: "none",
-                borderRadius: 20,
-                padding: "8px 12px",
-                cursor: "pointer",
-                fontSize: 14
-              }}
-              onClick={toggleTheme}
-            >
-              {isDark ? "🌙 Dark" : "☀️ Light"}
-            </button>
-            
-            <div style={{ 
-              display: "flex", 
-              alignItems: "center", 
-              backgroundColor: colors.cardBackground,
-              borderRadius: 24,
-              padding: "4px 4px",
-              minWidth: 180
-            }}>
-              <button style={{ 
-                width: 32,
-                height: 32,
-                borderRadius: 16,
-                backgroundColor: "transparent",
-                border: "none",
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center"
-              }}>
-                <ChevronLeft color={colors.text.primary} size={18} />
-              </button>
-              <div style={{ 
-                flex: 1,
-                textAlign: "center"
-              }}>
-                <select 
-                  style={{
-                    backgroundColor: "transparent",
-                    border: "none",
-                    color: colors.text.primary,
-                    fontSize: 16,
-                    fontWeight: 500,
-                    outline: "none",
-                    cursor: "pointer",
-                    WebkitAppearance: "none",
-                    MozAppearance: "none",
-                    appearance: "none",
-                    textAlign: "center",
-                    textAlignLast: "center",
-                    paddingRight: 16
-                  }}
-                  value={timeframe}
-                  onChange={(e) => setTimeframe(e.target.value)}
+    <SafeAreaView style={styles.container}>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        <View style={styles.header}>
+          <View>
+            <Text style={styles.title}>Health Dashboard</Text>
+            <Text style={styles.subtitle}>February 22 - 28, 2025</Text>
+          </View>
+          <View style={styles.headerControls}> 
+            <View style={styles.timeframeContainer}>
+              <TouchableOpacity style={styles.arrowButton}>
+                <ChevronLeft color={theme.colors.text} size={18} />
+              </TouchableOpacity>
+              
+              <View style={styles.pickerContainer}>
+                <Picker
+                  selectedValue={timeframe}
+                  onValueChange={(itemValue) => setTimeframe(itemValue)}
+                  style={{ color: theme.colors.text }}
                 >
-                  <option value="day">Daily</option>
-                  <option value="week">Weekly</option>
-                  <option value="month">Monthly</option>
-                </select>
-              </div>
-              <button style={{ 
-                width: 32,
-                height: 32,
-                borderRadius: 16,
-                backgroundColor: "transparent",
-                border: "none",
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center"
-              }}>
-                <ChevronRight color={colors.text.primary} size={18} />
-              </button>
-            </div>
-          </div>
-        </div>
+                  <Picker.Item label="Daily" value="day" />
+                  <Picker.Item label="Weekly" value="week" />
+                  <Picker.Item label="Monthly" value="month" />
+                </Picker>
+              </View>
+              
+              <TouchableOpacity style={styles.arrowButton}>
+                <ChevronRight color={theme.colors.text} size={18} />
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
 
         {/* Summary Cards */}
-        <div style={{ 
-          display: "grid", 
-          gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", 
-          gap: 12,
-          marginBottom: 20
-        }}>
+        <View style={styles.summaryCards}>
           <SummaryCard
             icon={<Heart color={themeAwareColors.heartRate} size={24} />}
             title="Heart Rate"
@@ -401,575 +362,447 @@ const DashboardScreen: FC<DemoTabScreenProps<"DashboardScreen">> = (_props) => {
           />
 
           <SummaryCard
-            icon={<Utensils color={themeAwareColors.vegetables} size={24} />}
-            title="Nutrition"
-            value={totalVeggies + totalFruits + totalWholeGrains}
+            icon={<Utensils color={themeAwareColors.vegetables} size={24} /> }
+              title="Nutrition"
+              value={totalVeggies + totalFruits + totalWholeGrains}
             unit="servings"
           />
-        </div>
+        </View>
 
         {/* Today's Nutrition */}
-        <div style={{ marginBottom: 20 }}>
+        <View style={styles.section}>
           <Card>
             <CardHeader>
-              <div style={{ 
-                display: "flex", 
-                justifyContent: "space-between",
-                alignItems: "center"
-              }}>
-                <div style={{ fontSize: 18, fontWeight: 500 }}>Feb 28</div>
-                <div style={{ fontSize: 16 }}>
-                  {latestNutrition.vegetables + latestNutrition.fruits + latestNutrition.wholeGrains} servings
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent style={{ padding: 16 }}>
-              <div style={{ marginBottom: 14 }}>
-                <div style={{ 
-                  display: "flex", 
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  marginBottom: 4
-                }}>
-                  <span style={{ color: themeAwareColors.vegetables, fontSize: 16 }}>Vegetables</span>
-                  <span style={{ fontSize: 16 }}>{latestNutrition.vegetables}</span>
-                </div>
-                <div style={{ 
-                  height: 8, 
-                  backgroundColor: colors.cardBackground,
-                  borderRadius: 4,
-                  overflow: "hidden"
-                }}>
-                  <div style={{ 
-                    height: "100%", 
-                    width: `${(latestNutrition.vegetables / 5) * 100}%`,
-                    backgroundColor: themeAwareColors.vegetables,
-                    borderRadius: 4
-                  }}></div>
-                </div>
-              </div>
-              
-              <div style={{ marginBottom: 14 }}>
-                <div style={{ 
-                  display: "flex", 
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  marginBottom: 4
-                }}>
-                  <span style={{ color: themeAwareColors.fruits, fontSize: 16 }}>Fruits</span>
-                  <span style={{ fontSize: 16 }}>{latestNutrition.fruits}</span>
-                </div>
-                <div style={{ 
-                  height: 8, 
-                  backgroundColor: colors.cardBackground,
-                  borderRadius: 4,
-                  overflow: "hidden"
-                }}>
-                  <div style={{ 
-                    height: "100%", 
-                    width: `${(latestNutrition.fruits / 5) * 100}%`,
-                    backgroundColor: themeAwareColors.fruits,
-                    borderRadius: 4
-                  }}></div>
-                </div>
-              </div>
-              
-              <div>
-                <div style={{ 
-                  display: "flex", 
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  marginBottom: 4
-                }}>
-                  <span style={{ color: themeAwareColors.wholeGrains, fontSize: 16 }}>Whole Grains</span>
-                  <span style={{ fontSize: 16 }}>{latestNutrition.wholeGrains}</span>
-                </div>
-                <div style={{ 
-                  height: 8, 
-                  backgroundColor: colors.cardBackground,
-                  borderRadius: 4,
-                  overflow: "hidden"
-                }}>
-                  <div style={{ 
-                    height: "100%", 
-                    width: `${(latestNutrition.wholeGrains / 5) * 100}%`,
-                    backgroundColor: themeAwareColors.wholeGrains,
-                    borderRadius: 4
-                  }}></div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Nutrition Summary */}
-        <div style={{ 
-          display: "grid", 
-          gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))",
-          gap: 12,
-          marginBottom: 20
-        }}>
-          <NutritionSummary
-            title="Vegetables"
-            value={totalVeggies}
-            color={themeAwareColors.vegetables}
-            bgColor={isDark ? "rgba(34, 197, 94, 0.15)" : "rgba(34, 197, 94, 0.08)"}
-          />
-          
-          <NutritionSummary
-            title="Fruits"
-            value={totalFruits}
-            color={themeAwareColors.fruits}
-            bgColor={isDark ? "rgba(234, 179, 8, 0.15)" : "rgba(234, 179, 8, 0.08)"}
-          />
-          
-          <NutritionSummary
-            title="Whole Grains"
-            value={totalWholeGrains}
-            color={themeAwareColors.wholeGrains}
-            bgColor={isDark ? "rgba(139, 92, 246, 0.15)" : "rgba(139, 92, 246, 0.08)"}
-          />
-          
-          <NutritionSummary
-            title="Sugary Beverages"
-            value={totalSugaryBeverages}
-            color={themeAwareColors.sugaryBeverages}
-            bgColor={isDark ? "rgba(239, 68, 68, 0.15)" : "rgba(239, 68, 68, 0.08)"}
-          />
-        </div>
-
-        {/* Vitals Tracking */}
-        <div style={{ marginBottom: 20 }}>
-          <Card>
-            <CardHeader>
-              <div style={{ display: "flex", alignItems: "center" }}>
-                <Heart size={18} color={themeAwareColors.heartRate} style={{ marginRight: 8 }} />
-                <CardTitle>Vitals Tracking</CardTitle>
-              </div>
-              <CardDescription>Heart rate, blood pressure, weight</CardDescription>
-            </CardHeader>
-            <CardContent style={{ padding: 0 }}>
-              <div style={{ 
-                display: "flex", 
-                borderBottom: `1px solid ${colors.border}`
-              }}>
-                <TabButton 
-                  active={activeTab === 'heartRate'} 
-                  onClick={() => setActiveTab('heartRate')}
-                >
-                  Heart Rate
-                </TabButton>
-                <TabButton 
-                  active={activeTab === 'bloodPressure'} 
-                  onClick={() => setActiveTab('bloodPressure')}
-                >
-                  Blood Pressure
-                </TabButton>
-                <TabButton 
-                  active={activeTab === 'weight'} 
-                  onClick={() => setActiveTab('weight')}
-                >
-                  Weight
-                </TabButton>
-              </div>
-              
-              <div style={{ padding: 16 }}>
-                {activeTab === 'heartRate' && (
-                  <DataTable
-                    title="Heart Rate (bpm)"
-                    data={vitalsData.map(item => ({
-                      label: item.date,
-                      value: item.heartRate
-                    }))}
-                    color={themeAwareColors.heartRate}
-                    unit="bpm"
-                  />
-                )}
-                
-                {activeTab === 'bloodPressure' && (
-                  <DataTable
-                    title="Blood Pressure"
-                    data={vitalsData.map(item => ({
-                      label: item.date,
-                      value: `${item.systolic}/${item.diastolic}`
-                    }))}
-                    color={themeAwareColors.bloodPressure}
-                  />
-                )}
-                
-                {activeTab === 'weight' && (
-                  <DataTable
-                    title="Weight (kg)"
-                    data={vitalsData.map(item => ({
-                      label: item.date,
-                      value: item.weight
-                    }))}
-                    color={themeAwareColors.weight}
-                    unit="kg"
-                  />
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Activity Breakdown */}
-        <div style={{ marginBottom: 20 }}>
-          <Card>
-            <CardHeader>
-              <div style={{ display: "flex", alignItems: "center" }}>
-                <Activity size={18} color={themeAwareColors.activity} style={{ marginRight: 8 }} />
-                <CardTitle>Activity Breakdown</CardTitle>
-              </div>
-              <CardDescription>Minutes by activity type</CardDescription>
+              <View style={styles.nutritionHeader}>
+                <Text style={styles.cardTitle}>Feb 28</Text>
+                <Text style={styles.normalText}>
+                  {latestNutrition.vegetables + latestNutrition.fruits + latestNutrition.wholeGrains + latestNutrition.sugaryBeverages} servings
+                </Text>
+              </View>
             </CardHeader>
             <CardContent>
-              <div style={{ marginBottom: 16 }}>
-                <h3 style={{ margin: "0 0 12px 0", fontSize: 16, fontWeight: 500 }}>Daily Activity</h3>
-                {activityData.map((day, index) => (
-                  <div key={index} style={{ 
-                    marginBottom: 16
-                  }}>
-                    <div style={{ 
-                      fontWeight: 500,
-                      fontSize: 14,
-                      marginBottom: 6,
-                      color: colors.text.secondary
-                    }}>
-                      {day.date}
-                    </div>
-                    <div style={{ 
-                      display: "flex", 
-                      alignItems: "center" 
-                    }}>
-                      <div style={{ 
-                        flex: 1, 
-                        height: 24, 
-                        backgroundColor: colors.cardBackground, 
-                        borderRadius: 12,
-                        position: "relative",
-                        overflow: "hidden"
-                      }}>
-                        {day.minutes > 0 && (
-                          <div style={{ 
-                            width: `${(day.minutes / 120) * 100}%`,
-                            maxWidth: "100%", 
-                            height: "100%", 
-                            backgroundColor: getActivityColors(isDark)[day.activity] || "#999",
-                            borderRadius: 12,
-                            display: "flex",
-                            alignItems: "center",
-                            paddingLeft: 10
-                          }}>
-                            <span style={{ 
-                              fontSize: 12, 
-                              fontWeight: 500,
-                              color: isDark ? "#fff" : "#000",
-                              whiteSpace: "nowrap",
-                              overflow: "hidden",
-                              textOverflow: "ellipsis",
-                              maxWidth: "100%"
-                            }}>
-                              {day.activity} - {day.minutes} minutes
-                            </span>
-                          </div>
-                        )}
-                        {day.minutes === 0 && (
-                          <div style={{ 
-                            position: "absolute",
-                            left: 10,
-                            top: 0,
-                            height: "100%",
-                            display: "flex",
-                            alignItems: "center"
-                          }}>
-                            <span style={{ fontSize: 12 }}>Rest Day</span>
-                          </div>
-                        )}
-                      </div>
-                      <div style={{ 
-                        minWidth: 50, 
-                        textAlign: "right", 
-                        marginLeft: 8,
-                        fontSize: 14,
-                        fontWeight: 500
-                      }}>
-                        {day.minutes} min
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <NutritionProgressBar 
+                title="Vegetables"
+                value={latestNutrition.vegetables}
+                color={themeAwareColors.vegetables}
+                maxValue={5}
+              />
               
-              <div>
-                <h3 style={{ margin: "0 0 12px 0", fontSize: 16, fontWeight: 500 }}>Activity Types</h3>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                  {Object.entries(getActivityColors(isDark)).map(([activity, color]) => (
-                    <div key={activity} style={{ 
-                      display: "flex", 
-                      alignItems: "center",
-                      padding: "4px 8px",
-                      backgroundColor: colors.cardBackground,
-                      borderRadius: 12
-                    }}>
-                      <div style={{ 
-                        width: 10, 
-                        height: 10, 
-                        backgroundColor: color,
-                        borderRadius: 5,
-                        marginRight: 6
-                      }}></div>
-                      <span style={{ fontSize: 13 }}>{activity}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              <NutritionProgressBar 
+                title="Fruits"
+                value={latestNutrition.fruits}
+                color={themeAwareColors.fruits}
+                maxValue={5}
+              />
+              
+              <NutritionProgressBar 
+                title="Whole Grains"
+                value={latestNutrition.wholeGrains}
+                color={themeAwareColors.wholeGrains}
+                maxValue={5}
+              />
+
+              <NutritionProgressBar 
+                title="Sugary Beverages"
+                value={latestNutrition.sugaryBeverages}
+                color={themeAwareColors.sugaryBeverages}
+                maxValue={5}
+              />
+
+
             </CardContent>
           </Card>
-        </div>
-      </div>
-    </div>
+        </View>
+
+        {/* Heart Rate Chart Section */}
+        <View style={styles.section}>
+          <Card>
+            <CardHeader>
+              <View style={styles.cardHeaderWithIcon}>
+                <Heart size={18} color={themeAwareColors.heartRate} style={{ marginRight: 8 }} />
+                <Text style={styles.cardTitle}>Heart Rate</Text>
+              </View>
+              <Text style={styles.cardDescription}>Weekly Trends</Text>
+            </CardHeader>
+            <CardContent>
+              <Text style={styles.chartTitle}>Heart Rate (bpm)</Text>
+              
+              <HeartRateChart 
+                data={vitalsData} 
+                color={themeAwareColors.heartRate} 
+              />
+              
+              {/* Simple data display */}
+              <View style={styles.dataRows}>
+                {vitalsData.map((item, index) => (
+                  <View key={index} style={styles.dataRow}>
+                    <Text style={styles.dataDate}>{item.date}</Text>
+                    <Text style={styles.dataValue}>{item.heartRate} bpm</Text>
+                  </View>
+                ))}
+              </View>
+            </CardContent>
+          </Card>
+        </View>
+
+        {/* Blood Pressure Chart Section */}
+        <View style={styles.section}>
+          <Card>
+            <CardHeader>
+              <View style={styles.cardHeaderWithIcon}>
+                <TrendingUp size={18} color={themeAwareColors.bloodPressure} style={{ marginRight: 8 }} />
+                <Text style={styles.cardTitle}>Blood Pressure</Text>
+              </View>
+              <Text style={styles.cardDescription}>Systolic & Diastolic</Text>
+            </CardHeader>
+            <CardContent>
+              <Text style={styles.chartTitle}>Blood Pressure</Text>
+              
+              <BloodPressureChart 
+                data={vitalsData} 
+                color={themeAwareColors.bloodPressure} 
+              />
+              
+              {/* Simple data display */}
+              <View style={styles.dataRows}>
+                {vitalsData.map((item, index) => (
+                  <View key={index} style={styles.dataRow}>
+                    <Text style={styles.dataDate}>{item.date}</Text>
+                    <Text style={styles.dataValue}>{item.systolic}/{item.diastolic}</Text>
+                  </View>
+                ))}
+              </View>
+            </CardContent>
+          </Card>
+        </View>
+
+        {/* Activity Breakdown Section */}
+        <View style={styles.section}>
+          <Card>
+            <CardHeader>
+              <View style={styles.cardHeaderWithIcon}>
+                <Activity size={18} color={themeAwareColors.activity} style={{ marginRight: 8 }} />
+                <Text style={styles.cardTitle}>Activity Breakdown</Text>
+              </View>
+              <Text style={styles.cardDescription}>Minutes by activity type</Text>
+            </CardHeader>
+            <CardContent>
+              <View style={styles.tabButtons}>
+                <TouchableOpacity 
+                  style={[
+                    styles.tabButton, 
+                    activityViewMode === 'chart' && styles.activeTab
+                  ]}
+                  onPress={() => setActivityViewMode('chart')}
+                >
+                  <Text style={styles.tabButtonText}>Chart</Text>
+                </TouchableOpacity>
+                <TouchableOpacity 
+                  style={[
+                    styles.tabButton, 
+                    activityViewMode === 'list' && styles.activeTab
+                  ]}
+                  onPress={() => setActivityViewMode('list')}
+                >
+                  <Text style={styles.tabButtonText}>List</Text>
+                </TouchableOpacity>
+              </View>
+              
+              {activityViewMode === 'chart' ? (
+                <View style={styles.chartSection}>
+                  <Text style={styles.chartTitle}>Activity Distribution</Text>
+                  
+                  <ActivityBarChart 
+                    data={activityData} 
+                    color={themeAwareColors.activity} 
+                  />
+                </View>
+              ) : (
+                <View style={styles.listSection}>
+                  <Text style={styles.chartTitle}>Daily Activity</Text>
+                  {activityData.map((day, index) => (
+                    <View key={index} style={styles.activityDay}>
+                      <Text style={styles.activityDate}>{day.date}</Text>
+                      <View style={styles.activityBar}>
+                        <View style={styles.activityBarBg}>
+                          {day.minutes > 0 && (
+                            <View style={[
+                              styles.activityBarFill, 
+                              { 
+                                width: `${(day.minutes / 120) * 100}%`,
+                                backgroundColor: day.activity === 'Run' 
+                                  ? themeAwareColors.activity 
+                                  : '#8884d8'
+                              }
+                            ]}>
+                              <Text style={styles.activityBarLabel} numberOfLines={1}>
+                                {day.activity} - {day.minutes} minutes
+                              </Text>
+                            </View>
+                          )}
+                          {day.minutes === 0 && (
+                            <Text style={styles.restDayLabel}>Rest Day</Text>
+                          )}
+                        </View>
+                        <Text style={styles.activityMinutes}>{day.minutes} min</Text>
+                      </View>
+                    </View>
+                  ))}
+                </View>
+              )}
+            </CardContent>
+          </Card>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
-// Component helper functions
-const SummaryCard: FC<{
-  icon: ReactNode;
-  title: string;
-  value: number | string;
-  unit?: string;
-}> = ({ icon, title, value, unit }) => {
-  const { colors } = useTheme();
-  
-  return (
-    <div style={{ 
-      backgroundColor: colors.cardBackground, 
-      borderRadius: 12, 
-      padding: 16,
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      justifyContent: "center",
-      textAlign: "center"
-    }}>
-      <div style={{ marginBottom: 8 }}>
-        {icon}
-      </div>
-      <p style={{ 
-        color: colors.text.secondary, 
-        fontSize: 14, 
-        margin: 0, 
-        marginBottom: 4 
-      }}>
-        {title}
-      </p>
-      <h3 style={{ 
-        fontSize: 24, 
-        fontWeight: 500, 
-        margin: 0, 
-        lineHeight: 1.2,
-        color: colors.text.primary
-      }}>
-        {value} {unit && <span style={{ fontSize: 14, fontWeight: "normal" }}>{unit}</span>}
-      </h3>
-    </div>
-  );
-};
-
-const Card: FC<CardProps> = ({ children, style = {} }) => {
-  const { colors } = useTheme();
-  
-  return (
-    <div style={{ 
-      backgroundColor: colors.cardBackground, 
-      borderRadius: 12, 
-      overflow: "hidden",
-      ...style
-    }}>
-      {children}
-    </div>
-  );
-};
-
-const CardHeader: FC<CardHeaderProps> = ({ children, style = {} }) => {
-  const { colors } = useTheme();
-  
-  return (
-    <div style={{ 
-      padding: 16,
-      borderBottom: `1px solid ${colors.border}`,
-      ...style
-    }}>
-      {children}
-    </div>
-  );
-};
-
-const CardTitle: FC<CardTitleProps> = ({ children, style = {} }) => {
-  const { colors } = useTheme();
-  
-  return (
-    <h2 style={{ 
-      fontSize: 18, 
-      fontWeight: 500,
-      margin: 0,
-      color: colors.text.primary,
-      ...style
-    }}>
-      {children}
-    </h2>
-  );
-};
-
-const CardDescription: FC<CardDescriptionProps> = ({ children, style = {} }) => {
-  const { colors } = useTheme();
-  
-  return (
-    <p style={{ 
-      fontSize: 14, 
-      color: colors.text.secondary,
-      margin: 0,
-      marginTop: 4,
-      ...style
-    }}>
-      {children}
-    </p>
-  );
-};
-
-const CardContent: FC<CardContentProps> = ({ children, style = {} }) => (
-  <div style={{ 
+// Styles
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: theme.colors.background,
+  },
+  scrollContent: {
+    padding: theme.spacing.md,
+  },
+  header: {
+    marginBottom: theme.spacing.lg,
+  },
+  title: {
+    fontSize: 32,
+    fontWeight: "500",
+    color: theme.colors.text,
+    marginBottom: 6,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: theme.colors.text,
+    opacity: 0.7,
+  },
+  headerControls: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: theme.spacing.md,
+    flexWrap: "wrap",
+    gap: 12,
+  },
+  timeframeContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: theme.colors.white,
+    borderRadius: 24,
+    paddingHorizontal: 4,
+    paddingVertical: 4,
+    minWidth: 180,
+  },
+  pickerContainer: {
+    flex: 1,
+  },
+  arrowButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  summaryCards: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 12,
+    marginBottom: 20,
+  },
+  summaryCard: {
+    backgroundColor: theme.colors.white,
+    borderRadius: 12,
     padding: 16,
-    ...style
-  }}>
-    {children}
-  </div>
-);
+    alignItems: "center",
+    justifyContent: "center",
+    minWidth: 140,
+    flex: 1,
+  },
+  summaryIcon: {
+    marginBottom: 8,
+  },
+  summaryTitle: {
+    fontSize: 14,
+    color: theme.colors.text,
+    opacity: 0.7,
+    marginBottom: 4,
+  },
+  summaryValue: {
+    fontSize: 24,
+    fontWeight: "500",
+    color: theme.colors.text,
+  },
+  summaryUnit: {
+    fontSize: 14,
+    fontWeight: "normal",
+  },
+  section: {
+    marginBottom: 20,
+  },
+  card: {
+    backgroundColor: theme.colors.white,
+    borderRadius: 12,
+    overflow: "hidden",
+  },
+  cardHeader: {
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0',
+  },
+  cardHeaderWithIcon: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  cardTitle: {
+    fontSize: 18,
+    fontWeight: "500",
+    color: theme.colors.text,
+  },
+  cardDescription: {
+    fontSize: 14,
+    color: theme.colors.text,
+    opacity: 0.7,
+    marginTop: 4,
+  },
+  cardContent: {
+    padding: 16,
+  },
+  nutritionHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  normalText: {
+    fontSize: 16,
+    color: theme.colors.text,
+  },
+  nutritionItem: {
+    marginBottom: 14,
+  },
+  nutritionItemHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 4,
+  },
+  nutritionItemTitle: {
+    fontSize: 16,
+  },
+  nutritionItemValue: {
+    fontSize: 16,
+    color: theme.colors.text,
+  },
+  progressBar: {
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#f5f5f5',
+    overflow: "hidden",
+  },
+  progressFill: {
+    height: "100%",
+    borderRadius: 4,
+  },
+  chartTitle: {
+    fontSize: 16,
+    fontWeight: "500",
+    color: theme.colors.text,
+    marginBottom: 12,
+  },
+  dataRows: {
+    marginTop: 16,
+  },
+  dataRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0',
+  },
+  dataDate: {
+    color: theme.colors.text,
+    opacity: 0.7,
+  },
+  dataValue: {
+    fontWeight: '500',
+    color: theme.colors.text,
+  },
+  tabButtons: {
+    flexDirection: 'row',
+    marginBottom: 16,
+  },
+  tabButton: {
+    flex: 1,
+    padding: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 8,
+  },
+  activeTab: {
+    backgroundColor: '#f0f0f0',
+  },
+  tabButtonText: {
+    color: theme.colors.text,
+  },
+  chartSection: {
+    marginTop: 10,
+  },
+  listSection: {
+    marginTop: 10,
+  },
+  activityDay: {
+    marginBottom: 16,
+  },
+  activityDate: {
+    fontWeight: "500",
+    fontSize: 14,
+    color: theme.colors.text,
+    opacity: 0.7,
+    marginBottom: 6,
+  },
+  activityBar: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  activityBarBg: {
+    flex: 1,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: '#f5f5f5',
+    position: "relative",
+    overflow: "hidden",
+  },
+  activityBarFill: {
+    height: "100%",
+    borderRadius: 12,
+    paddingLeft: 10,
+    justifyContent: "center",
+  },
+  activityBarLabel: {
+    fontSize: 12,
+    fontWeight: "500",
+    color: "#ffffff",
+  },
+  restDayLabel: {
+    fontSize: 12,
+    position: "absolute",
+    left: 10,
+    top: 6,
+    color: theme.colors.text,
+    opacity: 0.7,
+  },
+  activityMinutes: {
+    minWidth: 50,
+    textAlign: "right",
+    marginLeft: 8,
+    fontSize: 14,
+    fontWeight: "500",
+    color: theme.colors.text,
+  },
+});
 
-const TabButton: FC<TabButtonProps> = ({ children, active, onClick }) => {
-  const { colors } = useTheme();
-  
-  return (
-    <button
-      onClick={onClick}
-      style={{
-        padding: "10px 12px",
-        backgroundColor: active ? colors.tabActive : "transparent",
-        border: "none",
-        color: active ? colors.text.primary : colors.text.secondary,
-        fontWeight: active ? "500" : "normal",
-        cursor: "pointer",
-        fontSize: 14,
-        flex: 1,
-        textAlign: "center"
-      }}
-    >
-      {children}
-    </button>
-  );
-};
-
-const DataTable: FC<DataTableProps> = ({ title, data, color, unit = "" }) => {
-  const { colors, isDark } = useTheme();
-  
-  // Safely calculate the maximum value for the bar widths
-  const numericData = data.filter((item): item is { label: string; value: number } => 
-    typeof item.value === 'number'
-  );
-  
-  const maxValue = numericData.length > 0 
-    ? Math.max(...numericData.map(item => item.value))
-    : 100;
-
-  return (
-    <div>
-      <h3 style={{ margin: "0 0 12px 0", fontSize: 16, fontWeight: 500, color: colors.text.primary }}>{title}</h3>
-      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-        {data.map((item, idx) => (
-          <div 
-            key={idx}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              padding: "8px",
-              backgroundColor: idx % 2 === 0 ? colors.cardBackgroundAlt : colors.cardBackground,
-              borderRadius: 8
-            }}
-          >
-            <div style={{ width: 80, fontSize: 14, color: colors.text.primary }}>{item.label}</div>
-            <div 
-              style={{ 
-                flex: 1, 
-                height: 6, 
-                backgroundColor: colors.progressBackground,
-                borderRadius: 3,
-                marginRight: 12
-              }}
-            >
-              <div 
-                style={{ 
-                  height: "100%", 
-                  width: typeof item.value === 'number' 
-                    ? `${(item.value / maxValue) * 100}%` 
-                    : "50%",
-                  backgroundColor: color,
-                  borderRadius: 3
-                }}
-              ></div>
-            </div>
-            <div style={{ 
-              fontWeight: 500,
-              fontSize: 16,
-              minWidth: 55,
-              textAlign: "right",
-              color: colors.text.primary
-            }}>
-              {item.value} {unit && <span style={{ fontSize: 12 }}>{unit}</span>}
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-const NutritionSummary: FC<NutritionSummaryProps> = ({ title, value, color, bgColor }) => {
-  const { colors } = useTheme();
-  
-  return (
-    <div style={{ 
-      padding: 16, 
-      borderRadius: 12, 
-      backgroundColor: bgColor 
-    }}>
-      <h4 style={{ 
-        fontSize: 16, 
-        fontWeight: 500, 
-        margin: 0,
-        marginBottom: 8, 
-        color: color 
-      }}>
-        {title}
-      </h4>
-      <div style={{ 
-        fontSize: 24, 
-        fontWeight: 500, 
-        color: color,
-        lineHeight: 1.2 
-      }}>
-        {value}
-      </div>
-    </div>
-  );
-};
-
-// Export ThemeProvider wrapped Dashboard Component
-const ThemedDashboardScreen: FC<DemoTabScreenProps<"DashboardScreen">> = (props) => {
-  return (
-    <ThemeProvider>
-      <DashboardScreen {...props} />
-    </ThemeProvider>
-  );
-};
-
-export default ThemedDashboardScreen;
+export default DashboardScreen;
