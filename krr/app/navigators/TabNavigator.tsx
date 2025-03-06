@@ -8,6 +8,7 @@ import { DemoShowroomScreen} from "@/screens/DemoShowroomScreen/DemoShowroomScre
 import { ProfileScreen } from "@/screens/ProfileScreen"
 import  DashboardScreen  from "@/screens/DashboardScreen"
 import { LogsScreen } from "@/screens/LogsScreen"
+import ChatScreen from "@/screens/ChatScreen"
 import type { ThemedStyle } from "@/theme"
 import { AppStackParamList, AppStackScreenProps, TabParamList } from "../navigators/types"
 import { useAppTheme } from "@/utils/useAppTheme"
@@ -77,6 +78,17 @@ export function TabNavigator() {
       <Tab.Screen
         name="Profile"
         component={ProfileScreen}
+        options={{
+          tabBarLabel: translate("demoNavigator:profileTab"),
+          tabBarIcon: ({ focused }) => (
+            <Icon icon="community" color={focused ? colors.tint : colors.tintInactive} size={30} />
+          ),
+        }}
+      />
+
+      <Tab.Screen
+        name="Chat"
+        component={ChatScreen}
         options={{
           tabBarLabel: translate("demoNavigator:profileTab"),
           tabBarIcon: ({ focused }) => (

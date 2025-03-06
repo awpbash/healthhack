@@ -18,6 +18,7 @@ export type TabParamList = {
   Logs: NavigatorScreenParams<LogsTabParamList>
   DashboardScreen: undefined
   DemoDebug: undefined
+  Chat: undefined
 }
 
 // For backward compatibility
@@ -62,6 +63,11 @@ export type DietLoggerProps = {
   };
   route: RouteProp<LogsTabParamList, 'Diet'>;
 }
+
+export type ChatProps<T extends keyof TabParamList> = CompositeScreenProps<
+  BottomTabScreenProps<TabParamList, T>,
+  AppStackScreenProps<keyof AppStackParamList>
+>
 
 // A simpler LogsScreenProps type that avoids the complex CompositeScreenProps
 export type LogsScreenProps = TabScreenProps<'Logs'>;
