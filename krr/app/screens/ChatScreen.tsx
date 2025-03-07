@@ -4,7 +4,7 @@ import { View, Text, Animated, StyleSheet } from "react-native"
 import { ChatProps } from "@/navigators/types"
 
 // Azure OpenAI configuration
-const AZURE_OPENAI_API_KEY = "FvC65KLeZ0QT9ZvEGDEagkBZN4WtWYE1SpdTJH4J6YooUkWq3gSLJQQJ99BBACHYHv6XJ3w3AAAAACOGCZgz" // WARNING: Exposing API keys in client code is insecure.
+const AZURE_OPENAI_API_KEY = "" // WARNING: Exposing API keys in client code is insecure.
 const AZURE_OPENAI_ENDPOINT = "https://e0957-m7dhe0bf-eastus2.cognitiveservices.azure.com"
 const DEPLOYMENT_NAME = "gpt-4"
 const API_VERSION = "2024-08-01-preview"
