@@ -88,16 +88,16 @@ export const DietLoggerScreen: FC<DietLoggerProps> = function DietLoggerScreen(_
 
 const $textField: ThemedStyle<ViewStyle> = () => ({
   marginBottom: 10,
-    backgroundColor: "#e9e7e3",
-    borderRadius: 10,
+    // backgroundColor: "#e9e7e3",
+    // borderRadius: 10,
     padding: 12,
-    borderWidth: 1,
-    borderColor: "#ddd",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    // borderWidth: 1,
+    // borderColor: "#ddd",
+    // shadowColor: "#000",
+    // shadowOffset: { width: 0, height: 2 },
+    // shadowOpacity: 0.1,
+    // shadowRadius: 4,
+    // elevation: 3,
 })
 
 // Export the old name for backward compatibility

@@ -5,9 +5,10 @@ import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { Icon } from "../components"
 import { translate } from "@/i18n"
 import { ProfileScreen } from "@/screens/ProfileScreen"
-import  DashboardScreen  from "@/screens/DashboardScreen"
+import DashboardScreen from "@/screens/DashboardScreen"
 import { LogsScreen } from "@/screens/LogsScreen"
 import { ChatScreen } from "@/screens/ChatScreen"
+import SectionScreen from "@/screens/SectionsScreen"
 import type { ThemedStyle } from "@/theme"
 import { AppStackParamList, AppStackScreenProps, TabParamList } from "../navigators/types"
 import { useAppTheme } from "@/utils/useAppTheme"
@@ -49,6 +50,7 @@ export function TabNavigator() {
         tabBarItemStyle: themed($tabBarItem),
       }}
     >
+
       <Tab.Screen
         name="DashboardScreen"
         component={DashboardScreen}
@@ -86,6 +88,17 @@ export function TabNavigator() {
       />
 
       <Tab.Screen
+        name="Section"
+        component={SectionScreen}
+        options={{
+          tabBarLabel: translate("demoNavigator:profileTab"),
+          tabBarIcon: ({ focused }) => (
+            <Icon icon="section" color={focused ? colors.tint : colors.tintInactive} size={30} />
+          ),
+        }}
+      />
+
+      <Tab.Screen
         name="Profile"
         component={ProfileScreen}
         options={{
@@ -96,7 +109,6 @@ export function TabNavigator() {
         }}
       />
 
-      
     </Tab.Navigator>
   )
 }

@@ -6,6 +6,10 @@ const palette = {
     background: "#F4F2F1",
     text: "#333333",
     white: "#FFFFFF",
+
+    status_good: "#2ECC71",
+    status_avg: "#F1C40F",
+    status_error: "#E74C3C",
 }
 
 const theme = createTheme({
@@ -15,6 +19,10 @@ const theme = createTheme({
         background: palette.background,
         text: palette.text,
         white: palette.white,
+
+        status_good: palette.status_good,
+        status_avg: palette.status_avg,
+        status_error: palette.status_error,
     },
     spacing: {
         xxxs: 2,
