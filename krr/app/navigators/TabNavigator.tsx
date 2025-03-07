@@ -91,7 +91,7 @@ export function TabNavigator() {
         name="Section"
         component={SectionScreen}
         options={{
-          tabBarLabel: translate("demoNavigator:profileTab"),
+          tabBarLabel: translate("demoNavigator:sectionTab"),
           tabBarIcon: ({ focused }) => (
             <Icon icon="section" color={focused ? colors.tint : colors.tintInactive} size={30} />
           ),
