@@ -80,7 +80,7 @@ export function TabNavigator() {
         options={{
           tabBarLabel: translate("demoNavigator:chatTab"),
           tabBarIcon: ({ focused }) => (
-            <Icon icon="community" color={focused ? colors.tint : colors.tintInactive} size={30} />
+            <Icon icon="chat" color={focused ? colors.tint : colors.tintInactive} size={30} />
           ),
         }}
       />

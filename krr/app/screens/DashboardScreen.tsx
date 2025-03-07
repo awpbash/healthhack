@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Platform } from "react-native";
 import { 
   View, 
   Text, 
@@ -612,6 +613,8 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     gap: 12,
     marginBottom: 20,
+    justifyContent: "flex-start", // Ensures proper wrapping on iOS
+    alignItems: "flex-start", // Helps with proper wrapping behavior
   },
   summaryCard: {
     backgroundColor: theme.colors.white,
@@ -621,6 +624,10 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     minWidth: 140,
     flex: 1,
+    maxWidth: "48%", // Helps prevent uneven wrapping
+    flexGrow: 1, // Helps distribute available space
+    marginRight: 12, // Mimics gap
+    marginBottom: 12, // Mimics gap
   },
   summaryIcon: {
     marginBottom: 8,
@@ -633,7 +640,8 @@ const styles = StyleSheet.create({
   },
   summaryValue: {
     fontSize: 24,
-    fontWeight: "500",
+    // fontWeight: "500",
+    fontWeight: Platform.OS === "ios" ? "600" : "500", // iOS tends to render thin text
     color: theme.colors.text,
   },
   summaryUnit: {

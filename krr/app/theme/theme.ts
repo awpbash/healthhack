@@ -3,7 +3,7 @@ import { createTheme } from "@shopify/restyle"
 const palette = {
     primary: "#49c5b1",
     secondary: "#34C759",
-    background: "#F5F5F5",
+    background: "#F4F2F1",
     text: "#333333",
     white: "#FFFFFF",
 }
