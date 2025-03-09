@@ -21,10 +21,10 @@ import { Api } from "@/services/api/api"
 export const DietLoggerScreen: FC<DietLoggerProps> = function DietLoggerScreen(_props) {
   const { themed } = useAppTheme()
 
-  const [vegetables, set_vegetables] = useState("")
+  const [fruits_and_veges, set_fruits_and_veges] = useState("")
   const [wholegrains, set_whole_grains] = useState("")
-  const [sugary_beverages, set_sugary_beverages] = useState("")
-  const [fruits, set_fruits] = useState("")
+  const [sugar, set_sugar] = useState("")
+  const [protein, set_protein] = useState("")
   const [log, set_log] = useState("")
   const openHealthHubLink = () => {
     Linking.openURL(
@@ -52,47 +52,47 @@ export const DietLoggerScreen: FC<DietLoggerProps> = function DietLoggerScreen(_
           </TouchableOpacity>
         </View>
         <TextField
-          value={vegetables}
-          onChangeText={set_vegetables}
+          value={fruits_and_veges}
+          onChangeText={set_fruits_and_veges}
           containerStyle={themed($textField)}
           autoCapitalize="none"
-          autoComplete="email"
+          autoComplete="off"
           autoCorrect={false}
-          keyboardType="email-address"
-          labelTx="dietLoggerScreen:vegeLabel"
-          placeholderTx="dietLoggerScreen:vegePlaceholder"
-        />
-        <TextField
-          value={fruits}
-          onChangeText={set_fruits}
-          containerStyle={themed($textField)}
-          autoComplete="email"
-          autoCorrect={false}
-          keyboardType="email-address"
-          labelTx="dietLoggerScreen:fruitLabel"
-          placeholderTx="dietLoggerScreen:fruitPlaceholder"
+          keyboardType="numeric"
+          labelTx="dietLoggerScreen:fruitsAndVegesLabel"
+          placeholderTx="dietLoggerScreen:fruitsAndVegesPlaceholder"
         />
         <TextField
           value={wholegrains}
           onChangeText={set_whole_grains}
           containerStyle={themed($textField)}
           autoCapitalize="none"
-          autoComplete="email"
+          autoComplete="off"
           autoCorrect={false}
-          keyboardType="email-address"
+          keyboardType="numeric"
           labelTx="dietLoggerScreen:wholegrainLabel"
           placeholderTx="dietLoggerScreen:wholegrainPlaceholder"
         />
         <TextField
-          value={sugary_beverages}
-          onChangeText={set_sugary_beverages}
+          value={protein}
+          onChangeText={set_protein}
+          containerStyle={themed($textField)}
+          autoComplete="off"
+          autoCorrect={false}
+          keyboardType="numeric"
+          labelTx="dietLoggerScreen:proteinLabel"
+          placeholderTx="dietLoggerScreen:proteinPlaceholder"
+        />
+        <TextField
+          value={sugar}
+          onChangeText={set_sugar}
           containerStyle={themed($textField)}
           autoCapitalize="none"
-          autoComplete="email"
+          autoComplete="off"
           autoCorrect={false}
-          keyboardType="email-address"
-          labelTx="dietLoggerScreen:sugaryBeveragesLabel"
-          placeholderTx="dietLoggerScreen:sugaryBeveragesPlaceholder"
+          keyboardType="numeric"
+          labelTx="dietLoggerScreen:sugarLabel"
+          placeholderTx="dietLoggerScreen:sugarPlaceholder"
         />
         <TextField
           value={log}
@@ -103,7 +103,8 @@ export const DietLoggerScreen: FC<DietLoggerProps> = function DietLoggerScreen(_
           placeholderTx="dietLoggerScreen:logPlaceholder"
           multiline
           containerStyle={themed($textField)}
-          autoCapitalize="none"
+          autoCapitalize="sentences"
+          keyboardType="default"
         />
         <Button preset="filled">{"Add"}</Button>
       </Screen>
