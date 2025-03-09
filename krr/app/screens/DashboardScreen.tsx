@@ -1,5 +1,4 @@
 import React, { useState } from "react"
-import { Platform } from "react-native"
 import {
   View,
   Text,
@@ -8,6 +7,8 @@ import {
   SafeAreaView,
   StyleSheet,
   Dimensions,
+  Platform, 
+  Modal
 } from "react-native"
 import { LineChart, BarChart } from "react-native-chart-kit"
 import type { FC } from "react"
@@ -68,6 +69,8 @@ type BloodPressureThresholdType = {
 // Define types for status and metrics
 type StatusType = "good" | "warning" | "danger"
 type MetricType = "heartRate" | "bloodPressure" | "weight" | "activity" | "nutrition"
+type NutritionMetricType = "fruitsVegetables" | "wholeGrains" | "proteins" | "sugars";
+
 
 type MetricThresholdsType = {
   heartRate: {
@@ -96,6 +99,34 @@ type MetricThresholdsType = {
     danger: ThresholdType
   }
 }
+
+type NutritionThresholdType = {
+  range: RangeType;
+  message: string;
+};
+
+type NutritionMetricThresholdsType = {
+  fruitsVegetables: {
+    good: NutritionThresholdType;
+    warning: NutritionThresholdType;
+    danger: NutritionThresholdType;
+  };
+  wholeGrains: {
+    good: NutritionThresholdType;
+    warning: NutritionThresholdType;
+    danger: NutritionThresholdType;
+  };
+  proteins: {
+    good: NutritionThresholdType;
+    warning: NutritionThresholdType;
+    danger: NutritionThresholdType;
+  };
+  sugars: {
+    good: NutritionThresholdType;
+    warning: NutritionThresholdType;
+    danger: NutritionThresholdType;
+  };
+};
 
 // Define health metric thresholds and feedback messages
 const healthMetricThresholds: MetricThresholdsType = {
@@ -222,6 +253,65 @@ const getStatusForMetric = (metric: MetricType, value: number | string): StatusT
   }
 }
 
+const nutritionMetricThresholds: NutritionMetricThresholdsType = {
+  fruitsVegetables: {
+    good: {
+      range: [5, 10],
+      message: "Excellent! You're meeting the recommended 5+ daily servings of fruits and vegetables."
+    },
+    warning: {
+      range: [3, 5],
+      message: "You're on the right track. Try to increase to 5+ servings of fruits and vegetables daily."
+    },
+    danger: {
+      range: [0, 3],
+      message: "Your fruit and vegetable intake is below recommendations. Aim for at least 5 servings daily."
+    }
+  },
+  wholeGrains: {
+    good: {
+      range: [3, 10],
+      message: "Great job including whole grains in your diet! Keep up the 3+ servings daily."
+    },
+    warning: {
+      range: [1, 3],
+      message: "Try to increase your whole grain intake to at least 3 servings daily."
+    },
+    danger: {
+      range: [0, 1],
+      message: "Your whole grain intake is low. Include more whole grains for better health benefits."
+    }
+  },
+  proteins: {
+    good: {
+      range: [50, 100],
+      message: "You're meeting your daily protein needs. Keep it up!"
+    },
+    warning: {
+      range: [30, 50],
+      message: "Your protein intake is moderate. Consider increasing to 50+ grams daily."
+    },
+    danger: {
+      range: [0, 30],
+      message: "Your protein intake is low. Aim for at least 50 grams daily for optimal health."
+    }
+  },
+  sugars: {
+    good: {
+      range: [0, 25],
+      message: "Excellent job keeping added sugars under the recommended limit!"
+    },
+    warning: {
+      range: [25, 36],
+      message: "Your sugar intake is approaching the upper limit. Try to reduce below 25g daily."
+    },
+    danger: {
+      range: [36, 200],
+      message: "Your sugar intake exceeds recommendations. Try to limit added sugars to under 25g daily."
+    }
+  }
+};
+
 // Get message for a specific metric and status
 const getMessageForMetric = (metric: MetricType, status: StatusType): string => {
   return healthMetricThresholds[metric][status].message
@@ -240,6 +330,35 @@ const getColorForStatus = (status: StatusType): string => {
       return theme.colors.text
   }
 }
+
+const getNutritionStatus = (metric: NutritionMetricType, value: number): StatusType => {
+  const thresholds = nutritionMetricThresholds[metric];
+  
+  if (metric === 'sugars') {
+    // For sugar, lower is better
+    if (value <= thresholds.good.range[1]) {
+      return "good";
+    } else if (value <= thresholds.warning.range[1]) {
+      return "warning";
+    } else {
+      return "danger";
+    }
+  } else {
+    // For other metrics, higher is better
+    if (value >= thresholds.good.range[0]) {
+      return "good";
+    } else if (value >= thresholds.warning.range[0]) {
+      return "warning";
+    } else {
+      return "danger";
+    }
+  }
+};
+
+const getNutritionMessage = (metric: NutritionMetricType, value: number): string => {
+  const status = getNutritionStatus(metric, value);
+  return nutritionMetricThresholds[metric][status].message;
+};
 
 // Chart Components
 const HeartRateChart: FC<{ data: VitalsDataPoint[]; color?: string }> = ({ data, color }) => {
@@ -409,27 +528,33 @@ const NutritionProgressBar: FC<{
   )
 }
 
+interface NutritionQuadrantProps {
+  title: string;
+  value: number;
+  unit: string;
+  metric: NutritionMetricType;
+}
+
 // Color-coded Summary Card Component
 interface SummaryCardProps {
-  icon: React.ReactNode
-  title: string
-  value: number | string
-  unit?: string
-  metric: MetricType
-  isNutritionCard?: boolean
+  icon: React.ReactNode;
+  title: string;
+  value?: number | string;
+  unit?: string;
+  metric: MetricType;
+  isNutritionCard?: boolean;
   nutritionData?: {
-    fruitsVegetables: number
-    wholeGrains: number
-    proteins: number
-    sugars: number
-  }
-  // Add the colors property to the type definition
+    fruitsVegetables: number;
+    wholeGrains: number;
+    proteins: number;
+    sugars: number;
+  };
   colors?: {
-    fruitsVegetables?: string
-    wholeGrains?: string
-    proteins?: string
-    sugars?: string
-  }
+    fruitsVegetables?: string;
+    wholeGrains?: string;
+    proteins?: string;
+    sugars?: string;
+  };
 }
 
 const SummaryCard: FC<SummaryCardProps> = ({
@@ -440,114 +565,98 @@ const SummaryCard: FC<SummaryCardProps> = ({
   metric,
   isNutritionCard = false,
   nutritionData,
-  colors, // Now properly typed
 }) => {
-  const [showTooltip, setShowTooltip] = useState(false)
+  // State to control the modal visibility
+  const [showModal, setShowModal] = useState(false);
+  // New state to track which nutrition metric to show info for
+  const [activeNutritionMetric, setActiveNutritionMetric] = useState<NutritionMetricType | null>(null);
 
   // Standard status colors
   const statusColors = {
     good: "#4ade80", // Green
     warning: "#facc15", // Yellow
     danger: "#ef4444", // Red
-  }
+  };
 
-  // Determine status based on the metric and value
-  const status: StatusType = getStatusForMetric(metric, value)
-  const message: string = getMessageForMetric(metric, status)
-  const statusColor: string = statusColors[status] || theme.colors.text
-
-  // Long press handler for showing tooltip
-  let pressTimer: NodeJS.Timeout | null = null
-
-  const handlePressIn = () => {
-    pressTimer = setTimeout(() => {
-      setShowTooltip(true)
-    }, 500)
-  }
-
-  const handlePressOut = () => {
-    if (pressTimer) {
-      clearTimeout(pressTimer)
-      pressTimer = null
-    }
-  }
-
-  // Regular tap to toggle tooltip
-  const handlePress = () => {
-    setShowTooltip(!showTooltip)
-  }
-
-  // Render normal summary card
+  // Render regular summary card (not nutrition card)
   if (!isNutritionCard) {
-    return (
-      <TouchableOpacity
-        style={[styles.summaryCard, styles.uniformCardSize]}
-        onPress={handlePress}
-        onLongPress={() => setShowTooltip(true)}
-        onPressIn={handlePressIn}
-        onPressOut={handlePressOut}
-        activeOpacity={0.8}
-        delayLongPress={500}
-      >
-        <View style={styles.summaryIcon}>{icon}</View>
-        <Text style={styles.summaryTitle}>{title}</Text>
-        <Text style={styles.summaryValue}>
-          <Text style={{ color: statusColor }}>{value}</Text>
-          {unit && <Text style={styles.summaryUnit}> {unit}</Text>}
-        </Text>
+    // Determine status based on the metric and value
+    // Add null check for value to fix type error
+    const status: StatusType = value !== undefined 
+      ? getStatusForMetric(metric, value as number | string) 
+      : "warning"; // Default to warning if value is undefined
+    const message: string = getMessageForMetric(metric, status);
+    const statusColor: string = statusColors[status] || theme.colors.text;
 
-        {/* Tooltip/Message that appears on press/long press */}
-        {showTooltip && (
-          <View style={styles.tooltipContainer}>
-            <View style={styles.tooltip}>
-              <Text style={styles.tooltipText}>{message}</Text>
-              <TouchableOpacity style={styles.closeButton} onPress={() => setShowTooltip(false)}>
-                <Text style={styles.closeButtonText}>×</Text>
+    return (
+      <>
+        <TouchableOpacity
+          style={[styles.summaryCard, styles.uniformCardSize]}
+          onPress={() => setShowModal(true)}
+          activeOpacity={0.8}
+        >
+          <View style={styles.summaryIcon}>{icon}</View>
+          <Text style={styles.summaryTitle}>{title}</Text>
+          <Text style={styles.summaryValue}>
+            <Text style={{ color: statusColor }}>{value}</Text>
+            {unit && <Text style={styles.summaryUnit}> {unit}</Text>}
+          </Text>
+        </TouchableOpacity>
+
+        {/* Modal for regular cards */}
+        <Modal
+          visible={showModal}
+          transparent={true}
+          animationType="fade"
+          onRequestClose={() => setShowModal(false)}
+        >
+          <TouchableOpacity
+            style={styles.modalOverlay}
+            activeOpacity={1}
+            onPress={() => setShowModal(false)}
+          >
+            <TouchableOpacity
+              activeOpacity={1}
+              style={styles.modalContent}
+              onPress={e => e.stopPropagation()}
+            >
+              <Text style={styles.modalTitle}>{title}</Text>
+              <Text style={styles.modalValue}>
+                <Text style={{ color: statusColor, fontSize: 24, fontWeight: "600" }}>{value}</Text>
+                {unit && <Text style={{ fontSize: 16 }}> {unit}</Text>}
+              </Text>
+              <Text style={styles.modalMessage}>{message}</Text>
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={() => setShowModal(false)}
+              >
+                <Text style={styles.modalButtonText}>Got it</Text>
               </TouchableOpacity>
-            </View>
-          </View>
-        )}
-      </TouchableOpacity>
-    )
+            </TouchableOpacity>
+          </TouchableOpacity>
+        </Modal>
+      </>
+    );
   }
 
-  const NutritionQuadrant: FC<{
-    title: string
-    value: number
-    unit: string
-    valueColor: string
-    message: string
-  }> = ({ title, value, unit, valueColor, message }) => {
-    const [showTooltip, setShowTooltip] = useState(false)
+  const NutritionQuadrant: FC<NutritionQuadrantProps> = ({ title, value, unit, metric }) => {
+    // Get status and color based on specific nutrition metric
+    const status = getNutritionStatus(metric, value);
+    const valueColor = statusColors[status];
 
-    // Determine background color based on title
-    // const getBgColor = (title: string) => {
-    //   switch (title) {
-    //     case "F&V":
-    //       return "#f0fdf4" // Light green
-    //     case "Grains":
-    //       return "#f5f3ff" // Light purple
-    //     case "Protein":
-    //       return "#f0f9ff" // Light blue
-    //     case "Sugar":
-    //       return "#fef2f2" // Light red
-    //     default:
-    //       return "#f5f5f5"
-    //   }
-    // }
-
-    const getBgColor = (valueColor) => {
-      if (valueColor === statusColors.good) return "#ecfdf5" // Light green
-      if (valueColor === statusColors.warning) return "#fef9c3" // Light yellow
-      if (valueColor === statusColors.danger) return "#fee2e2" // Light red
-      return "#f5f5f5" // Default
-    }
+    // Determine background color based on status
+    const getBgColor = (status: StatusType): string => {
+      if (status === 'good') return "#ecfdf5"; // Light green
+      if (status === 'warning') return "#fef9c3"; // Light yellow
+      if (status === 'danger') return "#fee2e2"; // Light red
+      return "#f5f5f5"; // Default
+    };
 
     return (
       <View style={styles.nutritionQuad}>
         <TouchableOpacity
-          style={[styles.quadContent, { backgroundColor: getBgColor(valueColor) }]}
-          onPress={() => setShowTooltip(!showTooltip)}
+          style={[styles.quadContent, { backgroundColor: getBgColor(status) }]}
+          onPress={() => setActiveNutritionMetric(metric)}
           activeOpacity={0.7}
         >
           <Text style={styles.quadTitle}>{title}</Text>
@@ -555,124 +664,104 @@ const SummaryCard: FC<SummaryCardProps> = ({
             <Text style={[styles.quadValue, { color: valueColor }]}>{value}</Text>
             <Text style={styles.quadUnit}>{unit}</Text>
           </View>
-
-          {showTooltip && (
-            <View style={styles.tooltipContainer}>
-              <View style={[styles.tooltip, { position: "absolute", top: -5 }]}>
-                <Text style={styles.tooltipText}>{message}</Text>
-                <TouchableOpacity style={styles.closeButton} onPress={() => setShowTooltip(false)}>
-                  <Text style={styles.closeButtonText}>×</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          )}
         </TouchableOpacity>
       </View>
-    )
-  }
+    );
+  };
 
   const latestData = nutritionData || {
     fruitsVegetables: 6,
     wholeGrains: 2,
     proteins: 66,
     sugars: 55,
-  }
-
-  // Use custom colors if provided in props
-  const fnvColor = getFVColor(latestData.fruitsVegetables)
-  const grainsColor = getGrainsColor(latestData.wholeGrains)
-  const proteinColor = getProteinColor(latestData.proteins)
-  const sugarColor = getSugarColor(latestData.sugars)
-
-  // Helper functions to determine color based on nutrition value ranges
-  function getFVColor(value: number): string {
-    return value >= 5 ? statusColors.good : value >= 3 ? statusColors.warning : statusColors.danger
-  }
-
-  function getGrainsColor(value: number): string {
-    return value >= 3 ? statusColors.good : value >= 2 ? statusColors.warning : statusColors.danger
-  }
-
-  function getProteinColor(value: number): string {
-    return value >= 50
-      ? statusColors.good
-      : value >= 30
-        ? statusColors.warning
-        : statusColors.danger
-  }
-
-  function getSugarColor(value: number): string {
-    return value <= 25
-      ? statusColors.good
-      : value <= 36
-        ? statusColors.warning
-        : statusColors.danger
-  }
-
-  // Set messages
-  const fnvMessage = "Aim for 5+ servings of fruits and veggies daily."
-  const grainsMessage = "Try for 3+ servings of whole grains daily."
-  const proteinMessage = "50+ grams of protein daily is recommended."
-  const sugarMessage = "Keep sugar intake below 25g for optimal health."
-
-  // Calculate total and set color
-  const totalServings = latestData.fruitsVegetables + latestData.wholeGrains
-  const totalColor =
-    totalServings >= 8
-      ? statusColors.good
-      : totalServings >= 6
-        ? statusColors.warning
-        : statusColors.danger
+  };
 
   return (
-    <TouchableOpacity
-      style={[styles.summaryCard, styles.uniformCardSize, styles.nutritionCard]}
-      activeOpacity={0.9}
-    >
-      <View style={styles.summaryIcon}>{icon}</View>
-      <Text style={styles.summaryTitle}>{title}</Text>
-      <Text style={styles.summaryValue}>
-        <Text style={{ color: totalColor }}>{totalServings}</Text>
-        <Text style={styles.summaryUnit}> {unit || "servings"}</Text>
-      </Text>
+    <>
+      <TouchableOpacity
+        style={[styles.summaryCard, styles.uniformCardSize, styles.nutritionCard]}
+        activeOpacity={0.9}
+      >
+        <View style={styles.summaryIcon}>{icon}</View>
+        <Text style={styles.summaryTitle}>{title}</Text>
+        
+        {/* Quad layout for nutrition card */}
+        <View style={styles.nutritionQuadContainer}>
+          <NutritionQuadrant
+            title="F&V"
+            value={latestData.fruitsVegetables}
+            unit="servings"
+            metric="fruitsVegetables"
+          />
 
-      {/* Quad layout for nutrition card */}
-      <View style={styles.nutritionQuadContainer}>
-        <NutritionQuadrant
-          title="F&V"
-          value={latestData.fruitsVegetables}
-          unit="servings"
-          valueColor={fnvColor}
-          message={fnvMessage}
-        />
+          <NutritionQuadrant
+            title="Grains"
+            value={latestData.wholeGrains}
+            unit="servings"
+            metric="wholeGrains"
+          />
 
-        <NutritionQuadrant
-          title="Grains"
-          value={latestData.wholeGrains}
-          unit="servings"
-          valueColor={grainsColor}
-          message={grainsMessage}
-        />
+          <NutritionQuadrant
+            title="Protein"
+            value={latestData.proteins}
+            unit="grams"
+            metric="proteins"
+          />
 
-        <NutritionQuadrant
-          title="Protein"
-          value={latestData.proteins}
-          unit="grams"
-          valueColor={proteinColor}
-          message={proteinMessage}
-        />
+          <NutritionQuadrant
+            title="Sugar"
+            value={latestData.sugars}
+            unit="grams"
+            metric="sugars"
+          />
+        </View>
+      </TouchableOpacity>
 
-        <NutritionQuadrant
-          title="Sugar"
-          value={latestData.sugars}
-          unit="grams"
-          valueColor={sugarColor}
-          message={sugarMessage}
-        />
-      </View>
-    </TouchableOpacity>
-  )
-}
+      {/* Modal dialog instead of tooltip - doesn't overlap */}
+      {activeNutritionMetric !== null && (
+        <Modal
+          visible={activeNutritionMetric !== null}
+          transparent={true}
+          animationType="fade"
+          onRequestClose={() => setActiveNutritionMetric(null)}
+        >
+          <TouchableOpacity
+            style={styles.modalOverlay}
+            activeOpacity={1}
+            onPress={() => setActiveNutritionMetric(null)}
+          >
+            <TouchableOpacity
+              activeOpacity={1}
+              style={styles.modalContent}
+              onPress={e => e.stopPropagation()}
+            >
+              <Text style={styles.modalTitle}>
+                {activeNutritionMetric === "fruitsVegetables" ? "Fruits & Vegetables" :
+                 activeNutritionMetric === "wholeGrains" ? "Whole Grains" :
+                 activeNutritionMetric === "proteins" ? "Protein" : "Sugar"}
+              </Text>
+              <Text style={styles.modalMessage}>
+                {activeNutritionMetric && getNutritionMessage(
+                  activeNutritionMetric,
+                  activeNutritionMetric === "fruitsVegetables" ? latestData.fruitsVegetables :
+                  activeNutritionMetric === "wholeGrains" ? latestData.wholeGrains :
+                  activeNutritionMetric === "proteins" ? latestData.proteins : latestData.sugars
+                )}
+              </Text>
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={() => setActiveNutritionMetric(null)}
+              >
+                <Text style={styles.modalButtonText}>Got it</Text>
+              </TouchableOpacity>
+            </TouchableOpacity>
+          </TouchableOpacity>
+        </Modal>
+      )}
+    </>
+  );
+};
+
 const Card: FC<{ children: React.ReactNode }> = ({ children }) => {
   return <View style={styles.card}>{children}</View>
 }
@@ -986,8 +1075,6 @@ const DashboardScreen: FC<DemoTabScreenProps<"DashboardScreen">> = (_props) => {
           <SummaryCard
             icon={<Utensils color="#4ade80" size={24} />}
             title="Nutrition"
-            value={totalServings}
-            unit="servings"
             metric="nutrition"
             isNutritionCard={true}
             nutritionData={{
@@ -995,12 +1082,6 @@ const DashboardScreen: FC<DemoTabScreenProps<"DashboardScreen">> = (_props) => {
               wholeGrains: nutritionData[nutritionData.length - 1].wholeGrains,
               proteins: nutritionData[nutritionData.length - 1].proteins,
               sugars: nutritionData[nutritionData.length - 1].sugars,
-            }}
-            colors={{
-              fruitsVegetables: "#4ade80", // green
-              wholeGrains: "#8b5cf6", // purple
-              proteins: "#06b6d4", // cyan
-              sugars: "#ef4444", // red
             }}
           />
         </View>
@@ -1547,6 +1628,58 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     lineHeight: 18,
   },
+  modalOverlay: {
+    position: "absolute",
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: "rgba(0, 0, 0, 0.4)",
+    zIndex: 9999,
+  },
+  modalValue: {
+    marginBottom: 12,
+    textAlign: "center",
+  },
+  modalContent: {
+    backgroundColor: "white",
+    borderRadius: 12,
+    padding: 16,
+    width: "80%",
+    maxWidth: 300,
+    alignSelf: "center",
+    marginTop: "40%",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 5,
+    elevation: 5,
+  },
+  modalTitle: {
+    fontSize: 16, 
+    fontWeight: "500",
+    marginBottom: 8,
+    color: theme.colors.text,
+  },
+  modalMessage: {
+    fontSize: 14,
+    lineHeight: 20,
+    color: theme.colors.text,
+    marginBottom: 16,
+  },
+  modalButton: {
+    backgroundColor: theme.colors.primary,
+    padding: 12,
+    borderRadius: 6,
+    alignItems: "center",
+  },
+  modalButtonText: {
+    color: "white",
+    fontWeight: "500",
+  }
 })
 
 export default DashboardScreen
