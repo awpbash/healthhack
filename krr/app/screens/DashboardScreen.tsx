@@ -622,9 +622,18 @@ const SummaryCard: FC<SummaryCardProps> = ({
             >
               <Text style={styles.modalTitle}>{title}</Text>
               <Text style={styles.modalValue}>
-                <Text style={{ color: statusColor, fontSize: 24, fontWeight: "600" }}>{value}</Text>
-                {unit && <Text style={{ fontSize: 16 }}> {unit}</Text>}
+              <Text style={{ 
+                color: statusColor, 
+                fontSize: 24, 
+                fontFamily: "spaceGroteskSemiBold"
+              }}>
+                {value}
               </Text>
+              {unit && <Text style={{ 
+                fontSize: 16, 
+                fontFamily: "spaceGroteskRegular" 
+              }}> {unit}</Text>}
+            </Text>
               <Text style={styles.modalMessage}>{message}</Text>
               <TouchableOpacity
                 style={styles.modalButton}
@@ -717,7 +726,6 @@ const SummaryCard: FC<SummaryCardProps> = ({
         </View>
       </TouchableOpacity>
 
-      {/* Modal dialog instead of tooltip - doesn't overlap */}
       {activeNutritionMetric !== null && (
         <Modal
           visible={activeNutritionMetric !== null}
@@ -748,18 +756,21 @@ const SummaryCard: FC<SummaryCardProps> = ({
                 activeNutritionMetric === "proteins" ? latestData.proteins : latestData.sugars
               )],
               fontSize: 24,
-              fontWeight: "600"
+              fontFamily: "spaceGroteskSemiBold"
             }}>
-            {activeNutritionMetric === "fruitsVegetables" ? latestData.fruitsVegetables :
-             activeNutritionMetric === "wholeGrains" ? latestData.wholeGrains :
-             activeNutritionMetric === "proteins" ? latestData.proteins : latestData.sugars}
+              {activeNutritionMetric === "fruitsVegetables" ? latestData.fruitsVegetables :
+              activeNutritionMetric === "wholeGrains" ? latestData.wholeGrains :
+              activeNutritionMetric === "proteins" ? latestData.proteins : latestData.sugars}
+            </Text>
+            <Text style={{ 
+              fontSize: 16, 
+              fontFamily: "spaceGroteskRegular" 
+            }}>
+              {activeNutritionMetric === "fruitsVegetables" || activeNutritionMetric === "wholeGrains" 
+                ? " servings" 
+                : " grams"}
+            </Text>
           </Text>
-          <Text style={{ fontSize: 16 }}>
-            {activeNutritionMetric === "fruitsVegetables" || activeNutritionMetric === "wholeGrains" 
-              ? " servings" 
-              : " grams"}
-          </Text>
-        </Text>
               <Text style={styles.modalMessage}>
                 {activeNutritionMetric && getNutritionMessage(
                   activeNutritionMetric,
@@ -1037,10 +1048,13 @@ const DashboardScreen: FC<DemoTabScreenProps<"DashboardScreen">> = (_props) => {
           <View style={styles.headerControls}>
             <View style={styles.timeframeContainer}>
               <View style={styles.pickerContainer}>
-                <Picker
+              <Picker
                   selectedValue={timeframe}
                   onValueChange={(itemValue) => setTimeframe(itemValue)}
-                  style={{ color: theme.colors.text }}
+                  style={{ 
+                    color: theme.colors.text,
+                    fontFamily: "spaceGroteskRegular" 
+                  }}
                 >
                   <Picker.Item label="Daily" value="day" />
                   <Picker.Item label="Weekly" value="week" />
@@ -1209,8 +1223,6 @@ const DashboardScreen: FC<DemoTabScreenProps<"DashboardScreen">> = (_props) => {
                 </Text>
               </TouchableOpacity>
             </View>
-
-            {/* Chart Content - Dynamic based on selected tab */}
             <CardContent>{renderActiveChart()}</CardContent>
           </Card>
         </View>
@@ -1221,7 +1233,7 @@ const DashboardScreen: FC<DemoTabScreenProps<"DashboardScreen">> = (_props) => {
 
 // Styles defined as a variable outside the component to avoid scoping issues
 const styles = StyleSheet.create({
-  // Layout & Container styles
+  // Layout & Container styles remain the same
   container: {
     flex: 1,
     backgroundColor: theme.colors.background,
@@ -1235,17 +1247,18 @@ const styles = StyleSheet.create({
     zIndex: 0,
   },
 
-  // Header styles
+  // Header styles with direct font references
   header: {
     marginBottom: theme.spacing.lg,
   },
   title: {
+    fontFamily: "spaceGroteskBold",
     fontSize: 28,
-    fontWeight: "500",
     color: theme.colors.text,
     marginBottom: 6,
   },
   subtitle: {
+    fontFamily: "spaceGroteskRegular",
     fontSize: 16,
     color: theme.colors.text,
     opacity: 0.7,
@@ -1259,7 +1272,7 @@ const styles = StyleSheet.create({
     gap: 12,
   },
 
-  // Time picker styles
+  // Time picker styles remain the same
   timeframeContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -1280,56 +1293,57 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
 
-  // Summary cards layout
+  // Summary cards layout remains the same
   summaryCards: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 8, // Small gap between cards
+    gap: 8,
     marginBottom: 16,
     justifyContent: "space-between",
   },
 
-  // Summary card base styles - unified for all cards
+  // Summary card base styles with direct font references
   summaryCard: {
     backgroundColor: theme.colors.white,
     borderRadius: 12,
-    padding: 8, // More compact padding
+    padding: 8,
     alignItems: "center",
     justifyContent: "center",
     flex: 1,
-    width: "19%", // All cards same width (5 per row)
+    width: "19%",
     maxWidth: "19%",
-    minWidth: 60, // Minimum width for very small screens
-    height: 170, // All regular cards same height
+    minWidth: 60,
+    height: 170,
     minHeight: 110,
   },
   summaryIcon: {
     marginBottom: 4,
-    transform: [{ scale: 1.1 }], // Slightly larger icon
+    transform: [{ scale: 1.1 }],
   },
   summaryTitle: {
-    fontSize: 15, // Smaller title
+    fontFamily: "spaceGroteskMedium",
+    fontSize: 15,
     color: theme.colors.text,
     opacity: 0.7,
     marginBottom: 2,
     textAlign: "center",
   },
   summaryValue: {
-    fontSize: 24, // Smaller value
-    fontWeight: Platform.OS === "ios" ? "600" : "500",
+    fontFamily: "spaceGroteskSemiBold",
+    fontSize: 24,
     color: theme.colors.text,
     marginBottom: 2,
     textAlign: "center",
   },
   summaryUnit: {
-    fontSize: 12, // Smaller unit
-    fontWeight: "normal",
+    fontFamily: "spaceGroteskRegular",
+    fontSize: 12,
     color: theme.colors.text,
   },
 
-  // Nutrition card specific styles - for expanded view
+  // Nutrition card specific styles
   nutritionCard: {
-    height: 170, // Taller than regular cards but more compact than before
+    height: 170,
     minHeight: 170,
     padding: 6,
     paddingTop: 8,
@@ -1337,25 +1351,25 @@ const styles = StyleSheet.create({
   nutritionQuadContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 0, // Smaller gap between quadrants
+    gap: 0,
     justifyContent: "flex-start",
     marginTop: 2,
     width: "100%",
   },
   nutritionQuad: {
-    width: "50%", // With tiny gap between quadrants
-    height: 40, // More compact height
+    width: "50%",
+    height: 40,
   },
   quadContent: {
-    borderRadius: 4, // Smaller radius
-    padding: 2, // Minimal padding
+    borderRadius: 4,
+    padding: 2,
     height: "100%",
     justifyContent: "center",
     alignItems: "center",
   },
   quadTitle: {
-    fontSize: 11, // Smaller title
-    fontWeight: "500",
+    fontFamily: "spaceGroteskMedium",
+    fontSize: 11,
     color: theme.colors.text,
     opacity: 0.7,
     marginBottom: 0,
@@ -1366,12 +1380,12 @@ const styles = StyleSheet.create({
     alignItems: "baseline",
   },
   quadValue: {
-    fontSize: 16, // Smaller value
-    fontWeight: "bold",
+    fontFamily: "spaceGroteskSemiBold",
+    fontSize: 16,
   },
   quadUnit: {
-    fontSize: 12, // Smaller unit
-    fontWeight: "normal",
+    fontFamily: "spaceGroteskRegular",
+    fontSize: 12,
     marginLeft: 1,
     color: theme.colors.text,
     opacity: 0.7,
@@ -1394,11 +1408,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   cardTitle: {
+    fontFamily: "spaceGroteskSemiBold",
     fontSize: 18,
-    fontWeight: "500",
     color: theme.colors.text,
   },
   cardDescription: {
+    fontFamily: "spaceGroteskRegular",
     fontSize: 13,
     color: theme.colors.text,
     opacity: 0.7,
@@ -1428,6 +1443,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
   chartTabText: {
+    fontFamily: "spaceGroteskRegular",
     marginLeft: 4,
     fontSize: 12,
     color: theme.colors.text,
@@ -1435,8 +1451,8 @@ const styles = StyleSheet.create({
 
   // Content & Chart styles
   chartTitle: {
+    fontFamily: "spaceGroteskSemiBold",
     fontSize: 16,
-    fontWeight: "500",
     color: theme.colors.text,
     marginBottom: 12,
   },
@@ -1447,6 +1463,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   normalText: {
+    fontFamily: "spaceGroteskRegular",
     fontSize: 14,
     color: theme.colors.text,
   },
@@ -1460,15 +1477,17 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   nutritionItemTitle: {
+    fontFamily: "spaceGroteskMedium",
     fontSize: 14,
   },
   nutritionItemValue: {
+    fontFamily: "spaceGroteskRegular",
     fontSize: 14,
     color: theme.colors.text,
   },
   nutritionSectionTitle: {
+    fontFamily: "spaceGroteskSemiBold",
     fontSize: 16,
-    fontWeight: "500",
     color: theme.colors.text,
     marginTop: 16,
     marginBottom: 8,
@@ -1477,7 +1496,7 @@ const styles = StyleSheet.create({
     paddingBottom: 4,
   },
 
-  // Progress bar styles
+  // Progress bar styles remain the same
   progressBar: {
     height: 6,
     borderRadius: 3,
@@ -1501,12 +1520,13 @@ const styles = StyleSheet.create({
     borderBottomColor: "#f0f0f0",
   },
   dataDate: {
+    fontFamily: "spaceGroteskRegular",
     color: theme.colors.text,
     opacity: 0.7,
     fontSize: 13,
   },
   dataValue: {
-    fontWeight: "500",
+    fontFamily: "spaceGroteskMedium",
     color: theme.colors.text,
     fontSize: 13,
   },
@@ -1527,11 +1547,12 @@ const styles = StyleSheet.create({
     backgroundColor: "#f0f0f0",
   },
   tabButtonText: {
+    fontFamily: "spaceGroteskRegular",
     color: theme.colors.text,
     fontSize: 13,
   },
 
-  // Chart and list section styles
+  // Chart and list section styles remain the same
   chartSection: {
     marginTop: 8,
   },
@@ -1544,7 +1565,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   activityDate: {
-    fontWeight: "500",
+    fontFamily: "spaceGroteskMedium",
     fontSize: 13,
     color: theme.colors.text,
     opacity: 0.7,
@@ -1569,11 +1590,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   activityBarLabel: {
+    fontFamily: "spaceGroteskMedium",
     fontSize: 11,
-    fontWeight: "500",
     color: "#ffffff",
   },
   restDayLabel: {
+    fontFamily: "spaceGroteskRegular",
     fontSize: 11,
     position: "absolute",
     left: 8,
@@ -1582,11 +1604,11 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   activityMinutes: {
+    fontFamily: "spaceGroteskMedium",
     minWidth: 40,
     textAlign: "right",
     marginLeft: 6,
     fontSize: 13,
-    fontWeight: "500",
     color: theme.colors.text,
   },
 
@@ -1620,6 +1642,7 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   tooltipText: {
+    fontFamily: "spaceGroteskRegular",
     color: "#FFFFFF",
     fontSize: 11,
     textAlign: "center",
@@ -1635,11 +1658,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   closeButtonText: {
+    fontFamily: "spaceGroteskBold",
     color: "#FFFFFF",
     fontSize: 18,
-    fontWeight: "bold",
     lineHeight: 18,
   },
+  
+  // Modal styles
   modalOverlay: {
     position: "absolute",
     top: 0,
@@ -1649,12 +1674,8 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0, 0, 0, 0.4)",
     zIndex: 9999,
   },
-  modalValue: {
-    marginBottom: 12,
-    textAlign: "center",
-  },
   modalContent: {
-    backgroundColor: "white",
+    backgroundColor: theme.colors.white,
     borderRadius: 12,
     padding: 16,
     width: "80%",
@@ -1671,16 +1692,23 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   modalTitle: {
-    fontSize: 16, 
-    fontWeight: "500",
-    marginBottom: 8,
+    fontFamily: "spaceGroteskSemiBold",
+    fontSize: 18, 
     color: theme.colors.text,
+    marginBottom: 10,
+    textAlign: "center",
+  },
+  modalValue: {
+    marginBottom: 12,
+    textAlign: "center",
   },
   modalMessage: {
+    fontFamily: "spaceGroteskRegular",
     fontSize: 14,
     lineHeight: 20,
     color: theme.colors.text,
     marginBottom: 16,
+    textAlign: "center",
   },
   modalButton: {
     backgroundColor: theme.colors.primary,
@@ -1689,9 +1717,19 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   modalButtonText: {
+    fontFamily: "spaceGroteskMedium",
     color: "white",
-    fontWeight: "500",
-  }
-})
+    fontSize: 15,
+  },
+  
+  // Ensure this style exists
+  uniformCardSize: {
+    width: "19%",
+    maxWidth: "19%",
+    minWidth: 60,
+    height: 170,
+    minHeight: 110,
+  },
+});
 
 export default DashboardScreen
