@@ -740,6 +740,26 @@ const SummaryCard: FC<SummaryCardProps> = ({
                  activeNutritionMetric === "wholeGrains" ? "Whole Grains" :
                  activeNutritionMetric === "proteins" ? "Protein" : "Sugar"}
               </Text>
+              <Text style={styles.modalValue}>
+            <Text style={{ 
+              color: statusColors[getNutritionStatus(activeNutritionMetric, 
+                activeNutritionMetric === "fruitsVegetables" ? latestData.fruitsVegetables :
+                activeNutritionMetric === "wholeGrains" ? latestData.wholeGrains :
+                activeNutritionMetric === "proteins" ? latestData.proteins : latestData.sugars
+              )],
+              fontSize: 24,
+              fontWeight: "600"
+            }}>
+            {activeNutritionMetric === "fruitsVegetables" ? latestData.fruitsVegetables :
+             activeNutritionMetric === "wholeGrains" ? latestData.wholeGrains :
+             activeNutritionMetric === "proteins" ? latestData.proteins : latestData.sugars}
+          </Text>
+          <Text style={{ fontSize: 16 }}>
+            {activeNutritionMetric === "fruitsVegetables" || activeNutritionMetric === "wholeGrains" 
+              ? " servings" 
+              : " grams"}
+          </Text>
+        </Text>
               <Text style={styles.modalMessage}>
                 {activeNutritionMetric && getNutritionMessage(
                   activeNutritionMetric,
@@ -1016,10 +1036,6 @@ const DashboardScreen: FC<DemoTabScreenProps<"DashboardScreen">> = (_props) => {
           </View>
           <View style={styles.headerControls}>
             <View style={styles.timeframeContainer}>
-              <TouchableOpacity style={styles.arrowButton}>
-                <ChevronLeft color={theme.colors.text} size={18} />
-              </TouchableOpacity>
-
               <View style={styles.pickerContainer}>
                 <Picker
                   selectedValue={timeframe}
@@ -1031,10 +1047,6 @@ const DashboardScreen: FC<DemoTabScreenProps<"DashboardScreen">> = (_props) => {
                   <Picker.Item label="Monthly" value="month" />
                 </Picker>
               </View>
-
-              <TouchableOpacity style={styles.arrowButton}>
-                <ChevronRight color={theme.colors.text} size={18} />
-              </TouchableOpacity>
             </View>
           </View>
         </View>
