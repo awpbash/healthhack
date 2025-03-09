@@ -521,25 +521,32 @@ const SummaryCard: FC<SummaryCardProps> = ({
     const [showTooltip, setShowTooltip] = useState(false)
 
     // Determine background color based on title
-    const getBgColor = (title: string) => {
-      switch (title) {
-        case "F&V":
-          return "#f0fdf4" // Light green
-        case "Grains":
-          return "#f5f3ff" // Light purple
-        case "Protein":
-          return "#f0f9ff" // Light blue
-        case "Sugar":
-          return "#fef2f2" // Light red
-        default:
-          return "#f5f5f5"
-      }
+    // const getBgColor = (title: string) => {
+    //   switch (title) {
+    //     case "F&V":
+    //       return "#f0fdf4" // Light green
+    //     case "Grains":
+    //       return "#f5f3ff" // Light purple
+    //     case "Protein":
+    //       return "#f0f9ff" // Light blue
+    //     case "Sugar":
+    //       return "#fef2f2" // Light red
+    //     default:
+    //       return "#f5f5f5"
+    //   }
+    // }
+
+    const getBgColor = (valueColor) => {
+      if (valueColor === statusColors.good) return "#ecfdf5" // Light green
+      if (valueColor === statusColors.warning) return "#fef9c3" // Light yellow
+      if (valueColor === statusColors.danger) return "#fee2e2" // Light red
+      return "#f5f5f5" // Default
     }
 
     return (
       <View style={styles.nutritionQuad}>
         <TouchableOpacity
-          style={[styles.quadContent, { backgroundColor: getBgColor(title) }]}
+          style={[styles.quadContent, { backgroundColor: getBgColor(valueColor) }]}
           onPress={() => setShowTooltip(!showTooltip)}
           activeOpacity={0.7}
         >
@@ -551,7 +558,7 @@ const SummaryCard: FC<SummaryCardProps> = ({
 
           {showTooltip && (
             <View style={styles.tooltipContainer}>
-              <View style={[styles.tooltip, { position: "absolute", top: -90, left: -50 }]}>
+              <View style={[styles.tooltip, { position: "absolute", top: -5 }]}>
                 <Text style={styles.tooltipText}>{message}</Text>
                 <TouchableOpacity style={styles.closeButton} onPress={() => setShowTooltip(false)}>
                   <Text style={styles.closeButtonText}>×</Text>
@@ -568,14 +575,14 @@ const SummaryCard: FC<SummaryCardProps> = ({
     fruitsVegetables: 6,
     wholeGrains: 2,
     proteins: 66,
-    sugars: 32,
+    sugars: 55,
   }
 
   // Use custom colors if provided in props
-  const fnvColor = colors?.fruitsVegetables || getFVColor(latestData.fruitsVegetables)
-  const grainsColor = colors?.wholeGrains || getGrainsColor(latestData.wholeGrains)
-  const proteinColor = colors?.proteins || getProteinColor(latestData.proteins)
-  const sugarColor = colors?.sugars || getSugarColor(latestData.sugars)
+  const fnvColor = getFVColor(latestData.fruitsVegetables)
+  const grainsColor = getGrainsColor(latestData.wholeGrains)
+  const proteinColor = getProteinColor(latestData.proteins)
+  const sugarColor = getSugarColor(latestData.sugars)
 
   // Helper functions to determine color based on nutrition value ranges
   function getFVColor(value: number): string {
@@ -603,7 +610,7 @@ const SummaryCard: FC<SummaryCardProps> = ({
   }
 
   // Set messages
-  const fnvMessage = "Aim for 5+ servings of fruits and vegetables daily."
+  const fnvMessage = "Aim for 5+ servings of fruits and veggies daily."
   const grainsMessage = "Try for 3+ servings of whole grains daily."
   const proteinMessage = "50+ grams of protein daily is recommended."
   const sugarMessage = "Keep sugar intake below 25g for optimal health."
@@ -725,7 +732,7 @@ const DashboardScreen: FC<DemoTabScreenProps<"DashboardScreen">> = (_props) => {
     { date: "Feb 25", fruitsVegetables: 7, wholeGrains: 4, proteins: 75, sugars: 30 },
     { date: "Feb 26", fruitsVegetables: 7, wholeGrains: 2, proteins: 70, sugars: 35 },
     { date: "Feb 27", fruitsVegetables: 6, wholeGrains: 3, proteins: 78, sugars: 28 },
-    { date: "Feb 28", fruitsVegetables: 6, wholeGrains: 2, proteins: 66, sugars: 32 },
+    { date: "Feb 28", fruitsVegetables: 6, wholeGrains: 2, proteins: 66, sugars: 55 },
   ]
 
   const latestNutrition = nutritionData[nutritionData.length - 1]
@@ -1500,6 +1507,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     zIndex: 1000,
+    pointerEvents: "box-none",
   },
   tooltip: {
     position: "absolute",
