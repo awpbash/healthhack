@@ -43,7 +43,7 @@ interface ActivityDataPoint {
 // Updated nutrition data structure to combine fruits/vegetables and include proteins and sugars in grams
 interface NutritionDataPoint {
   date: string
-  fruitsVegetables: number // servings (combined)
+  fruitsVegetables: number // servings (combined) 
   wholeGrains: number // servings
   proteins: number // grams
   sugars: number // grams
@@ -369,9 +369,13 @@ const HeartRateChart: FC<{ data: VitalsDataPoint[]; color?: string }> = ({ data,
         datasets: [
           {
             data: data.map((item) => item.heartRate),
-            color: () => "black",
+            color: () => theme.colors.primary,
             strokeWidth: 2,
           },
+          // {
+          //   data: [60],
+          //   withDots: false,
+          // },
         ],
       }}
       width={Dimensions.get("window").width - 64}
@@ -381,16 +385,16 @@ const HeartRateChart: FC<{ data: VitalsDataPoint[]; color?: string }> = ({ data,
         backgroundGradientFrom: "white",
         backgroundGradientTo: "white",
         decimalPlaces: 0,
-        color: () => theme.colors.text,
-        labelColor: () => theme.colors.text,
+        color: () => theme.colors.primary,
+        labelColor: () => "black",
         style: {
           borderRadius: 16,
         },
         propsForDots: {
           r: "6",
           strokeWidth: "2",
-          stroke: "black",
-          fill: "black",
+          stroke: theme.colors.primary,
+          fill: theme.colors.primary,
         },
       }}
       bezier={false}
@@ -410,12 +414,12 @@ const BloodPressureChart: FC<{ data: VitalsDataPoint[]; color?: string }> = ({ d
         datasets: [
           {
             data: data.map((item) => item.systolic),
-            color: () => "black",
+            color: () => "#49c5b1",
             strokeWidth: 2,
           },
           {
             data: data.map((item) => item.diastolic),
-            color: (opacity = 1) => "#FF6384",
+            color: (opacity = 1) => "#E76F51",
             strokeWidth: 2,
           },
         ],
@@ -428,8 +432,8 @@ const BloodPressureChart: FC<{ data: VitalsDataPoint[]; color?: string }> = ({ d
         backgroundGradientFrom: "white",
         backgroundGradientTo: "white",
         decimalPlaces: 0,
-        color: () => theme.colors.text,
-        labelColor: () => theme.colors.text,
+        color: () => theme.colors.primary,
+        labelColor: () => "black",
         style: {
           borderRadius: 16,
         },
@@ -449,7 +453,10 @@ const BloodPressureChart: FC<{ data: VitalsDataPoint[]; color?: string }> = ({ d
   )
 }
 
-const ActivityBarChart: FC<{ data: ActivityDataPoint[]; color?: string }> = ({ data, color }) => {
+export const ActivityBarChart: FC<{ data: ActivityDataPoint[]; color?: string }> = ({
+  data,
+  color,
+}) => {
   // Group activities and sum their minutes
   const activitySummary = data.reduce(
     (acc, curr) => {
@@ -555,6 +562,7 @@ interface SummaryCardProps {
     proteins?: string;
     sugars?: string;
   };
+  status_of_val: string
 }
 
 const SummaryCard: FC<SummaryCardProps> = ({
@@ -591,7 +599,7 @@ const SummaryCard: FC<SummaryCardProps> = ({
     return (
       <>
         <TouchableOpacity
-          style={[styles.summaryCard, styles.uniformCardSize]}
+          style={/*[*/styles.summaryCard/*, styles.uniformCardSize]*/}
           onPress={() => setShowModal(true)}
           activeOpacity={0.8}
         >
@@ -688,7 +696,7 @@ const SummaryCard: FC<SummaryCardProps> = ({
   return (
     <>
       <TouchableOpacity
-        style={[styles.summaryCard, styles.uniformCardSize, styles.nutritionCard]}
+        style={[styles.summaryCard, /*styles.uniformCardSize,*/ styles.nutritionCard]}
         activeOpacity={0.9}
       >
         <View style={styles.summaryIcon}>{icon}</View>
@@ -792,6 +800,42 @@ const SummaryCard: FC<SummaryCardProps> = ({
     </>
   );
 };
+
+// const SummaryCard: FC<{
+//   icon: React.ReactNode
+//   title: string
+//   value: number | string
+//   unit?: string
+//   status_of_val: string
+// }> = ({ icon, title, value, unit, status_of_val }) => {
+//   const text_color =
+//     status_of_val === "Good"
+//       ? theme.colors.status_good
+//       : status_of_val === "Average"
+//         ? theme.colors.status_avg
+//         : theme.colors.status_error
+//   const text_style = StyleSheet.create({
+//     text: {
+//       fontSize: 24,
+//       // fontWeight: "500",
+//       fontWeight: Platform.OS === "ios" ? "600" : "500", // iOS tends to render thin text
+//       color: text_color,
+//     },
+//   })
+//   return (
+//     <View style={styles.summaryCard}>
+//       <View style={styles.summaryIcon}>{icon}</View>
+//       <Text style={styles.summaryTitle}>{title}</Text>
+//       <Text style={text_style.text}>
+//         {value} {unit && <Text style={styles.summaryUnit}>{unit}</Text>}
+//       </Text>
+//     </View>
+//   )
+//   // <Text style={styles.summaryValue}>
+//   //   {value} {unit && <Text style={styles.summaryUnit}>{unit}</Text>}
+//   // </Text>
+// }
+// >>>>>>> Stashed changes
 
 const Card: FC<{ children: React.ReactNode }> = ({ children }) => {
   return <View style={styles.card}>{children}</View>
@@ -1073,6 +1117,7 @@ const DashboardScreen: FC<DemoTabScreenProps<"DashboardScreen">> = (_props) => {
             value={avgHeartRate}
             unit="bpm"
             metric="heartRate"
+            status_of_val="Average"
           />
 
           <SummaryCard
@@ -1080,6 +1125,7 @@ const DashboardScreen: FC<DemoTabScreenProps<"DashboardScreen">> = (_props) => {
             title="Blood Pressure"
             value={`${avgBloodPressure.systolic}/${avgBloodPressure.diastolic}`}
             metric="bloodPressure"
+            status_of_val="Bad"
           />
 
           <SummaryCard
@@ -1088,6 +1134,7 @@ const DashboardScreen: FC<DemoTabScreenProps<"DashboardScreen">> = (_props) => {
             value={vitalsData[vitalsData.length - 1].weight}
             unit="kg"
             metric="weight"
+            status_of_val="Good"
           />
 
           <SummaryCard
@@ -1096,6 +1143,7 @@ const DashboardScreen: FC<DemoTabScreenProps<"DashboardScreen">> = (_props) => {
             value={totalActivityMinutes}
             unit="min"
             metric="activity"
+            status_of_val="Good"
           />
 
           <SummaryCard
@@ -1109,7 +1157,9 @@ const DashboardScreen: FC<DemoTabScreenProps<"DashboardScreen">> = (_props) => {
               proteins: nutritionData[nutritionData.length - 1].proteins,
               sugars: nutritionData[nutritionData.length - 1].sugars,
             }}
+            status_of_val="Good"
           />
+
         </View>
 
         {/* Consolidated Charts Section with Tabs */}
@@ -1297,8 +1347,13 @@ const styles = StyleSheet.create({
   summaryCards: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 8,
+    flex: 2,
+    // gap: 8,
+    // marginRight: 16,
+    width: "100%",
     marginBottom: 16,
+    // margin: 16,
+    // height: 500,
     justifyContent: "space-between",
   },
 
@@ -1309,12 +1364,14 @@ const styles = StyleSheet.create({
     padding: 8,
     alignItems: "center",
     justifyContent: "center",
-    flex: 1,
-    width: "19%",
-    maxWidth: "19%",
-    minWidth: 60,
+    margin: "2.5%",
+    minWidth: 150,
+    maxWidth: "45%",
+    flexGrow: 1,
+    alignSelf: "stretch",
     height: 170,
     minHeight: 110,
+    marginHorizontal: 2,
   },
   summaryIcon: {
     marginBottom: 4,
@@ -1527,6 +1584,7 @@ const styles = StyleSheet.create({
   },
   dataValue: {
     fontFamily: "spaceGroteskMedium",
+    fontWeight: "500",
     color: theme.colors.text,
     fontSize: 13,
   },
@@ -1577,8 +1635,8 @@ const styles = StyleSheet.create({
   },
   activityBarBg: {
     flex: 1,
-    height: 20,
-    borderRadius: 10,
+    height: 24,
+    borderRadius: 12,
     backgroundColor: "#f5f5f5",
     position: "relative",
     overflow: "hidden",
@@ -1722,14 +1780,14 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
   
-  // Ensure this style exists
-  uniformCardSize: {
-    width: "19%",
-    maxWidth: "19%",
-    minWidth: 60,
-    height: 170,
-    minHeight: 110,
-  },
+  // // Ensure this style exists
+  // uniformCardSize: {
+  //   width: "19%",
+  //   maxWidth: "19%",
+  //   minWidth: 60,
+  //   height: 170,
+  //   minHeight: 110,
+  // },
 });
 
 export default DashboardScreen

@@ -86,7 +86,7 @@ const en = {
     dashboardTab: "Dashboard",
     chatTab: "Chat",
     loggerTab: "Log",
-    sectionTab: "Sections",
+    servicesTab: "Services",
   },
   demoCommunityScreen: {
     title: "Connect with the community",
