@@ -39,8 +39,10 @@ export const useThemeProvider = (initialTheme: ThemeContexts = undefined) => {
     setTheme(newTheme)
   }, [])
 
-  const themeScheme = overrideTheme || colorScheme || "light"
-  const navigationTheme = themeScheme === "dark" ? DarkTheme : DefaultTheme
+  // const themeScheme = overrideTheme || colorScheme || "light"
+  const themeScheme = "light"
+  // const navigationTheme = themeScheme === "dark" ? DarkTheme : DefaultTheme
+  const navigationTheme = DefaultTheme
 
   useEffect(() => {
     setImperativeTheming(themeContextToTheme(themeScheme))

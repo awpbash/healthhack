@@ -13,12 +13,13 @@ export type AppStackParamList = {
 
 // Main bottom tab navigator param list (renamed from DemoTabParamList for clarity)
 export type TabParamList = {
-  DemoShowroom: { queryIndex?: string; itemIndex?: string }
+  // DemoShowroom: { queryIndex?: string; itemIndex?: string }
   Profile: undefined
   Logs: NavigatorScreenParams<LogsTabParamList>
   DashboardScreen: undefined
-  DemoDebug: undefined
+  // DemoDebug: undefined
   Chat: undefined
+  Section: undefined
 }
 
 // For backward compatibility
@@ -44,24 +45,24 @@ export type TabScreenProps<T extends keyof TabParamList> = CompositeScreenProps<
 
 // Define simpler individual props types to avoid complex nested composite types
 export type VitalsLoggerProps = {
-  navigation: NavigationProp<LogsTabParamList, 'Vitals'> & {
-    getParent<T = NavigationProp<TabParamList, 'Logs'>>(name?: string): T;
-  };
-  route: RouteProp<LogsTabParamList, 'Vitals'>;
+  navigation: NavigationProp<LogsTabParamList, "Vitals"> & {
+    getParent<T = NavigationProp<TabParamList, "Logs">>(name?: string): T
+  }
+  route: RouteProp<LogsTabParamList, "Vitals">
 }
 
 export type ActivityLoggerProps = {
-  navigation: NavigationProp<LogsTabParamList, 'Activity'> & {
-    getParent<T = NavigationProp<TabParamList, 'Logs'>>(name?: string): T;
-  };
-  route: RouteProp<LogsTabParamList, 'Activity'>;
+  navigation: NavigationProp<LogsTabParamList, "Activity"> & {
+    getParent<T = NavigationProp<TabParamList, "Logs">>(name?: string): T
+  }
+  route: RouteProp<LogsTabParamList, "Activity">
 }
 
 export type DietLoggerProps = {
-  navigation: NavigationProp<LogsTabParamList, 'Diet'> & {
-    getParent<T = NavigationProp<TabParamList, 'Logs'>>(name?: string): T;
-  };
-  route: RouteProp<LogsTabParamList, 'Diet'>;
+  navigation: NavigationProp<LogsTabParamList, "Diet"> & {
+    getParent<T = NavigationProp<TabParamList, "Logs">>(name?: string): T
+  }
+  route: RouteProp<LogsTabParamList, "Diet">
 }
 
 export type ChatProps<T extends keyof TabParamList> = CompositeScreenProps<
@@ -69,5 +70,10 @@ export type ChatProps<T extends keyof TabParamList> = CompositeScreenProps<
   AppStackScreenProps<keyof AppStackParamList>
 >
 
+export type SectionProps<T extends keyof TabParamList> = CompositeScreenProps<
+  BottomTabScreenProps<TabParamList, T>,
+  AppStackScreenProps<keyof AppStackParamList>
+>
+
 // A simpler LogsScreenProps type that avoids the complex CompositeScreenProps
-export type LogsScreenProps = TabScreenProps<'Logs'>;
+export type LogsScreenProps = TabScreenProps<"Logs">

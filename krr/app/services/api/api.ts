@@ -11,6 +11,7 @@ import { GeneralApiProblem, getGeneralApiProblem } from "./apiProblem"
 import type { ApiConfig, ApiFeedResponse } from "./api.types"
 import type { EpisodeSnapshotIn } from "../../models/Episode"
 import axios from 'axios';
+import { Platform } from "react-native";
 
 /**
  * Configuring the apisauce instance.
@@ -77,7 +78,12 @@ export class Api {
   }
 }
 
-const BASE_URL = 'http://10.0.2.2:3000/api';
+const BASE_URL = // Added this part that works for various platforms
+  Platform.OS === "android"
+    ? "http://10.0.2.2:3000/api" // Android emulator (maps to your localhost)
+    : Platform.OS === "ios"
+    ? "http://localhost:3000/api" // iOS simulator
+    : "http://localhost:3000/api"; // For react-native-web or others
  
 // Insertion APIs
 export async function insertMedical(data: {

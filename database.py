@@ -3,10 +3,11 @@ import time
 import os
 import json
 from flask import Flask, request, jsonify, Blueprint
+from flask_cors import CORS
 from sentence_transformers import SentenceTransformer
 
 app = Flask(__name__)
-
+CORS(app) # added CORS
 # Create a Blueprint for API routes with prefix '/api'
 api_bp = Blueprint('api', __name__, url_prefix='/api')
 

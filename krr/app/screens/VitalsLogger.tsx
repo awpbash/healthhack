@@ -1,3 +1,4 @@
+/* eslint-disable import/no-unresolved */
 import { FC, useState } from "react"
 import { ViewStyle } from "react-native"
 import { Screen, TextField, Icon, Button } from "@/components"
@@ -7,7 +8,7 @@ import { useAppTheme } from "@/utils/useAppTheme"
 import theme from "@/theme/theme"
 import { ThemeProvider } from "@shopify/restyle"
 import { VitalsLoggerProps } from "@/navigators/types"
-import * as Api from '@/services/api/api'
+import * as Api from "@/services/api/api"
 
 export const VitalsLoggerScreen: FC<VitalsLoggerProps> = function VitalsLoggerScreen(_props) {
   const { themed } = useAppTheme()
@@ -32,10 +33,10 @@ export const VitalsLoggerScreen: FC<VitalsLoggerProps> = function VitalsLoggerSc
         PulseRate: parseFloat(heart_rate),
         Datetime: new Date().toISOString(),
       }
-      
+
       const response = await Api.insertVitals(vitalsData)
       console.log("Vitals inserted successfully:", response)
-      
+
       // Optionally, clear the fields after insertion
       set_heart_rate("")
       set_blood_pressure("")
@@ -102,16 +103,7 @@ export const VitalsLoggerScreen: FC<VitalsLoggerProps> = function VitalsLoggerSc
 
 const $textField: ThemedStyle<ViewStyle> = () => ({
   marginBottom: 10,
-  backgroundColor: "#e9e7e3",
-  borderRadius: 10,
   padding: 12,
-  borderWidth: 1,
-  borderColor: "#ddd",
-  shadowColor: "#000",
-  shadowOffset: { width: 0, height: 2 },
-  shadowOpacity: 0.1,
-  shadowRadius: 4,
-  elevation: 3,
 })
 
 // Export the old name for backward compatibility
