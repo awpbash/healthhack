@@ -4,7 +4,11 @@
     "@react-navigation/material-top-tabs": "^7.1.0",
     "lucide-react": "^0.476.0",
     "react-native-tab-view": "^4.0.5",
+    "react-native-vector-icons": "^10.2.0",
     "recharts": "^2.15.1",
     "typescript": "^5.7.3"
+  },
+  "devDependencies": {
+    "@types/react-native-vector-icons": "^6.4.18"
   }
 }
