@@ -42,7 +42,7 @@ export function TabNavigator() {
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
-        tabBarHideOnKeyboard: true,
+        tabBarHideOnKeyboard: false,
         tabBarStyle: themed([$tabBar, { height: bottom + 70 }]),
         tabBarActiveTintColor: colors.text,
         tabBarInactiveTintColor: colors.text,

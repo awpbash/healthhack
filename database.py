@@ -1,15 +1,22 @@
 import iris
 import time
 import os
-import pandas as pd
-from sentence_transformers import SentenceTransformer
-import numpy as np
 import json
+from flask import Flask, request, jsonify, Blueprint
+from sentence_transformers import SentenceTransformer
 
-# Load a pre-trained sentence transformer model. Output vector size is 384
+app = Flask(__name__)
+
+# Create a Blueprint for API routes with prefix '/api'
+api_bp = Blueprint('api', __name__, url_prefix='/api')
+
+# Load a pre-trained sentence transformer model.
+# Note: The table for MedicalRecords expects a VECTOR of DOUBLE, size 768.
+# Adjust the model or table definition if necessary.
 model = SentenceTransformer('pritamdeka/S-PubMedBert-MS-MARCO')
 
 def createDatabase():
+    """Establish a connection to the IRIS database."""
     username = 'demo'
     password = 'demo'
     hostname = os.getenv('IRIS_HOSTNAME', 'localhost')
@@ -22,127 +29,325 @@ def createDatabase():
     print("Database connection established")
 
 createDatabase()
-print(cursor)
 
-def createTable():
-    MedicalRecords = "MedicalRecords"
-    MRtableDefinition = """
-    (User_ID VARCHAR(50), 
-     Symptom VARCHAR(50), 
-     Diagnosis VARCHAR(1000), 
-     Datetime VARCHAR(50), 
-     Embedding VECTOR(DOUBLE, 768))
-    """
-    
-    Vitals = "Vitals"
-    VitalsTableDefinition = """
-    (User_ID VARCHAR(50), 
-     Temperature FLOAT, 
-     BloodPressure VARCHAR(50), 
-     PulseRate FLOAT, 
-     Datetime VARCHAR(50))
-    """
-    
-    Activity = "Activity"
-    ActivityTableDefinition = """
-    (User_ID VARCHAR(50), 
-     Activity VARCHAR(50), 
-     Duration FLOAT, 
-     Datetime VARCHAR(50))
-    """
-    
-    PastPrompts = "PastPrompts"
-    PastPromptsTableDefinition = """
-    (User_ID VARCHAR(50), 
-     Summary VARCHAR(1000), 
-     Datetime VARCHAR(50))
-    """
-    #cursor.execute(f"DROP TABLE {MedicalRecords}")
-    #cursor.execute(f"DROP TABLE {Vitals}")
-    #cursor.execute(f"DROP TABLE {Activity}")
-    #cursor.execute(f"DROP TABLE {PastPrompts}")
-    # Check if table exists and create if needed
-    try:
-        cursor.execute(f"CREATE TABLE {MedicalRecords} {MRtableDefinition}")
-        cursor.execute(f"CREATE TABLE {Vitals} {VitalsTableDefinition}")
-        cursor.execute(f"CREATE TABLE {Activity} {ActivityTableDefinition}")
-        cursor.execute(f"CREATE TABLE {PastPrompts} {PastPromptsTableDefinition}")
-        print("Tables created successfully.")
-    except Exception as e:
-        print("Tables already exist or encountered an error:", e)
-#createTable()
-# Function to embed text
+def createTables():
+    """Attempt to create all four tables. Uncomment if needed."""
+    table_defs = {
+        "MedicalRecords": """
+            (User_ID VARCHAR(50), 
+             Symptom VARCHAR(50), 
+             Diagnosis VARCHAR(1000), 
+             Datetime VARCHAR(50), 
+             Embedding VECTOR(DOUBLE, 768))
+        """,
+        "Vitals": """
+            (User_ID VARCHAR(50), 
+             Temperature FLOAT, 
+             BloodPressure VARCHAR(50), 
+             PulseRate FLOAT, 
+             Datetime VARCHAR(50))
+        """,
+        "Activity": """
+            (User_ID VARCHAR(50), 
+             Activity VARCHAR(50), 
+             Duration FLOAT, 
+             Datetime VARCHAR(50))
+        """,
+        "PastPrompts": """
+            (User_ID VARCHAR(50), 
+             Summary VARCHAR(1000), 
+             Datetime VARCHAR(50))
+        """,
+        "Diet": """
+            (User_ID VARCHAR(50),
+             Meal VARCHAR(50),
+             Calories FLOAT,
+             Datetime VARCHAR(50))
+        """
+    }
+    for table, definition in table_defs.items():
+        try:
+            cursor.execute(f"CREATE TABLE {table} {definition}")
+            print(f"Table {table} created successfully.")
+        except Exception as e:
+            print(f"Table {table} may already exist or encountered an error: {e}")
+
+# Uncomment the following line to create tables on startup if needed.
+# createTables()
+
 def embed(text):
-    return model.encode(text, normalize_embeddings=True) # Convert NumPy array to list for storage
+    """Embed text using the SentenceTransformer model and return a list."""
+    return model.encode(text, normalize_embeddings=True).tolist()
 
-def insertData(table, data):
+###############################################################################
+# Insertion Endpoints
+###############################################################################
+
+@app.route('/api/insert/medical', methods=['POST'])
+def insert_medical():
     """
-    Inserts data into the specified table.
-    For MedicalRecords, it embeds the Symptom and Diagnosis before inserting.
+    Inserts a record into the MedicalRecords table.
+    Expects JSON with keys:
+      - User_ID, Symptom, Diagnosis, Datetime
+    The endpoint generates an embedding from the combined Symptom and Diagnosis.
     """
+    data = request.get_json()
+    required_fields = ["User_ID", "Symptom", "Diagnosis", "Datetime"]
+    for field in required_fields:
+        if field not in data:
+            return jsonify({"error": f"Missing field {field}"}), 400
+
     try:
-        if table == "MedicalRecords" :
-            if len(data) < 4:
-                raise ValueError("Insufficient fields for MedicalRecords. Requires at least (User_ID, Symptom, Diagnosis, Datetime).")
-
-            user_id, symptom, diagnosis, datetime = data
-
-            # ✅ Create embedding for symptom and diagnosis
-            embedded_vector = embed(f"{symptom} {diagnosis}").tolist()  # Convert NumPy array to list
-            
-            # ✅ Convert to JSON string for storage in SQL
-            embedding_json = json.dumps(embedded_vector)  
-
-            # ✅ Prepare SQL insert
-            query = f"INSERT INTO {table} (User_ID, Symptom, Diagnosis, Datetime, Embedding) VALUES (?, ?, ?, ?, ?)"
-            
-            cursor.execute(query, (user_id, symptom, diagnosis, datetime, embedding_json))
+        user_id = data["User_ID"]
+        symptom = data["Symptom"]
+        diagnosis = data["Diagnosis"]
+        datetime_val = data["Datetime"]
         
-        else:
-            query = f"INSERT INTO {table} VALUES ({', '.join(['?' for _ in data])})"
-            cursor.execute(query, data)
+        # Create embedding from the combined text
+        embedded_vector = embed(f"{symptom} {diagnosis}")
+        embedding_json = json.dumps(embedded_vector)
         
-        print(f"✅ Data inserted into {table} successfully.")
-    
+        query = """
+            INSERT INTO MedicalRecords (User_ID, Symptom, Diagnosis, Datetime, Embedding)
+            VALUES (?, ?, ?, ?, ?)
+        """
+        cursor.execute(query, (user_id, symptom, diagnosis, datetime_val, embedding_json))
+        print("Medical record inserted successfully.")
+        return jsonify({"status": "success"}), 200
+
     except Exception as e:
-        print(f"❌ Error inserting into {table}: {e}")
+        print(f"Error inserting into MedicalRecords: {e}")
+        return jsonify({"error": str(e)}), 500
 
-def queryMedicalRecords(user, prompt):
-    """Fetches and prints top 3 rows from the MedicalRecords table based on RAG."""
-    #embed the prompt
-    prompt_embedding = model.encode(prompt, normalize_embeddings=True).tolist() 
-    sql = f"""
-    SELECT TOP ? Symptom, Diagnosis, Datetime
-    FROM MedicalRecords
-    WHERE User_ID = {user}
-    ORDER BY VECTOR_DOT_PRODUCT(Embedding, TO_VECTOR(?)) DESC
+
+@app.route('/api/insert/vitals', methods=['POST'])
+def insert_vitals():
     """
-    cursor.execute(sql, [3, str(prompt_embedding)])
-    rows = cursor.fetchall()
-    return rows
-        
-def queryData(table, user):
-    """Fetches and prints all rows from a table."""
-    sql = f"""
-    SELECT * FROM {table}
-    WHERE User_ID = {user}
+    Inserts a record into the Vitals table.
+    Expects JSON with keys:
+      - User_ID, Temperature, BloodPressure, PulseRate, Datetime
     """
-    cursor.execute(sql)
-    rows = cursor.fetchall()
-    return rows
+    data = request.get_json()
+    required_fields = ["User_ID", "Temperature", "BloodPressure", "PulseRate", "Datetime"]
+    for field in required_fields:
+        if field not in data:
+            return jsonify({"error": f"Missing field {field}"}), 400
 
-def insertPrompts(summary, user):
-    #embed the summary then insert into PastPrompts
-    summary_embedding = model.encode(summary, normalize_embeddings=True).tolist()
-    query = f"INSERT INTO PastPrompts (User_ID, Summary, Datetime) VALUES (?, ?, ?)"
-    cursor.execute(query, (user, summary, time.strftime('%Y-%m-%d %H:%M:%S')))
+    try:
+        query = """
+            INSERT INTO Vitals (User_ID, Temperature, BloodPressure, PulseRate, Datetime)
+            VALUES (?, ?, ?, ?, ?)
+        """
+        cursor.execute(query, (
+            data["User_ID"],
+            data["Temperature"],
+            data["BloodPressure"],
+            data["PulseRate"],
+            data["Datetime"]
+        ))
+        print("Vitals record inserted successfully.")
+        return jsonify({"status": "success"}), 200
 
-# Example insert
-data = ('129', 'Cancer', 'Running nose', '2023-09-01')
-insertData("MedicalRecords", data)
+    except Exception as e:
+        print(f"Error inserting into Vitals: {e}")
+        return jsonify({"error": str(e)}), 500
 
-print(queryMedicalRecords('129', 'Fever'))
-insertData("Vitals", ('129', 98.6, '120/80', 72, '2023-09-01'))
-insertData("Vitals", ('129', 91.2, '140/70', 92, '2023-09-02'))
 
-print(queryData("Vitals", '129'))
+@app.route('/api/insert/activity', methods=['POST'])
+def insert_activity():
+    """
+    Inserts a record into the Activity table.
+    Expects JSON with keys:
+      - User_ID, Activity, Duration, Datetime
+    """
+    data = request.get_json()
+    required_fields = ["User_ID", "Activity", "Duration", "Datetime"]
+    for field in required_fields:
+        if field not in data:
+            return jsonify({"error": f"Missing field {field}"}), 400
+
+    try:
+        query = """
+            INSERT INTO Activity (User_ID, Activity, Duration, Datetime)
+            VALUES (?, ?, ?, ?)
+        """
+        cursor.execute(query, (
+            data["User_ID"],
+            data["Activity"],
+            data["Duration"],
+            data["Datetime"]
+        ))
+        print("Activity record inserted successfully.")
+        return jsonify({"status": "success"}), 200
+
+    except Exception as e:
+        print(f"Error inserting into Activity: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/insert/prompt', methods=['POST'])
+def insert_prompt():
+    """
+    Inserts a prompt summary into the PastPrompts table.
+    Expects JSON with keys:
+      - User_ID, Summary
+    Datetime is added automatically.
+    """
+    data = request.get_json()
+    required_fields = ["User_ID", "Summary"]
+    for field in required_fields:
+        if field not in data:
+            return jsonify({"error": f"Missing field {field}"}), 400
+
+    try:
+        query = """
+            INSERT INTO PastPrompts (User_ID, Summary, Datetime)
+            VALUES (?, ?, ?)
+        """
+        current_time = time.strftime('%Y-%m-%d %H:%M:%S')
+        cursor.execute(query, (data["User_ID"], data["Summary"], current_time))
+        print("Prompt inserted successfully.")
+        return jsonify({"status": "success"}), 200
+
+    except Exception as e:
+        print(f"Error inserting into PastPrompts: {e}")
+        return jsonify({"error": str(e)}), 500
+
+###############################################################################
+# Query Endpoints
+###############################################################################
+
+@app.route('/api/medical', methods=['GET'])
+def query_medical_records():
+    """
+    Query MedicalRecords by User_ID and a text prompt.
+    Expects query parameters:
+      - user: the user ID
+      - prompt: the prompt text to embed and compare
+    Returns top 3 records ordered by similarity.
+    """
+    user = request.args.get('user')
+    prompt = request.args.get('prompt')
+    
+    if not user or not prompt:
+        return jsonify({"error": "Missing query parameters 'user' and/or 'prompt'."}), 400
+
+    try:
+        prompt_embedding = model.encode(prompt, normalize_embeddings=True).tolist()
+        sql = """
+            SELECT TOP ? Symptom, Diagnosis, Datetime
+            FROM MedicalRecords
+            WHERE User_ID = ?
+            ORDER BY VECTOR_DOT_PRODUCT(Embedding, TO_VECTOR(?)) DESC
+        """
+        cursor.execute(sql, (3, user, json.dumps(prompt_embedding)))
+        rows = cursor.fetchall()
+        results = [{"Symptom": row[0], "Diagnosis": row[1], "Datetime": row[2]} for row in rows]
+        return jsonify(results), 200
+
+    except Exception as e:
+        print(f"Error querying MedicalRecords: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/vitals', methods=['GET'])
+def query_vitals():
+    """
+    Query Vitals by User_ID.
+    Expects query parameter:
+      - user: the user ID
+    Returns all matching rows from the Vitals table.
+    """
+    user = request.args.get('user')
+    if not user:
+        return jsonify({"error": "Missing query parameter 'user'."}), 400
+
+    try:
+        sql = "SELECT * FROM Vitals WHERE User_ID = ?"
+        cursor.execute(sql, (user,))
+        rows = cursor.fetchall()
+        results = [
+            {
+                "User_ID": row[0],
+                "Temperature": row[1],
+                "BloodPressure": row[2],
+                "PulseRate": row[3],
+                "Datetime": row[4]
+            } for row in rows
+        ]
+        return jsonify(results), 200
+
+    except Exception as e:
+        print(f"Error querying Vitals: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/activity', methods=['GET'])
+def query_activity():
+    """
+    Query Activity by User_ID.
+    Expects query parameter:
+      - user: the user ID
+    Returns all matching rows from the Activity table.
+    """
+    user = request.args.get('user')
+    if not user:
+        return jsonify({"error": "Missing query parameter 'user'."}), 400
+
+    try:
+        sql = "SELECT * FROM Activity WHERE User_ID = ?"
+        cursor.execute(sql, (user,))
+        rows = cursor.fetchall()
+        results = [
+            {
+                "User_ID": row[0],
+                "Activity": row[1],
+                "Duration": row[2],
+                "Datetime": row[3]
+            } for row in rows
+        ]
+        return jsonify(results), 200
+
+    except Exception as e:
+        print(f"Error querying Activity: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/prompts', methods=['GET'])
+def query_prompts():
+    """
+    Query PastPrompts by User_ID.
+    Expects query parameter:
+      - user: the user ID
+    Returns all matching rows from the PastPrompts table.
+    """
+    user = request.args.get('user')
+    if not user:
+        return jsonify({"error": "Missing query parameter 'user'."}), 400
+
+    try:
+        sql = "SELECT * FROM PastPrompts WHERE User_ID = ?"
+        cursor.execute(sql, (user,))
+        rows = cursor.fetchall()
+        results = [
+            {
+                "User_ID": row[0],
+                "Summary": row[1],
+                "Datetime": row[2]
+            } for row in rows
+        ]
+        return jsonify(results), 200
+
+    except Exception as e:
+        print(f"Error querying PastPrompts: {e}")
+        return jsonify({"error": str(e)}), 500
+
+###############################################################################
+# Run the Flask App
+###############################################################################
+
+# Register the blueprint so that all routes are under the '/api' prefix.
+app.register_blueprint(api_bp)
+
+if __name__ == '__main__':
+    app.run(port=3000, debug=True)
