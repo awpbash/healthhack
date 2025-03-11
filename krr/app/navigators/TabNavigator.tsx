@@ -5,10 +5,10 @@ import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { Icon } from "../components"
 import { translate } from "@/i18n"
 import { ProfileScreen } from "@/screens/ProfileScreen"
-import DashboardScreen from "@/screens/DashboardScreen"
+import  DashboardScreen   from "@/screens/DashboardScreen"
 import { LogsScreen } from "@/screens/LogsScreen"
 import { ChatScreen } from "@/screens/ChatScreen"
-import SectionScreen from "@/screens/SectionsScreen"
+import { ServicesScreen } from "@/screens/ServicesScreen"
 import type { ThemedStyle } from "@/theme"
 import { AppStackParamList, AppStackScreenProps, TabParamList } from "../navigators/types"
 import { useAppTheme } from "@/utils/useAppTheme"
@@ -50,7 +50,6 @@ export function TabNavigator() {
         tabBarItemStyle: themed($tabBarItem),
       }}
     >
-
       <Tab.Screen
         name="DashboardScreen"
         component={DashboardScreen}
@@ -66,10 +65,7 @@ export function TabNavigator() {
         name="Logs"
         component={LogsScreen}
         options={{
-          // Using a hardcoded string as a temporary solution
           tabBarLabel: "Logs",
-          // You'll need to add "logsTab" to your translation file
-          // tabBarLabel: translate("demoNavigator:logsTab"),
           tabBarIcon: ({ focused }) => (
             <Icon icon="menu" color={focused ? colors.tint : colors.tintInactive} size={30} />
           ),
@@ -82,18 +78,18 @@ export function TabNavigator() {
         options={{
           tabBarLabel: translate("demoNavigator:chatTab"),
           tabBarIcon: ({ focused }) => (
-            <Icon icon="chat" color={focused ? colors.tint : colors.tintInactive} size={30} />
+            <Icon icon="community" color={focused ? colors.tint : colors.tintInactive} size={30} />
           ),
         }}
       />
 
       <Tab.Screen
-        name="Section"
-        component={SectionScreen}
+        name="Services"
+        component={ServicesScreen}
         options={{
-          tabBarLabel: translate("demoNavigator:sectionTab"),
+          tabBarLabel: translate("demoNavigator:servicesTab"),
           tabBarIcon: ({ focused }) => (
-            <Icon icon="section" color={focused ? colors.tint : colors.tintInactive} size={30} />
+            <Icon icon="community" color={focused ? colors.tint : colors.tintInactive} size={30} />
           ),
         }}
       />
@@ -109,6 +105,7 @@ export function TabNavigator() {
         }}
       />
 
+      
     </Tab.Navigator>
   )
 }
