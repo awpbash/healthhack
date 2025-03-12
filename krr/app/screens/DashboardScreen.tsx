@@ -7,7 +7,6 @@ import {
   SafeAreaView,
   StyleSheet,
   Dimensions,
-  Platform, 
   Modal
 } from "react-native"
 import { LineChart, BarChart } from "react-native-chart-kit"
@@ -18,9 +17,7 @@ import {
   Heart,
   Scale,
   Utensils,
-  TrendingUp,
-  ChevronLeft,
-  ChevronRight,
+  TrendingUp
 } from "lucide-react-native"
 import { Picker } from "@react-native-picker/picker"
 
@@ -440,8 +437,8 @@ const BloodPressureChart: FC<{ data: VitalsDataPoint[]; color?: string }> = ({ d
         propsForDots: {
           r: "6",
           strokeWidth: "2",
-          stroke: "black",
-          fill: "black",
+          stroke: theme.colors.primary,
+          fill: theme.colors.primary,
         },
       }}
       bezier={false}
