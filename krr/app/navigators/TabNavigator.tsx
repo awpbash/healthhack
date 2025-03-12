@@ -8,7 +8,7 @@ import { ProfileScreen } from "@/screens/ProfileScreen"
 import  DashboardScreen   from "@/screens/DashboardScreen"
 import { LogsScreen } from "@/screens/LogsScreen"
 import { ChatScreen } from "@/screens/ChatScreen"
-import { ServicesScreen } from "@/screens/ServicesScreen"
+import  { ServicesScreen } from "@/screens/ServicesScreen"
 import type { ThemedStyle } from "@/theme"
 import { AppStackParamList, AppStackScreenProps, TabParamList } from "../navigators/types"
 import { useAppTheme } from "@/utils/useAppTheme"
@@ -78,7 +78,7 @@ export function TabNavigator() {
         options={{
           tabBarLabel: translate("demoNavigator:chatTab"),
           tabBarIcon: ({ focused }) => (
-            <Icon icon="community" color={focused ? colors.tint : colors.tintInactive} size={30} />
+            <Icon icon="chat" color={focused ? colors.tint : colors.tintInactive} size={30} />
           ),
         }}
       />
@@ -89,7 +89,7 @@ export function TabNavigator() {
         options={{
           tabBarLabel: translate("demoNavigator:servicesTab"),
           tabBarIcon: ({ focused }) => (
-            <Icon icon="community" color={focused ? colors.tint : colors.tintInactive} size={30} />
+            <Icon icon="more" color={focused ? colors.tint : colors.tintInactive} size={30} />
           ),
         }}
       />
