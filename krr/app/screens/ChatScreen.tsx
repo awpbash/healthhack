@@ -7,7 +7,7 @@ import { get_prompt } from "@/services/api/prompt"
 
 // Azure OpenAI configuration
 const AZURE_OPENAI_API_KEY =
-  "FvC65KLeZ0QT9ZvEGDEagkBZN4WtWYE1SpdTJH4J6YooUkWq3gSLJQQJ99BBACHYHv6XJ3w3AAAAACOGCZgz" // WARNING: Exposing API keys in client code is insecure.
+  "" // WARNING: Exposing API keys in client code is insecure.
 const AZURE_OPENAI_ENDPOINT = "https://e0957-m7dhe0bf-eastus2.cognitiveservices.azure.com"
 const DEPLOYMENT_NAME = "gpt-4"
 const API_VERSION = "2024-08-01-preview"
@@ -238,7 +238,7 @@ export const ChatScreen: FC<ChatProps<"Chat">> = function ChatScreen(_props) {
       .join("\n");
 
     // Build the additional context.
-    const additionalContext = `Vitals Data:\n${vitalsStr}\n\nActivity Data:\n${activityStr}`;
+    const additionalContext = `\n${latestUserMsg}\nVitals Data:\n${vitalsStr}\n\nActivity Data:\n${activityStr}`;
     // console.log("gay")
     // Generate the combined prompt using the selected prompt mode.
     const combinedPrompt = get_prompt(selectedPrompt, additionalContext);

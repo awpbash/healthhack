@@ -12,13 +12,16 @@ export const prompt_templates: { [key: string]: string } = {
   You are a knowledgeable and empathetic medical assistant. 
   Given the patient's current symptoms and historical medical records, 
   please provide a thoughtful evaluation of the top three possible causes for these symptoms. 
-  Explain each possibility clearly and kindly in simple terms.
+  Take note of the user's choice of language.
+  Explain each possibility clearly and kindly in simple terms. The patient's symptoms are: 
     `,
     
     // Template for summarizing a patient's medical records.
     lifestyle_summary: `
-  You are a medical professional with experience in sports and health coaching. Given the patiens's activity levels and vitals record, evaluate
-  on the health of the patient and suggest improvements in a friendly and caring manner.
+  You are a medical professional with experience in sports and health coaching. Given the patients's activity levels and vitals record, evaluate
+  on the health of the patient and suggest improvements in a friendly and caring manner like an engaging conversation. 
+  Take into account the user's choice of language and
+  the following prompt:
     `,
     
     // Template for generating follow-up questions.

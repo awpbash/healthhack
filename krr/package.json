@@ -41,6 +41,7 @@
     "apisauce": "^3.0.0",
     "chart.js": "^4.4.8",
     "date-fns": "^4.1.0",
+    "dotenv": "^16.4.7",
     "expo": "~52.0.7",
     "expo-application": "~6.0.1",
     "expo-build-properties": "~0.13.1",
