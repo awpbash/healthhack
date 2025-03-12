@@ -85,6 +85,7 @@ export const ChatScreen: FC<ChatProps<"Chat">> = function ChatScreen(_props) {
   const [isTyping, setIsTyping] = useState(false)
   const [selectedPrompt, setSelectedPrompt] = useState("symptom_checker")
 
+
   // Initialize chat with a welcome message.
   useEffect(() => {
     setMessages([
@@ -119,12 +120,14 @@ export const ChatScreen: FC<ChatProps<"Chat">> = function ChatScreen(_props) {
   )
 
   // Standard onSend for regular chat messages.
-  const onSend = useCallback(async (newMessages: any[] = []) => {
+  const onSend = async (newMessages: any[] = []) => {
+    console.log(selectedPrompt)
     setMessages((previousMessages) => GiftedChat.append(previousMessages, newMessages))
 
     const userMessage = newMessages[0].text
     console.log(userMessage)
-    console.log(newMessages)
+    console.log(selectedPrompt)
+
     if (selectedPrompt === "symptom_checker") {
       //console.log("gaygayagy")
       onSymptomCheck(newMessages)
@@ -154,7 +157,7 @@ export const ChatScreen: FC<ChatProps<"Chat">> = function ChatScreen(_props) {
     } finally {
       setIsTyping(false)
     }
-  }, [])
+  }
 
   // onSymptomCheck retrieves medical records for user "129", builds a combined prompt, and calls Azure OpenAI.
   const onSymptomCheck = useCallback(async (msg: any[]=[]) => {
@@ -225,6 +228,7 @@ export const ChatScreen: FC<ChatProps<"Chat">> = function ChatScreen(_props) {
       console.error("Error retrieving vitals or activity data:", error);
       return;
     }
+    // console.log("success!")
     // Format the records into strings.
     const vitalsStr = vitalsRecords
       .map((rec: any) => `Temp: ${rec.Temperature}, BP: ${rec.BloodPressure}, Pulse: ${rec.PulseRate} at ${rec.Datetime}`)
@@ -235,6 +239,7 @@ export const ChatScreen: FC<ChatProps<"Chat">> = function ChatScreen(_props) {
 
     // Build the additional context.
     const additionalContext = `Vitals Data:\n${vitalsStr}\n\nActivity Data:\n${activityStr}`;
+    // console.log("gay")
     // Generate the combined prompt using the selected prompt mode.
     const combinedPrompt = get_prompt(selectedPrompt, additionalContext);
     console.log("Combined prompt for medical_summary:", combinedPrompt);
@@ -277,6 +282,7 @@ export const ChatScreen: FC<ChatProps<"Chat">> = function ChatScreen(_props) {
             selectedPrompt === mode.key && styles.promptModeButtonSelected,
           ]}
           onPress={() => setSelectedPrompt(mode.key)}
+          
         >
           <Text
             style={[
@@ -295,7 +301,6 @@ export const ChatScreen: FC<ChatProps<"Chat">> = function ChatScreen(_props) {
     <View style={{ flex: 1 }}>
       <View style={{ flex: 0.2 }}>{renderPromptModes()}</View>
       {/* Show the Symptom Check button only when "symptom_checker" mode is selected */}
-      {selectedPrompt === "symptom_checker"}
       <GiftedChat
         messages={messages}
         renderBubble={renderBubble}

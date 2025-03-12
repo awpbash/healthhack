@@ -16,9 +16,9 @@ export const prompt_templates: { [key: string]: string } = {
     `,
     
     // Template for summarizing a patient's medical records.
-    medical_summary: `
-  You are a compassionate medical aide. Summarize the patient's past medical records,
-  highlighting recurring symptoms, diagnoses, and key health events in a clear and concise manner.
+    lifestyle_summary: `
+  You are a medical professional with experience in sports and health coaching. Given the patiens's activity levels and vitals record, evaluate
+  on the health of the patient and suggest improvements in a friendly and caring manner.
     `,
     
     // Template for generating follow-up questions.
