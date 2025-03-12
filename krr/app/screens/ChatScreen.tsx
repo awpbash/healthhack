@@ -11,7 +11,7 @@ import {
 import { ChatProps } from "@/navigators/types";
 import * as Api from "@/services/api/api";
 import { get_prompt } from "@/services/api/prompt";
-import { Platform } from "react-native";
+
 
 // Azure OpenAI configuration
 const AZURE_OPENAI_API_KEY =
@@ -85,7 +85,6 @@ const TypingIndicator: FC = () => {
 const promptModes = [
   { key: "symptom_checker", label: "Symptom Checker" },
   { key: "medical_summary", label: "Medical Summary" },
-  { key: "followup_question", label: "Follow-Up Question" },
   { key: "treatment_recommendation", label: "Treatment Rec." },
   { key: "general_conversation", label: "General Chat" },
 ]; 
@@ -94,7 +93,7 @@ export const ChatScreen: FC<ChatProps<"Chat">> = function ChatScreen(_props) {
   const [messages, setMessages] = useState<any[]>([]);
   const [isTyping, setIsTyping] = useState(false);
   const [selectedPrompt, setSelectedPrompt] = useState("symptom_checker");
-
+  
   // Initialize chat with a welcome message.
   useEffect(() => {
     setMessages([
@@ -105,6 +104,7 @@ export const ChatScreen: FC<ChatProps<"Chat">> = function ChatScreen(_props) {
         user: {
           _id: 2,
           name: "Chatbot",
+          avatar: require("../../assets/images/bot-icon.png")
         },
       },
     ]);
@@ -116,7 +116,7 @@ export const ChatScreen: FC<ChatProps<"Chat">> = function ChatScreen(_props) {
       textStyle={{ right: { color: "#333333" } }}
       wrapperStyle={{
         right: { backgroundColor: "#FFFFFF" },
-        left: { backgroundColor: "#49c5b1", marginLeft: -40 },
+        left: { backgroundColor: "#49c5b1", marginLeft: -0 },
       }}
       renderTime={(props: any) => (
         <Time
@@ -202,7 +202,8 @@ export const ChatScreen: FC<ChatProps<"Chat">> = function ChatScreen(_props) {
         createdAt: new Date(),
         user: {
           _id: 2,
-          name: "Chatbot"
+          name: "Missy",
+          avatar: require("../../assets/images/bot-icon.png")
         },
       };
       setMessages((previousMessages) =>
