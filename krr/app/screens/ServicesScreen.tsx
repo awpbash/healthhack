@@ -83,16 +83,16 @@ export const ServicesScreen: FC<DemoTabScreenProps<"Services">> = function Servi
   // Sample icons (replace with your actual local images)
   // For local images, you'll need to use require()
   const icons = {
-    asthmaControlTest: require("@/components/act.png"),
-    cancerRiskCalculator: require("@/components/calculator.png"),
-    smokingCessation: require("@/components/smokingcessation.png"),
-    medication: require("@/components/medication.png"),
-    healthScreening: require("@/components/healthscreening.png"),
-    chas: require("@/components/chas.png"),
-    healthierSG: require("@/components/healthierSG.png"),
-    appointments: require("@/components/act.png"),
-    medications: require("@/components/act.png"),
-    paymentFinancials: require("@/components/act.png"),
+    asthmaControlTest: require("@/assets/icons/act.png"),
+    cancerRiskCalculator: require("@/assets/icons/calculator.png"),
+    smokingCessation: require("@/assets/icons/smokingcessation.png"),
+    medication: require("@/assets/icons/medication.png"),
+    healthScreening: require("@/assets/icons/healthscreening.png"),
+    chas: require("@/assets/icons/chas.png"),
+    healthierSG: require("@/assets/icons/healthierSG.png"),
+    appointments: require("@/assets/icons/appointments.png"),
+    medications: require("@/assets/icons/medication.png"),
+    paymentFinancials: require("@/assets/icons/payments.png"),
   }
 
   // Light color variants based on the app's primary teal color (#49c5b1)
@@ -118,7 +118,7 @@ export const ServicesScreen: FC<DemoTabScreenProps<"Services">> = function Servi
           {/* ACT */}
           <ServiceItem
             icon={icons.asthmaControlTest}
-            label="Asthma Control Test"
+            label="Asthma control test"
             color={colorVariants.lightTeal}
             zoom={1.5} /* Adjust this value to control zoom level */
           />
@@ -126,7 +126,7 @@ export const ServicesScreen: FC<DemoTabScreenProps<"Services">> = function Servi
           {/* Cancer Risk Calculator */}
           <ServiceItem
             icon={icons.cancerRiskCalculator}
-            label="Cancer Risk Calculator"
+            label="Cancer risk calculator"
             color={colorVariants.lightTeal}
             zoom={1.5}
           />
@@ -134,7 +134,7 @@ export const ServicesScreen: FC<DemoTabScreenProps<"Services">> = function Servi
           {/* Smoking Cessation */}
           <ServiceItem
             icon={icons.smokingCessation}
-            label="Smoking Cessation"
+            label="Smoking cessation"
             color={colorVariants.lightTeal}
             zoom={1.5}
           />
@@ -176,7 +176,7 @@ export const ServicesScreen: FC<DemoTabScreenProps<"Services">> = function Servi
             icon={icons.appointments}
             label="Appointments"
             color={colorVariants.lightTeal}
-            zoom={1.5}
+            zoom={1.2}
           />
         </View>
 
@@ -186,7 +186,7 @@ export const ServicesScreen: FC<DemoTabScreenProps<"Services">> = function Servi
             icon={icons.medications}
             label="Medications"
             color={colorVariants.lightTeal}
-            zoom={1.8} /* Higher zoom for the inhaler image */
+            zoom={1.2} /* Higher zoom for the inhaler image */
           />
 
           {/* Payments & Financials */}

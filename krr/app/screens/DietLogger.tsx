@@ -38,7 +38,7 @@ export const DietLoggerScreen: FC<DietLoggerProps> = function DietLoggerScreen(_
         <View style={themed($healthyPlateContainer)}>
           <Text style={themed($healthyPlateTitle)}>Healthy Plate Guide</Text>
           <Image
-            source={require("../components/healthyplate.png")}
+            source={require("@/assets/icons/healthyplate.png")}
             style={$healthyPlateImage}
             resizeMode="contain"
           />
