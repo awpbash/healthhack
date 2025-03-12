@@ -1,32 +1,23 @@
-import React, { FC, useState, useCallback, useEffect, useRef } from "react";
-import { GiftedChat, Bubble, Time } from "react-native-gifted-chat";
-import {
-  View,
-  Text,
-  Animated,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
-} from "react-native";
-import { ChatProps } from "@/navigators/types";
-import * as Api from "@/services/api/api";
-import { get_prompt } from "@/services/api/prompt";
-
+import React, { FC, useState, useCallback, useEffect, useRef } from "react"
+import { GiftedChat, Bubble, Time } from "react-native-gifted-chat"
+import { View, Text, Animated, StyleSheet, TouchableOpacity, ScrollView } from "react-native"
+import { ChatProps } from "@/navigators/types"
+import * as Api from "@/services/api/api"
+import { get_prompt } from "@/services/api/prompt"
 
 // Azure OpenAI configuration
 const AZURE_OPENAI_API_KEY =
-  "FvC65KLeZ0QT9ZvEGDEagkBZN4WtWYE1SpdTJH4J6YooUkWq3gSLJQQJ99BBACHYHv6XJ3w3AAAAACOGCZgz"; // WARNING: Exposing API keys in client code is insecure.
-const AZURE_OPENAI_ENDPOINT =
-  "https://e0957-m7dhe0bf-eastus2.cognitiveservices.azure.com";
-const DEPLOYMENT_NAME = "gpt-4";
-const API_VERSION = "2024-08-01-preview";
+  "FvC65KLeZ0QT9ZvEGDEagkBZN4WtWYE1SpdTJH4J6YooUkWq3gSLJQQJ99BBACHYHv6XJ3w3AAAAACOGCZgz" // WARNING: Exposing API keys in client code is insecure.
+const AZURE_OPENAI_ENDPOINT = "https://e0957-m7dhe0bf-eastus2.cognitiveservices.azure.com"
+const DEPLOYMENT_NAME = "gpt-4"
+const API_VERSION = "2024-08-01-preview"
 
 // Function to call the Azure OpenAI API directly.
 const sendToAzureOpenAI = async (userMessage: string) => {
-  const url = `${AZURE_OPENAI_ENDPOINT}/openai/deployments/${DEPLOYMENT_NAME}/chat/completions?api-version=${API_VERSION}`;
+  const url = `${AZURE_OPENAI_ENDPOINT}/openai/deployments/${DEPLOYMENT_NAME}/chat/completions?api-version=${API_VERSION}`
   const payload = {
     messages: [{ role: "user", content: userMessage }],
-  };
+  }
   const response = await fetch(url, {
     method: "POST",
     headers: {
@@ -34,51 +25,51 @@ const sendToAzureOpenAI = async (userMessage: string) => {
       "api-key": AZURE_OPENAI_API_KEY,
     },
     body: JSON.stringify(payload),
-  });
+  })
   if (!response.ok) {
-    const error = await response.text();
-    throw new Error(`Azure OpenAI API error: ${error}`);
+    const error = await response.text()
+    throw new Error(`Azure OpenAI API error: ${error}`)
   }
-  const data = await response.json();
-  return data;
-};
+  const data = await response.json()
+  return data
+}
 
 //=======================================================================================================
 // This section for the typing indicator pubor
 const TypingIndicator: FC = () => {
-  const animation = useRef(new Animated.Value(0)).current;
+  const animation = useRef(new Animated.Value(0)).current
   useEffect(() => {
     Animated.loop(
       Animated.timing(animation, {
         toValue: 3, // three phases: 0-1, 1-2, 2-3
         duration: 900, // total duration for one complete cycle
         useNativeDriver: true,
-      })
-    ).start();
-  }, [animation]);
+      }),
+    ).start()
+  }, [animation])
   const dot1Opacity = animation.interpolate({
     inputRange: [0, 0.5, 1],
     outputRange: [0.3, 1, 0.3],
     extrapolate: "clamp",
-  });
+  })
   const dot2Opacity = animation.interpolate({
     inputRange: [1, 1.5, 2],
     outputRange: [0.3, 1, 0.3],
     extrapolate: "clamp",
-  });
+  })
   const dot3Opacity = animation.interpolate({
     inputRange: [2, 2.5, 3],
     outputRange: [0.3, 1, 0.3],
     extrapolate: "clamp",
-  });
+  })
   return (
     <View style={styles.typingContainer}>
       <Animated.View style={[styles.dot, { opacity: dot1Opacity }]} />
       <Animated.View style={[styles.dot, { opacity: dot2Opacity }]} />
       <Animated.View style={[styles.dot, { opacity: dot3Opacity }]} />
     </View>
-  );
-};
+  )
+}
 //=======================================================================================================
 
 // Define available prompt modes.
@@ -87,13 +78,13 @@ const promptModes = [
   { key: "medical_summary", label: "Medical Summary" },
   { key: "treatment_recommendation", label: "Treatment Rec." },
   { key: "general_conversation", label: "General Chat" },
-]; 
+]
 
 export const ChatScreen: FC<ChatProps<"Chat">> = function ChatScreen(_props) {
-  const [messages, setMessages] = useState<any[]>([]);
-  const [isTyping, setIsTyping] = useState(false);
-  const [selectedPrompt, setSelectedPrompt] = useState("symptom_checker");
-  
+  const [messages, setMessages] = useState<any[]>([])
+  const [isTyping, setIsTyping] = useState(false)
+  const [selectedPrompt, setSelectedPrompt] = useState("symptom_checker")
+
   // Initialize chat with a welcome message.
   useEffect(() => {
     setMessages([
@@ -104,11 +95,11 @@ export const ChatScreen: FC<ChatProps<"Chat">> = function ChatScreen(_props) {
         user: {
           _id: 2,
           name: "Chatbot",
-          avatar: require("../../assets/images/bot-icon.png")
+          avatar: require("../../assets/images/bot-icon.png"),
         },
       },
-    ]);
-  }, []);
+    ])
+  }, [])
 
   const renderBubble = (props: any) => (
     <Bubble
@@ -125,98 +116,95 @@ export const ChatScreen: FC<ChatProps<"Chat">> = function ChatScreen(_props) {
         />
       )}
     />
-  );
+  )
 
   // Standard onSend for regular chat messages.
   const onSend = useCallback(async (newMessages: any[] = []) => {
-    setMessages((previousMessages) =>
-      GiftedChat.append(previousMessages, newMessages)
-    );
+    setMessages((previousMessages) => GiftedChat.append(previousMessages, newMessages))
 
-    const userMessage = newMessages[0].text;
+    const userMessage = newMessages[0].text
     console.log(userMessage)
     console.log(newMessages)
     if (selectedPrompt == "symptom_checker") {
       //console.log("gaygayagy")
-      onSymptomCheck(newMessages);
+      onSymptomCheck(newMessages)
       return
-    };
-    setIsTyping(true);
+    }
+    setIsTyping(true)
     try {
-      const response = await sendToAzureOpenAI(userMessage);
-      const botReply = response.choices[0].message.content;
+      const response = await sendToAzureOpenAI(userMessage)
+      const botReply = response.choices[0].message.content
       const botMessage = {
         _id: Math.random().toString(36).substring(7),
         text: botReply,
         createdAt: new Date(),
         user: {
           _id: 2,
-          name: "Chatbot"
+          name: "Chatbot",
         },
-      };
-      setMessages((previousMessages) =>
-        GiftedChat.append(previousMessages, [botMessage])
-      );
+      }
+      setMessages((previousMessages) => GiftedChat.append(previousMessages, [botMessage]))
     } catch (error) {
-      console.error("Error calling Azure OpenAI:", error);
+      console.error("Error calling Azure OpenAI:", error)
     } finally {
-      setIsTyping(false);
+      setIsTyping(false)
     }
-  }, []);
+  }, [])
 
   // onSymptomCheck retrieves medical records for user "129", builds a combined prompt, and calls Azure OpenAI.
-  const onSymptomCheck = useCallback(async (msg: any[]=[]) => {
-    // Retrieve the latest user symptom from messages.
-    //console.log(msg);
-    const latestUserMsg = msg[0].text;
-    //console.log(latestUserMsg)
-    if (!latestUserMsg) {
-      console.warn("No user symptom found.");
-      return;
-    }
-    const symptomText = latestUserMsg;
-    // Retrieve medical records for user "129" using your query API.
-    let records: any[] = [];
-    try {
-      console.log(symptomText);
-      console.log("gaygaygay")
-      records = await Api.queryMedical("129", symptomText);
-    } catch (error) {
-      console.error("Error retrieving medical records:", error);
-    }
-    const recordsStr = records
-      .map((rec: any) => `${rec.Symptom}: ${rec.Diagnosis} (${rec.Datetime})`)
-      .join("\n");
-    // Build the combined prompt using the selected prompt mode.
-    const additionalContext = `Patient symptoms: ${symptomText}\nPast Medical Records:\n${recordsStr}`;
-    const combinedPrompt = get_prompt(selectedPrompt, additionalContext);
-    // Add a temporary message indicating evaluation is in progress.
-    
-    setIsTyping(true);
-    try {
-      const response = await sendToAzureOpenAI(combinedPrompt);
-      const botReply = response.choices[0].message.content;
-      const botMessage = {
-        _id: Math.random().toString(36).substring(7),
-        text: botReply,
-        createdAt: new Date(),
-        user: {
-          _id: 2,
-          name: "Missy",
-          avatar: require("../../assets/images/bot-icon.png")
-        },
-      };
-      setMessages((previousMessages) =>
-        GiftedChat.append(previousMessages, [botMessage])
-      );
-    } catch (error) {
-      console.error("Error calling Azure OpenAI for symptom check:", error);
-    } finally {
-      setIsTyping(false);
-    }
-  }, [messages, selectedPrompt]);
+  const onSymptomCheck = useCallback(
+    async (msg: any[] = []) => {
+      // Retrieve the latest user symptom from messages.
+      //console.log(msg);
+      const latestUserMsg = msg[0].text
+      //console.log(latestUserMsg)
+      if (!latestUserMsg) {
+        console.warn("No user symptom found.")
+        return
+      }
+      const symptomText = latestUserMsg
+      // Retrieve medical records for user "129" using your query API.
+      let records: any[] = []
+      try {
+        console.log(symptomText)
+        console.log("gaygaygay")
+        records = await Api.queryMedical("129", symptomText)
+      } catch (error) {
+        console.error("Error retrieving medical records:", error)
+      }
+      const recordsStr = records
+        .map((rec: any) => `${rec.Symptom}: ${rec.Diagnosis} (${rec.Datetime})`)
+        .join("\n")
+      // Build the combined prompt using the selected prompt mode.
+      const additionalContext = `Patient symptoms: ${symptomText}\nPast Medical Records:\n${recordsStr}`
+      const combinedPrompt = get_prompt(selectedPrompt, additionalContext)
+      // Add a temporary message indicating evaluation is in progress.
 
-  const renderFooter = () => (isTyping ? <TypingIndicator /> : null);
+      setIsTyping(true)
+      try {
+        const response = await sendToAzureOpenAI(combinedPrompt)
+        const botReply = response.choices[0].message.content
+        const botMessage = {
+          _id: Math.random().toString(36).substring(7),
+          text: botReply,
+          createdAt: new Date(),
+          user: {
+            _id: 2,
+            name: "Missy",
+            avatar: require("../../assets/images/bot-icon.png"),
+          },
+        }
+        setMessages((previousMessages) => GiftedChat.append(previousMessages, [botMessage]))
+      } catch (error) {
+        console.error("Error calling Azure OpenAI for symptom check:", error)
+      } finally {
+        setIsTyping(false)
+      }
+    },
+    [messages, selectedPrompt],
+  )
+
+  const renderFooter = () => (isTyping ? <TypingIndicator /> : null)
 
   // Render prompt mode selection UI.
   const renderPromptModes = () => (
@@ -245,11 +233,11 @@ export const ChatScreen: FC<ChatProps<"Chat">> = function ChatScreen(_props) {
         </TouchableOpacity>
       ))}
     </ScrollView>
-  );
+  )
 
   return (
     <View style={{ flex: 1 }}>
-      {renderPromptModes()}
+      <View style={{ flex: 0.1 }}>{renderPromptModes()}</View>
       {/* Show the Symptom Check button only when "symptom_checker" mode is selected */}
       {selectedPrompt === "symptom_checker"}
       <GiftedChat
@@ -261,8 +249,8 @@ export const ChatScreen: FC<ChatProps<"Chat">> = function ChatScreen(_props) {
         user={{ _id: 1 }}
       />
     </View>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   typingContainer: {
@@ -279,11 +267,12 @@ const styles = StyleSheet.create({
     marginHorizontal: 3,
   },
   promptModesContainer: {
-    flexDirection: "row",
-    paddingVertical: 10,
-    paddingHorizontal: 5,
-    justifyContent: "center",
+    // flexDirection: "row",
+    // paddingVertical: 10,
+    // paddingHorizontal: 5,
+    // justifyContent: "center",
     alignItems: "center",
+    // height: "10%"
   },
   promptModeButton: {
     backgroundColor: "#eee",
@@ -316,10 +305,10 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   messagesContainer: {
-    backgroundColor: "#F5F5F5",
+    // backgroundColor: "#F5F5F5",
     paddingBottom: 20,
     paddingLeft: 0,
   },
-});
+})
 
-export default ChatScreen;
+export default ChatScreen
