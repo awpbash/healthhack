@@ -241,7 +241,7 @@ def query_medical_records():
             WHERE User_ID = ?
             ORDER BY VECTOR_DOT_PRODUCT(Embedding, TO_VECTOR(?)) DESC
         """
-        cursor.execute(sql, (3, user, json.dumps(prompt_embedding)))
+        cursor.execute(sql, (3, user, json.dumps(prompt_embedding))) # <-- can change
         rows = cursor.fetchall()
         results = [{"Symptom": row[0], "Diagnosis": row[1], "Datetime": row[2]} for row in rows]
         return jsonify(results), 200

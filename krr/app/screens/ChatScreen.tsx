@@ -191,7 +191,7 @@ export const ChatScreen: FC<ChatProps<"Chat">> = function ChatScreen(_props) {
     const additionalContext = `Patient symptoms: ${symptomText}\nPast Medical Records:\n${recordsStr}`;
     const combinedPrompt = get_prompt(selectedPrompt, additionalContext);
     // Add a temporary message indicating evaluation is in progress.
-    
+    console.log(combinedPrompt)
     setIsTyping(true);
     try {
       const response = await sendToAzureOpenAI(combinedPrompt);
