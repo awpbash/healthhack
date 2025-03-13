@@ -122,7 +122,7 @@ cd healthhack
 ```
 ### 2. Installing depandencies
 ```bash
-pip install requriements.txt
+pip install -r requriements.txt
 ```
 
 ### 3. Running backend
