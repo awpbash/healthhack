@@ -7,7 +7,7 @@ import { get_prompt } from "@/services/api/prompt"
 
 // Azure OpenAI configuration
 const AZURE_OPENAI_API_KEY =
-  "" // WARNING: Exposing API keys in client code is insecure.
+  "FvC65KLeZ0QT9ZvEGDEagkBZN4WtWYE1SpdTJH4J6YooUkWq3gSLJQQJ99BBACHYHv6XJ3w3AAAAACOGCZgz" // WARNING: Exposing API keys in client code is insecure.
 const AZURE_OPENAI_ENDPOINT = "https://e0957-m7dhe0bf-eastus2.cognitiveservices.azure.com"
 const DEPLOYMENT_NAME = "gpt-4"
 const API_VERSION = "2024-08-01-preview"
@@ -140,7 +140,10 @@ export const ChatScreen: FC<ChatProps<"Chat">> = function ChatScreen(_props) {
     }
     setIsTyping(true)
     try {
-      const response = await sendToAzureOpenAI(userMessage)
+      const foo = get_prompt(selectedPrompt, userMessage)
+      console.log(selectedPrompt)
+      console.log(foo)
+      const response = await sendToAzureOpenAI(foo)
       const botReply = response.choices[0].message.content
       const botMessage = {
         _id: Math.random().toString(36).substring(7),
@@ -149,6 +152,7 @@ export const ChatScreen: FC<ChatProps<"Chat">> = function ChatScreen(_props) {
         user: {
           _id: 2,
           name: "Chatbot",
+          avatar: require("../../assets/images/bot-icon.png")
         },
       }
       setMessages((previousMessages) => GiftedChat.append(previousMessages, [botMessage]))

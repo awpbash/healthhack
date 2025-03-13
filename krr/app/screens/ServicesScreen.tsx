@@ -112,13 +112,13 @@ export const ServicesScreen: FC<DemoTabScreenProps<"Services">> = function Servi
         </View>
 
         {/* Popular Services Section */}
-        <Text preset="subheading" text="Popular Services" style={themed($sectionTitle)} />
+        <Text preset="subheading" text="My Services                                    Edit" style={themed($sectionTitle)} />
 
         <View style={themed($servicesGrid)}>
           {/* ACT */}
           <ServiceItem
             icon={icons.asthmaControlTest}
-            label="Asthma control test"
+            label="Asthma Control test"
             color={colorVariants.lightTeal}
             zoom={1.5} /* Adjust this value to control zoom level */
           />
@@ -126,7 +126,7 @@ export const ServicesScreen: FC<DemoTabScreenProps<"Services">> = function Servi
           {/* Cancer Risk Calculator */}
           <ServiceItem
             icon={icons.cancerRiskCalculator}
-            label="Cancer risk calculator"
+            label="Cancer Risk calculator"
             color={colorVariants.lightTeal}
             zoom={1.5}
           />
@@ -134,7 +134,7 @@ export const ServicesScreen: FC<DemoTabScreenProps<"Services">> = function Servi
           {/* Smoking Cessation */}
           <ServiceItem
             icon={icons.smokingCessation}
-            label="Smoking cessation"
+            label="Smoking Cessation"
             color={colorVariants.lightTeal}
             zoom={1.5}
           />
@@ -142,7 +142,7 @@ export const ServicesScreen: FC<DemoTabScreenProps<"Services">> = function Servi
           {/* Medication Refill - Your inhaler image */}
           <ServiceItem
             icon={icons.medication}
-            label="Medication refill"
+            label="Medication Refill"
             color={colorVariants.lightTeal}
             zoom={1.1} /* Higher zoom for the inhaler image */
           />
@@ -150,7 +150,7 @@ export const ServicesScreen: FC<DemoTabScreenProps<"Services">> = function Servi
           {/* Health Screening */}
           <ServiceItem
             icon={icons.healthScreening}
-            label="Health screening"
+            label="Health Screening"
             color={colorVariants.lightTeal}
             zoom={1.4}
           />
