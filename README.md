@@ -1,8 +1,8 @@
-# HealthHack: {Insert Name}
+# HealthHack: Pocket Missy
 
 <img src="krr/assets/images/bot-icon.png"  width="150" />
 
-Welcome to **{Insert Name}**, our innovative one-stop shop app designed to transform healthcare delivery for Singapore’s ageing population. By consolidating all essential healthcare services into a single platform, our solution leverages cutting-edge digital tools—such as IRIS database vector search and Retrieval-Augmented Generation (RAG) for prompt engineering—to empower seniors and healthcare providers with real-time health data, personalized insights, and AI-driven advice.
+Welcome to **Pocket Missy**, our innovative one-stop shop app designed to transform healthcare delivery for Singapore’s ageing population. By consolidating all essential healthcare services into a single platform, our solution leverages cutting-edge digital tools—such as IRIS database vector search and Retrieval-Augmented Generation (RAG) for prompt engineering—to empower seniors and healthcare providers with real-time health data, personalized insights, and AI-driven advice.
 
 ---
 
