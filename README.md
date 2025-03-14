@@ -1,8 +1,8 @@
-# HealthHack: {Insert Name}
+# HealthHack: Pocket Missy
 
-<img src="krr/assets/images/bot-icon.png"  width="150" />
+<img src="krr/assets/images/app_logo.png"  width="300" />
 
-Welcome to **{Insert Name}**, our innovative one-stop shop app designed to transform healthcare delivery for Singapore’s ageing population. By consolidating all essential healthcare services into a single platform, our solution leverages cutting-edge digital tools—such as IRIS database vector search and Retrieval-Augmented Generation (RAG) for prompt engineering—to empower seniors and healthcare providers with real-time health data, personalized insights, and AI-driven advice.
+Welcome to **Pocket Missy**, our innovative one-stop shop app designed to transform healthcare delivery for Singapore’s ageing population. By consolidating all essential healthcare services into a single platform, our solution leverages cutting-edge digital tools—such as IRIS database vector search and Retrieval-Augmented Generation (RAG) for prompt engineering—to empower seniors and healthcare providers with real-time health data, personalized insights, and AI-driven advice.
 
 ---
 
@@ -26,7 +26,7 @@ Welcome to **{Insert Name}**, our innovative one-stop shop app designed to trans
 
 ## 1. Overview
 
-With ageing populations on the rise and a growing need for proactive, value-based healthcare, Singapore’s healthcare landscape is rapidly evolving. **{Insert Name}** is our pioneering solution that integrates all essential health services into one unified platform. By harnessing advanced digital technologies—including IRIS vector search for efficient data retrieval and RAG for prompt engineering—our app delivers real-time insights and personalized advice, bridging gaps in care continuity while reducing costs and improving patient outcomes.
+With ageing populations on the rise and a growing need for proactive, value-based healthcare, Singapore’s healthcare landscape is rapidly evolving. **Pocket Missy** is our pioneering solution that integrates all essential health services into one unified platform. By harnessing advanced digital technologies—including IRIS vector search for efficient data retrieval and RAG for prompt engineering—our app delivers real-time insights and personalized advice, bridging gaps in care continuity while reducing costs and improving patient outcomes.
 
 ---
 
