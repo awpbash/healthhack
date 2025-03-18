@@ -8,7 +8,7 @@ Welcome to **Pocket Missy**, our innovative one-stop shop app designed to transf
 
 ## Table of Contents
 
-1. [Overview](#1.-overview)
+1. [Overview](#overview)
 2. [Problem Statement & Context](#problem-statement--context)
 3. [Our Approach](#our-approach)
 4. [Key Features](#key-features)
@@ -24,7 +24,7 @@ Welcome to **Pocket Missy**, our innovative one-stop shop app designed to transf
 
 ---
 
-## 1. Overview
+## Overview
 
 With ageing populations on the rise and a growing need for proactive, value-based healthcare, Singapore’s healthcare landscape is rapidly evolving. **Pocket Missy** is our pioneering solution that integrates all essential health services into one unified platform. By harnessing advanced digital technologies—including IRIS vector search for efficient data retrieval and RAG for prompt engineering—our app delivers real-time insights and personalized advice, bridging gaps in care continuity while reducing costs and improving patient outcomes.
 
