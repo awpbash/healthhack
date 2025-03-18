@@ -14,13 +14,6 @@ Welcome to **Pocket Missy**, our innovative one-stop shop app designed to transf
 4. [Key Features](#4-key-features)
 5. [Architecture & Workflow](#5-architecture--workflow)
 6. [Setup & Installation](#6-setup--installation)
-7. [Usage](#7-usage)
-8. [APIs & Data Flow](#8-apis--data-flow)
-9. [Code Samples](#9-code-samples)
-10. [Screenshots & Visuals](#10-screenshots--visuals)
-11. [Contributing](#11-contributing)
-12. [License](#12-license)
-13. [Final Thoughts](#13-final-thoughts)
 
 ---
 
@@ -88,24 +81,26 @@ Our solution directly tackles these challenges through:
 
 ### Architecture
 
-<img src="krr/assets/images/Architecturev2.jpg"  width="500" />
+<img src="krr/assets/images/Architecturev2.jpg"  width="100%" />
 
-Powered by
+Powered by<br/>
+<img src="krr/assets/images/tech stackv2.png"  width="300" />
 
-- **Frontend (React Native):** <img src="krr/assets/images/react-native-1.svg"  width="300" />
-
+- **Frontend (React Native - Typescript):** 
 
   Delivers the mobile interface for the health dashboard and chatbot.
 
-- **Backend (Flask):** 
+- **Backend (Flask - Python):** 
 
   Provides RESTful API endpoints to interact with the IRIS database and Azure OpenAI.
 
-- **Database (IRIS):**  
+- **Database (IRIS):**
+
   Stores user data across tables: MedicalRecords, Vitals, Activity, PastPrompts, and Diet.  
   Utilizes vector search to support efficient data retrieval and prompt engineering.
 
-- **Embedding Service:**  
+- **Embedding Service (pritamdeka/S-PubMedBert-MS-MARCO):**
+
   Generates semantic embeddings using SentenceTransformer for advanced natural language processing.
 
 ### Workflow
