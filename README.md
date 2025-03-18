@@ -13,7 +13,6 @@ By unifying essential healthcare services into one powerful platform, Pocket Mis
 
 <!-- ## Table of Contents
 
-<<<<<<< HEAD
 1. [Overview](#overview)
 2. [Problem Statement & Context](#problem-statement--context)
 3. [Our Approach](#our-approach)
@@ -27,21 +26,6 @@ By unifying essential healthcare services into one powerful platform, Pocket Mis
 11. [Contributing](#contributing)
 12. [License](#license)
 13. [Final Thoughts](#final-thoughts) -->
-=======
-1. [Overview](#1-overview)
-2. [Problem Statement & Context](#2-problem-statement--context)
-3. [Our Approach](#3-our-approach)
-4. [Key Features](#4-key-features)
-5. [Architecture & Workflow](#5-architecture--workflow)
-6. [Setup & Installation](#6-setup--installation)
-7. [Usage](#7-usage)
-8. [APIs & Data Flow](#8-apis--data-flow)
-9. [Code Samples](#9-code-samples)
-10. [Screenshots & Visuals](#10-screenshots--visuals)
-11. [Contributing](#11-contributing)
-12. [License](#12-license)
-13. [Final Thoughts](#13-final-thoughts)
->>>>>>> readme
 
 
 ## Problem Statement & Context
@@ -106,10 +90,9 @@ Our solution directly tackles these challenges through:
 
 <img src="krr/assets/images/Architecturev2.jpg"  width="500" />
 
-Powered by
 
-- **Frontend (React Native):** <img src="krr/assets/images/react-native-1.svg"  width="300" />
-
+Powered by<br/>
+<img src="krr/assets/images/tech stackv2.png"  width="300" />
 
   Delivers the mobile interface for the health dashboard and chatbot.
 
