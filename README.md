@@ -2,7 +2,7 @@
 
 <img src="krr/assets/images/app_logo.png"  width="300" />
 
-## Overview
+## 1. Overview
 
 Welcome to **Pocket Missy**, an innovative all-in-one app built to advance value-based healthcare in Singapore and support seniors in living independently. 
 
@@ -10,7 +10,7 @@ By unifying essential healthcare services into one powerful platform, Pocket Mis
 
 ## Table of Contents
 
-1. [Overview](#1-overview)
+1. [Overview](#-1-overview)
 2. [Problem Statement & Context](#2-problem-statement--context)
 3. [Our Approach](#3-our-approach)
 4. [Key Features](#4-key-features)
@@ -19,24 +19,7 @@ By unifying essential healthcare services into one powerful platform, Pocket Mis
 
 ---
 
-<!-- ## Table of Contents
-
-1. [Overview](#overview)
-2. [Problem Statement & Context](#problem-statement--context)
-3. [Our Approach](#our-approach)
-4. [Key Features](#key-features)
-5. [Architecture & Workflow](#architecture--workflow)
-6. [Setup & Installation](#setup--installation)
-7. [Usage](#usage)
-8. [APIs & Data Flow](#apis--data-flow)
-9. [Code Samples](#code-samples)
-10. [Screenshots & Visuals](#screenshots--visuals)
-11. [Contributing](#contributing)
-12. [License](#license)
-13. [Final Thoughts](#final-thoughts) -->
-
-
-## Problem Statement & Context
+## 2. Problem Statement & Context
 
 
 1. **Fragmented Healthcare Ecosystem:**  
