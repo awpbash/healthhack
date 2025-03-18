@@ -33,13 +33,6 @@ With ageing populations on the rise and a growing need for proactive, value-base
 2. **Underreporting Among the Elderly:**  
    Seniors often underreport critical health events due to forgetfulness or complex app navigation, leading to gaps in care.
 
-### Core Questions:
-
-- **How can technology bridge the gap between elderly care services and healthcare providers to ensure continuous, value-based care while reducing costs?**
-- **What innovative digital tools can lower healthcare costs and improve care quality in a value-based system?**
-
----
-
 ## 3. Our Approach
 
 Our solution directly tackles these challenges through:
@@ -105,21 +98,28 @@ Powered by<br/>
 
 ### Workflow
 
-1. **Data Ingestion:**  
-   Sensor data, user logs, and external information are stored in the IRIS database.
-2. **Data Processing:**  
-   The backend cleans and enriches the data, including generating embeddings.
-3. **AI-Powered Insights:**  
-   The chatbot uses contextual data (e.g., vitals, activities) to generate personalized responses via Azure OpenAI.
-4. **User Interaction:**  
-   Users engage with a unified mobile app that integrates real-time dashboards and a conversational AI interface.
+# TO ADD FULL VIDEO FOR FRONTEND HERE
+# ADD VIDEO FOR LOGGER HERE
+1. **Logger:**  
+   Users save sensor data, logs and any information about their health they wish to store here. The saved data is sent to the backend for updating.
+
+2. **Backend Vector Embeddings:**
+   The backend embeds all unstructured data into vector embeddings before updating the IRIS Intersystems RAG Database.
+
+# ADD VIDEO FOR MISSY CHAT HERE
+3. **RAG and AI-Powered Insights using OpenAI:**
+   When chatting with Missy, users will be sending prompts for any of the 4 prompt modes:
+      - **Symptom Checker:** Retrieves past symptoms in logs using the vector search from IRIS Intersystems database that are most relevant to enrich the full fine-tuned prompt that generates in-depth analysis of their symptoms and possible diagnoses for users.
+      - **Medical Summary:** Retrieves and synthesizes historical vitals and activity data from the IRIS Intersystems database to build a fine-tuned prompt outlining the users' current general health based on their previous logs.
+      - **Treatment Recommendations:** Offers tailored advice on treatment options based on individual health profiles.
+      - **General Health Queries:** Supports multi-language conversations for accessible health information.
 
 ---
 
 ## 6. Setup & Installation
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/your-username/healthhack.git
+git clone https://github.com/awpbash/healthhack.git
 cd healthhack
 ```
 ### 2. Installing depandencies
