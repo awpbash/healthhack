@@ -91,7 +91,7 @@ Our solution directly tackles these challenges through:
 <img src="krr/assets/images/Architecturev2.jpg"  width="500" />
 
 
-Powered by<br/>
+Powered by: <br/>
 <img src="krr/assets/images/tech stackv2.png"  width="300" />
 
   Delivers the mobile interface for the health dashboard and chatbot.
