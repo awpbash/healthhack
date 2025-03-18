@@ -8,23 +8,23 @@ Welcome to **Pocket Missy**, our innovative one-stop shop app designed to transf
 
 ## Table of Contents
 
-1. [Overview](#overview)
+1. [Overview](#1-overview)
 2. [Problem Statement & Context](#2-problem-statement--context)
-3. [Our Approach](#our-approach)
-4. [Key Features](#key-features)
-5. [Architecture & Workflow](#architecture--workflow)
-6. [Setup & Installation](#setup--installation)
-7. [Usage](#usage)
-8. [APIs & Data Flow](#apis--data-flow)
-9. [Code Samples](#code-samples)
-10. [Screenshots & Visuals](#screenshots--visuals)
-11. [Contributing](#contributing)
-12. [License](#license)
-13. [Final Thoughts](#final-thoughts)
+3. [Our Approach](#3-our-approach)
+4. [Key Features](#4-key-features)
+5. [Architecture & Workflow](#5-architecture--workflow)
+6. [Setup & Installation](#6-setup--installation)
+7. [Usage](#7-usage)
+8. [APIs & Data Flow](#8-apis--data-flow)
+9. [Code Samples](#9-code-samples)
+10. [Screenshots & Visuals](#10-screenshots--visuals)
+11. [Contributing](#11-contributing)
+12. [License](#12-license)
+13. [Final Thoughts](#13-final-thoughts)
 
 ---
 
-## Overview
+## 1. Overview
 
 With ageing populations on the rise and a growing need for proactive, value-based healthcare, Singapore’s healthcare landscape is rapidly evolving. **Pocket Missy** is our pioneering solution that integrates all essential health services into one unified platform. By harnessing advanced digital technologies—including IRIS vector search for efficient data retrieval and RAG for prompt engineering—our app delivers real-time insights and personalized advice, bridging gaps in care continuity while reducing costs and improving patient outcomes.
 
