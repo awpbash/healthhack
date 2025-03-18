@@ -2,11 +2,16 @@
 
 <img src="krr/assets/images/app_logo.png"  width="300" />
 
-Welcome to **Pocket Missy**, our innovative one-stop shop app designed to transform healthcare delivery for Singapore’s ageing population. By consolidating all essential healthcare services into a single platform, our solution leverages cutting-edge digital tools—such as IRIS database vector search and Retrieval-Augmented Generation (RAG) for prompt engineering—to empower seniors and healthcare providers with real-time health data, personalized insights, and AI-driven advice.
+## Overview
+
+Welcome to **Pocket Missy**, an innovative all-in-one app built to advance value-based healthcare in Singapore and support seniors in living independently. 
+
+By unifying essential healthcare services into one powerful platform, Pocket Missy leverages cutting-edge vector search and Retrieval-Augmented Generation (RAG) technology to deliver hyper-personalized medical advice. Beyond that, it provides advanced data analytics and actionable healthcare insights, empowering users to make smarter, data-driven decisions for their health.
+
 
 ---
 
-## Table of Contents
+<!-- ## Table of Contents
 
 1. [Overview](#overview)
 2. [Problem Statement & Context](#problem-statement--context)
@@ -20,25 +25,20 @@ Welcome to **Pocket Missy**, our innovative one-stop shop app designed to transf
 10. [Screenshots & Visuals](#screenshots--visuals)
 11. [Contributing](#contributing)
 12. [License](#license)
-13. [Final Thoughts](#final-thoughts)
+13. [Final Thoughts](#final-thoughts) -->
 
----
 
-## 1. Overview
+## Problem Statement & Context
 
-With ageing populations on the rise and a growing need for proactive, value-based healthcare, Singapore’s healthcare landscape is rapidly evolving. **Pocket Missy** is our pioneering solution that integrates all essential health services into one unified platform. By harnessing advanced digital technologies—including IRIS vector search for efficient data retrieval and RAG for prompt engineering—our app delivers real-time insights and personalized advice, bridging gaps in care continuity while reducing costs and improving patient outcomes.
 
----
+1. **Fragmented Healthcare Ecosystem:**  
+   The current healthcare landscape is cluttered with multiple disjointed apps for appointments, prescriptions, teleconsultations, and medical records. This fragmentation makes it difficult for users — especially seniors — to manage their health holistically and conveniently.
 
-## 2. Problem Statement & Context
+2. **Underreporting Among Seniors:**  
+   Elderly users often underreport symptoms or health events, either due to forgetfulness or the complexity of navigating multiple healthcare platforms. This leads to missed opportunities for timely intervention and preventive care.
 
-### Challenges Addressed:
-
-1. **Fragmentation of Healthcare Apps:**  
-   Too many disjointed healthcare apps make it challenging for users to manage their health effectively.
-
-2. **Underreporting Among the Elderly:**  
-   Seniors often underreport critical health events due to forgetfulness or complex app navigation, leading to gaps in care.
+3. **Strain on the Healthcare System:**  
+    Clinicians are frequently overwhelmed, having to comb through extensive medical records, lifestyle data, and dietary habits to make informed decisions. In reality, time constraints often prevent doctors from fully leveraging this data, resulting in rushed or incomplete diagnoses.
 
 ### Core Questions:
 
