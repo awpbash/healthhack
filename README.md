@@ -88,10 +88,14 @@ Our solution directly tackles these challenges through:
 
 ### Architecture
 
+![Architecturev2.drawio.html.pdf](https://github.com/user-attachments/files/19314475/Architecturev2.drawio.html.pdf)
+
+
 - **Frontend (React Native):**  
   Delivers the mobile interface for the health dashboard and chatbot.
 
-- **Backend (Flask/Node.js):**  
+- **Backend (Flask/Node.js):** 
+
   Provides RESTful API endpoints to interact with the IRIS database and Azure OpenAI.
 
 - **Database (IRIS):**  
