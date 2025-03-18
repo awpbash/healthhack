@@ -88,11 +88,11 @@ Our solution directly tackles these challenges through:
 
 ### Architecture
 
-![Architecturev2.drawio.html.pdf](https://github.com/user-attachments/files/19314475/Architecturev2.drawio.html.pdf)
+<img src="krr/assets/images/Architecturev2.jpg"  width="500" />
 
 Powered by
 
-- **Frontend (React Native):**  [![image](https://github.com/user-attachments/assets/9fea60c5-336a-470a-8eef-3b6036b5cfd6)](https://iconduck.com/icons/14185/react)
+- **Frontend (React Native):** <img src="krr/assets/images/react-native-1.svg"  width="300" />
 
 
   Delivers the mobile interface for the health dashboard and chatbot.
