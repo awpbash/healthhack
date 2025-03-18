@@ -8,7 +8,7 @@ Welcome to **Pocket Missy**, our innovative one-stop shop app designed to transf
 
 ## Table of Contents
 
-1. [Overview](#overview)
+1. [Overview](#1.-overview)
 2. [Problem Statement & Context](#problem-statement--context)
 3. [Our Approach](#our-approach)
 4. [Key Features](#key-features)
