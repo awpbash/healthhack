@@ -8,6 +8,14 @@ Welcome to **Pocket Missy**, an innovative all-in-one app built to advance value
 
 By unifying essential healthcare services into one powerful platform, Pocket Missy leverages cutting-edge vector search and Retrieval-Augmented Generation (RAG) technology to deliver hyper-personalized medical advice. Beyond that, it provides advanced data analytics and actionable healthcare insights, empowering users to make smarter, data-driven decisions for their health.
 
+## Table of Contents
+
+1. [Overview](#1-overview)
+2. [Problem Statement & Context](#2-problem-statement--context)
+3. [Our Approach](#3-our-approach)
+4. [Key Features](#4-key-features)
+5. [Architecture & Workflow](#5-architecture--workflow)
+6. [Setup & Installation](#6-setup--installation)
 
 ---
 
@@ -39,13 +47,6 @@ By unifying essential healthcare services into one powerful platform, Pocket Mis
 
 3. **Strain on the Healthcare System:**  
     Clinicians are frequently overwhelmed, having to comb through extensive medical records, lifestyle data, and dietary habits to make informed decisions. In reality, time constraints often prevent doctors from fully leveraging this data, resulting in rushed or incomplete diagnoses.
-
-### Core Questions:
-
-- **How can technology bridge the gap between elderly care services and healthcare providers to ensure continuous, value-based care while reducing costs?**
-- **What innovative digital tools can lower healthcare costs and improve care quality in a value-based system?**
-
----
 
 ## 3. Our Approach
 
@@ -88,42 +89,52 @@ Our solution directly tackles these challenges through:
 
 ### Architecture
 
-<img src="krr/assets/images/Architecturev2.jpg"  width="500" />
-
+<img src="krr/assets/images/Architecturev2.jpg"  width="100%" />
 
 Powered by<br/>
 <img src="krr/assets/images/tech stackv2.png"  width="300" />
 
+- **Frontend (React Native - Typescript):** 
+
   Delivers the mobile interface for the health dashboard and chatbot.
 
-- **Backend (Flask):** 
+- **Backend (Flask - Python):** 
 
   Provides RESTful API endpoints to interact with the IRIS database and Azure OpenAI.
 
-- **Database (IRIS):**  
+- **Database (IRIS):**
+
   Stores user data across tables: MedicalRecords, Vitals, Activity, PastPrompts, and Diet.  
   Utilizes vector search to support efficient data retrieval and prompt engineering.
 
-- **Embedding Service:**  
+- **Embedding Service (pritamdeka/S-PubMedBert-MS-MARCO):**
+
   Generates semantic embeddings using SentenceTransformer for advanced natural language processing.
 
 ### Workflow
 
-1. **Data Ingestion:**  
-   Sensor data, user logs, and external information are stored in the IRIS database.
-2. **Data Processing:**  
-   The backend cleans and enriches the data, including generating embeddings.
-3. **AI-Powered Insights:**  
-   The chatbot uses contextual data (e.g., vitals, activities) to generate personalized responses via Azure OpenAI.
-4. **User Interaction:**  
-   Users engage with a unified mobile app that integrates real-time dashboards and a conversational AI interface.
+# TO ADD FULL VIDEO FOR FRONTEND HERE
+# ADD VIDEO FOR LOGGER HERE
+1. **Logger:**  
+   Users save sensor data, logs and any information about their health they wish to store here. The saved data is sent to the backend for updating.
+
+2. **Backend Vector Embeddings:**
+   The backend embeds all unstructured data into vector embeddings before updating the IRIS Intersystems RAG Database.
+
+# ADD VIDEO FOR MISSY CHAT HERE
+3. **RAG and AI-Powered Insights using OpenAI:**
+   When chatting with Missy, users will be sending prompts for any of the 4 prompt modes:
+      - **Symptom Checker:** Retrieves past symptoms in logs using the vector search from IRIS Intersystems database that are most relevant to enrich the full fine-tuned prompt that generates in-depth analysis of their symptoms and possible diagnoses for users.
+      - **Medical Summary:** Retrieves and synthesizes historical vitals and activity data from the IRIS Intersystems database to build a fine-tuned prompt outlining the users' current general health based on their previous logs.
+      - **Treatment Recommendations:** Offers tailored advice on treatment options based on individual health profiles.
+      - **General Health Queries:** Supports multi-language conversations for accessible health information.
 
 ---
 
 ## 6. Setup & Installation
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/your-username/healthhack.git
+git clone https://github.com/awpbash/healthhack.git
 cd healthhack
 ```
 ### 2. Installing depandencies
