@@ -113,15 +113,18 @@ Powered by: <br/>
 
 ### Workflow
 
-# TO ADD FULL VIDEO FOR FRONTEND HERE
-# ADD VIDEO FOR LOGGER HERE
+[Demo video](https://www.youtube.com/watch?v=7Qxpbz3fE30)
+
+<img src = "krr\assets\images\demo\logs_demo.gif" width="500">
+
 1. **Logger:**  
    Users save sensor data, logs and any information about their health they wish to store here. The saved data is sent to the backend for updating.
 
 2. **Backend Vector Embeddings:**
    The backend embeds all unstructured data into vector embeddings before updating the IRIS Intersystems RAG Database.
 
-# ADD VIDEO FOR MISSY CHAT HERE
+<img src = "krr\assets\images\demo\chat_demo.gif" width = "500">
+
 3. **RAG and AI-Powered Insights using OpenAI:**
    When chatting with Missy, users will be sending prompts for any of the 4 prompt modes:
       - **Symptom Checker:** Retrieves past symptoms in logs using the vector search from IRIS Intersystems database that are most relevant to enrich the full fine-tuned prompt that generates in-depth analysis of their symptoms and possible diagnoses for users.
